@@ -3,7 +3,19 @@
 import React from "react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
-import { Sun, Moon, Bell, ChevronDown, Check, Settings, LogOut, Server, AlertCircle, CheckCheck, LayoutGrid } from "lucide-react";
+import {
+  Sun,
+  Moon,
+  Bell,
+  ChevronDown,
+  Check,
+  Settings,
+  LogOut,
+  Server,
+  AlertCircle,
+  CheckCheck,
+  LayoutGrid,
+} from "lucide-react";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { useSearchParams, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -29,9 +41,12 @@ export function Header({ title }: { title?: string }) {
   const [userOpen, setUserOpen] = React.useState(false);
   const [notifOpen, setNotifOpen] = React.useState(false);
   const [instances, setInstances] = React.useState<N8nInstance[]>([]);
-  const [selectedInstance, setSelectedInstance] = React.useState<N8nInstance | null>(null);
+  const [selectedInstance, setSelectedInstance] =
+    React.useState<N8nInstance | null>(null);
   const [user, setUser] = React.useState<SessionUser | null>(null);
-  const [notifications, setNotifications] = React.useState<AppNotification[]>([]);
+  const [notifications, setNotifications] = React.useState<AppNotification[]>(
+    [],
+  );
   const [readIds, setReadIds] = React.useState<Set<string>>(new Set());
   const [notifsLoading, setNotifsLoading] = React.useState(false);
 
@@ -46,7 +61,9 @@ export function Header({ title }: { title?: string }) {
   React.useEffect(() => {
     fetch("/api/auth/me")
       .then((r) => r.json())
-      .then((d) => { if (d.user) setUser(d.user); })
+      .then((d) => {
+        if (d.user) setUser(d.user);
+      })
       .catch(() => {});
 
     fetch("/api/instances")
@@ -58,7 +75,9 @@ export function Header({ title }: { title?: string }) {
         const urlInstanceId = searchParams.get("instance");
         let resolvedId = urlInstanceId;
         if (!resolvedId) {
-          try { resolvedId = localStorage.getItem("fw_selected_instance"); } catch {}
+          try {
+            resolvedId = localStorage.getItem("fw_selected_instance");
+          } catch {}
         }
         const match = resolvedId ? list.find((i) => i.id === resolvedId) : null;
         setSelectedInstance(match ?? null);
@@ -123,7 +142,9 @@ export function Header({ title }: { title?: string }) {
     const allIds = notifications.map((n) => n.id);
     const next = new Set([...readIds, ...allIds]);
     setReadIds(next);
-    try { localStorage.setItem("fw_read_notifs", JSON.stringify([...next])); } catch {}
+    try {
+      localStorage.setItem("fw_read_notifs", JSON.stringify([...next]));
+    } catch {}
   }
 
   const unreadCount = notifications.filter((n) => !readIds.has(n.id)).length;
@@ -157,7 +178,11 @@ export function Header({ title }: { title?: string }) {
         {/* Instance selector */}
         <div className="relative">
           <button
-            onClick={() => { setInstanceOpen(!instanceOpen); setUserOpen(false); setNotifOpen(false); }}
+            onClick={() => {
+              setInstanceOpen(!instanceOpen);
+              setUserOpen(false);
+              setNotifOpen(false);
+            }}
             className={cn(
               "flex items-center gap-2 rounded-lg border border-border bg-background px-2 sm:px-3 py-1.5 text-sm transition-colors hover:bg-secondary",
               instanceOpen && "ring-2 ring-ring",
@@ -165,21 +190,31 @@ export function Header({ title }: { title?: string }) {
           >
             {selectedInstance ? (
               <>
-                <span className={cn(
-                  "w-1.5 h-1.5 rounded-full shrink-0",
-                  selectedInstance.is_active ? "bg-success animate-pulse-dot" : "bg-muted-foreground"
-                )} />
-                <span className="hidden sm:inline font-medium text-foreground">{selectedInstance.name}</span>
+                <span
+                  className={cn(
+                    "w-1.5 h-1.5 rounded-full shrink-0",
+                    selectedInstance.is_active
+                      ? "bg-success animate-pulse-dot"
+                      : "bg-muted-foreground",
+                  )}
+                />
+                <span className="hidden sm:inline font-medium text-foreground">
+                  {selectedInstance.name}
+                </span>
               </>
             ) : instances.length === 0 ? (
               <>
                 <Server className="w-3.5 h-3.5 text-muted-foreground" />
-                <span className="hidden sm:inline text-muted-foreground">No instances</span>
+                <span className="hidden sm:inline text-muted-foreground">
+                  No instances
+                </span>
               </>
             ) : (
               <>
                 <LayoutGrid className="w-3.5 h-3.5 text-muted-foreground" />
-                <span className="hidden sm:inline text-muted-foreground">All instances</span>
+                <span className="hidden sm:inline text-muted-foreground">
+                  All instances
+                </span>
               </>
             )}
             <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
@@ -190,7 +225,9 @@ export function Header({ title }: { title?: string }) {
               {instances.length === 0 ? (
                 <div className="px-3 py-4 text-center">
                   <Server className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-xs text-muted-foreground">No instances connected</p>
+                  <p className="text-xs text-muted-foreground">
+                    No instances connected
+                  </p>
                 </div>
               ) : (
                 <>
@@ -200,8 +237,12 @@ export function Header({ title }: { title?: string }) {
                     className="w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-secondary transition-colors text-left"
                   >
                     <LayoutGrid className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                    <span className="flex-1 font-medium text-foreground">All instances</span>
-                    {!selectedInstance && <Check className="w-3.5 h-3.5 text-primary shrink-0" />}
+                    <span className="flex-1 font-medium text-foreground">
+                      All instances
+                    </span>
+                    {!selectedInstance && (
+                      <Check className="w-3.5 h-3.5 text-primary shrink-0" />
+                    )}
                   </button>
                   <div className="border-t border-border my-1" />
                   {instances.map((inst) => (
@@ -210,13 +251,17 @@ export function Header({ title }: { title?: string }) {
                       onClick={() => selectInstance(inst)}
                       className="w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-secondary transition-colors text-left"
                     >
-                      <span className={cn(
-                        "w-1.5 h-1.5 rounded-full shrink-0",
-                        inst.is_active ? "bg-success" : "bg-muted-foreground"
-                      )} />
+                      <span
+                        className={cn(
+                          "w-1.5 h-1.5 rounded-full shrink-0",
+                          inst.is_active ? "bg-success" : "bg-muted-foreground",
+                        )}
+                      />
                       <div className="flex-1 min-w-0">
                         <div className="font-medium truncate">{inst.name}</div>
-                        <div className="text-xs text-muted-foreground truncate">{inst.url}</div>
+                        <div className="text-xs text-muted-foreground truncate">
+                          {inst.url}
+                        </div>
                       </div>
                       {selectedInstance?.id === inst.id && (
                         <Check className="w-3.5 h-3.5 text-primary shrink-0" />
@@ -227,10 +272,15 @@ export function Header({ title }: { title?: string }) {
               )}
               <div className="border-t border-border mt-1 pt-1 px-2">
                 <button
-                  onClick={() => { router.push("/dashboard/instances"); setInstanceOpen(false); }}
+                  onClick={() => {
+                    router.push("/dashboard/instances");
+                    setInstanceOpen(false);
+                  }}
                   className="w-full text-left px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors rounded"
                 >
-                  {instances.length === 0 ? "+ Connect instance" : "Manage instances"}
+                  {instances.length === 0
+                    ? "+ Connect instance"
+                    : "Manage instances"}
                 </button>
               </div>
             </div>
@@ -257,7 +307,9 @@ export function Header({ title }: { title?: string }) {
             <div className="absolute right-0 top-full mt-1.5 w-80 rounded-xl border border-border bg-popover shadow-elevated z-50 animate-fade-in flex flex-col max-h-[420px]">
               {/* Panel header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
-                <span className="text-sm font-semibold text-foreground">Notifications</span>
+                <span className="text-sm font-semibold text-foreground">
+                  Notifications
+                </span>
                 {unreadCount > 0 && (
                   <button
                     onClick={markAllRead}
@@ -278,7 +330,9 @@ export function Header({ title }: { title?: string }) {
                 ) : notifications.length === 0 ? (
                   <div className="px-4 py-8 flex flex-col items-center gap-2 text-center">
                     <Bell className="w-6 h-6 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">No recent failures</p>
+                    <p className="text-sm text-muted-foreground">
+                      No recent failures
+                    </p>
                   </div>
                 ) : (
                   notifications.map((n) => {
@@ -288,15 +342,28 @@ export function Header({ title }: { title?: string }) {
                         key={n.id}
                         className={cn(
                           "px-4 py-3 border-b border-border last:border-0 flex items-start gap-3 transition-colors",
-                          isRead ? "opacity-50" : "bg-destructive/5"
+                          isRead ? "opacity-50" : "bg-destructive/5",
                         )}
                       >
-                        <AlertCircle className={cn("w-4 h-4 shrink-0 mt-0.5", isRead ? "text-muted-foreground" : "text-destructive")} />
+                        <AlertCircle
+                          className={cn(
+                            "w-4 h-4 shrink-0 mt-0.5",
+                            isRead
+                              ? "text-muted-foreground"
+                              : "text-destructive",
+                          )}
+                        />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate">{n.workflow_name}</p>
-                          <p className="text-xs text-muted-foreground truncate">{n.instance_name}</p>
+                          <p className="text-sm font-medium text-foreground truncate">
+                            {n.workflow_name}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {n.instance_name}
+                          </p>
                           <p className="text-[11px] text-muted-foreground mt-0.5">
-                            {formatDistanceToNow(parseISO(n.started_at), { addSuffix: true })}
+                            {formatDistanceToNow(parseISO(n.started_at), {
+                              addSuffix: true,
+                            })}
                           </p>
                         </div>
                         {!isRead && (
@@ -325,7 +392,11 @@ export function Header({ title }: { title?: string }) {
         {/* Avatar + user menu */}
         <div className="relative">
           <button
-            onClick={() => { setUserOpen((v) => !v); setInstanceOpen(false); setNotifOpen(false); }}
+            onClick={() => {
+              setUserOpen((v) => !v);
+              setInstanceOpen(false);
+              setNotifOpen(false);
+            }}
             className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-secondary transition-colors"
           >
             <div className="w-7 h-7 rounded-full gradient-primary flex items-center justify-center text-white text-xs font-bold">
@@ -342,14 +413,23 @@ export function Header({ title }: { title?: string }) {
               {user && (
                 <>
                   <div className="px-3 py-2 border-b border-border mb-1">
-                    <p className="text-sm font-medium text-foreground">{user.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-                    <p className="text-xs text-muted-foreground capitalize mt-0.5">{user.orgName} · {user.role}</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {user.name}.
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {user.email}
+                    </p>
+                    <p className="text-xs text-muted-foreground capitalize mt-0.5">
+                      {user.orgName} · {user.role}
+                    </p>
                   </div>
                 </>
               )}
               <button
-                onClick={() => { router.push("/dashboard/settings"); setUserOpen(false); }}
+                onClick={() => {
+                  router.push("/dashboard/settings");
+                  setUserOpen(false);
+                }}
                 className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-secondary transition-colors text-left"
               >
                 <Settings className="w-4 h-4 text-muted-foreground" />
@@ -370,13 +450,22 @@ export function Header({ title }: { title?: string }) {
 
       {/* Backdrops */}
       {instanceOpen && (
-        <div className="fixed inset-0 z-40" onClick={() => setInstanceOpen(false)} />
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setInstanceOpen(false)}
+        />
       )}
       {userOpen && (
-        <div className="fixed inset-0 z-40" onClick={() => setUserOpen(false)} />
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setUserOpen(false)}
+        />
       )}
       {notifOpen && (
-        <div className="fixed inset-0 z-40" onClick={() => setNotifOpen(false)} />
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setNotifOpen(false)}
+        />
       )}
     </header>
   );
