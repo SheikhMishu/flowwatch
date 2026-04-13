@@ -1,0 +1,430 @@
+FLOWWATCH – FINAL SAAS PRODUCT BLUEPRINT (V1.0)
+
+---
+
+CORE IDEA
+
+“Make debugging n8n so easy that people will happily pay to avoid opening n8n UI.”
+
+Positioning:
+Automation Observability Platform for n8n
+
+Not a dashboard. Not a viewer.
+A production monitoring + debugging system.
+
+---
+
+MARKET OPPORTUNITY
+
+* No polished SaaS exists for n8n observability
+* Existing solutions are:
+
+  * mobile-only (limited)
+  * self-hosted (technical)
+  * DIY (Grafana/Prometheus)
+
+Target ICP:
+
+* Agencies running n8n for clients (primary)
+* SaaS founders using automation
+* Ops/automation teams
+
+---
+
+CORE ARCHITECTURE
+
+Hybrid real-time system:
+
+1. Webhook-first (primary)
+
+   * n8n error workflow → FlowWatch backend
+   * instant failure ingestion
+
+2. Polling fallback (30–60 sec)
+
+   * ensures no missed executions
+
+3. Optional WebSocket layer
+
+   * live UI updates
+
+---
+
+MVP SCOPE (FIRST 30 DAYS)
+
+Goal:
+“Instantly see what failed and why”
+
+Build ONLY:
+
+1. Authentication
+2. Connect n8n instance(s)
+   * data model must support multi-instance from day 1
+   * UI can show one at a time initially
+3. Dashboard (basic metrics)
+4. Failures feed
+5. Execution detail view
+6. Webhook ingestion (real-time failures)
+7. Demo mode (sample data, no API key needed)
+   * acquisition tool — visitors try before connecting
+
+---
+
+CORE FEATURES
+
+---
+
+1. DASHBOARD
+
+* total workflows
+* active vs inactive
+* executions (24h)
+* failures (24h)
+* success rate %
+
+Mobile-first card UI
+
+---
+
+2. FAILURES FEED
+
+* workflow name
+* failed node
+* timestamp
+* short error
+
+Click → detail view
+
+---
+
+3. EXECUTION DETAIL
+
+* node-by-node timeline
+* highlight failed node
+* input/output data
+* error message
+
+---
+
+4. INCIDENT-BASED MONITORING (KEY DIFFERENTIATOR)
+
+Group failures into incidents:
+
+Example:
+12 failures in 10 mins = 1 incident
+
+Show:
+
+* timeline
+* frequency
+* impact
+
+Reduces noise, increases clarity
+
+---
+
+5. ALERTING SYSTEM
+
+* Slack / email / webhook alerts
+* alert grouping
+* cooldown rules
+* threshold alerts:
+  “alert if fails X times in Y minutes”
+
+---
+
+6. MAINTENANCE MODE (IMPORTANT)
+
+* snooze alerts temporarily
+* avoid alert fatigue during deployments
+
+---
+
+AI DEBUGGING (CORE PRODUCT PILLAR)
+
+---
+
+NOT just a feature — main differentiator
+
+Input:
+
+* execution JSON
+* workflow JSON
+* failed node
+
+Output:
+
+1. What failed (simple)
+2. Why it failed (technical)
+3. Root cause
+4. Step-by-step fix
+
+---
+
+ADVANCED AI FEATURES (PHASE 2)
+
+* pattern detection:
+  “failure increased 40% today”
+* repeated failure grouping
+* incident-level analysis
+* fix suggestions
+* retry from UI (closed loop)
+
+---
+
+WORKFLOW MANAGEMENT
+
+* activate/deactivate workflows
+* bulk actions
+* tagging/grouping
+* last run + frequency
+
+---
+
+EXECUTION EXPLORER
+
+* filter by:
+
+  * workflow
+  * status
+  * time
+* searchable logs
+* retry execution
+
+---
+
+SCHEDULING INTELLIGENCE
+
+* detect cron triggers
+* human-readable schedules
+* upcoming runs timeline
+* conflict detection
+
+---
+
+PERFORMANCE MONITORING
+
+* execution duration tracking
+* slowdown detection
+* trend analysis
+
+---
+
+COST TRACKING
+
+* execution volume tracking
+* usage vs limits:
+  “73% of monthly usage consumed”
+* supports SaaS pricing logic
+
+---
+
+TEAM FEATURES (PAID TIERS)
+
+* multi-user access (RBAC)
+* workflow ownership
+* comments on incidents
+* shared debugging
+
+---
+
+ON-CALL SYSTEM
+
+* assign incident owners
+* simple rotation schedule
+* route alerts to responsible person
+
+---
+
+CLIENT-FACING FEATURES (HIGH ROI)
+
+1. Public Status Page
+
+   * shareable per client/instance
+   * “All systems operational”
+   * optional white-label
+
+2. White-label Mode
+
+   * agencies brand as their own
+   * premium pricing tier
+
+---
+
+INTEGRATIONS
+
+* Slack (alerts)
+* Email
+* Issue trackers:
+
+  * auto-create Linear/Jira/GitHub issues
+  * pre-filled with:
+
+    * error
+    * workflow
+    * execution ID
+    * AI diagnosis
+
+---
+
+FLOWWATCH API
+
+* expose read API
+* users can pull data into:
+
+  * dashboards
+  * bots
+  * internal tools
+
+Creates strong lock-in
+
+---
+
+DATA & INFRASTRUCTURE
+
+---
+
+Database (Supabase/Postgres):
+
+* users
+* n8n_instances
+* workflows
+* executions
+* incidents
+* alerts
+
+---
+
+Data Retention Strategy:
+
+* Free: 3–7 days
+* Pro: 30 days
+* Team: 90 days+
+
+Optional:
+
+* disable raw JSON storage (cost control)
+
+---
+
+SECURITY
+
+* encrypted API key storage
+* audit logs
+* optional proxy mode (future)
+* enterprise-ready posture
+
+---
+
+ONBOARDING (CRITICAL)
+
+* 2-minute setup max
+* paste API key → instant data
+* guided steps
+* demo mode (sample data)
+
+---
+
+MOBILE STRATEGY
+
+* mobile-first responsive web app
+* PWA support
+* push notifications
+
+DO NOT build native apps initially
+
+---
+
+PRICING MODEL
+
+Free
+
+* 1 instance
+* limited logs
+* basic alerts
+
+Pro ($19–29/mo)
+
+* multiple instances
+* 30-day retention
+* Slack alerts
+* analytics
+* AI debugging (limited: 10 analyses/month)
+  → lets users feel the value before upgrading
+
+Team ($79–99/mo)
+
+* 10 instances
+* AI debugging (unlimited)
+* RBAC
+* reports
+* on-call
+
+Enterprise
+
+* SSO
+* SLA
+* white-label
+* audit logs
+
+---
+
+FUTURE EXPANSION (MOAT)
+
+Expand beyond n8n:
+
+* Zapier
+* Make
+* Pipedream
+
+Become:
+“Unified automation observability platform”
+
+---
+
+BUILD TIMELINE (REALISTIC)
+
+Week 1–2:
+
+* dashboard
+* workflows
+* executions
+* failures
+
+Week 3:
+
+* incident grouping
+* alerts
+
+Week 4:
+
+* AI debugging
+* retry loop
+
+Launch immediately after
+
+---
+
+FINAL STRATEGY
+
+Do NOT overbuild.
+
+Ship early:
+
+* see failures
+* understand failures
+* fix failures faster
+
+Everything else is expansion.
+
+---
+
+END GOAL
+
+From:
+“I think something broke…”
+
+To:
+“I know exactly what broke and how to fix it in 30 seconds.”
+
+---

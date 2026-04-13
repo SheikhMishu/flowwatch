@@ -1,0 +1,191 @@
+Your task is to IMPLEMENT INCIDENT GROUPING into the existing system WITHOUT breaking current functionality.
+
+IMPORTANT:
+
+* Do NOT rewrite existing systems
+* Extend and integrate cleanly
+* Reuse existing execution ingestion flow
+* Keep code modular and production-ready
+
+---
+
+## GOAL
+
+Group failed executions into "incidents" using:
+
+* same workflow_id
+* same error_signature (normalized error)
+* within a time window (15 minutes)
+
+---
+
+## STEP 1 — DATABASE CHANGES
+
+Create a new table:
+
+incidents:
+
+* id (uuid, pk)
+* workflow_id (fk)
+* error_signature (text, indexed)
+* node_name (text)
+* status (text: 'open' | 'resolved')
+* count (int)
+* first_seen_at (timestamp)
+* last_seen_at (timestamp)
+* last_execution_id (fk)
+* created_at
+* updated_at
+
+Add to executions table:
+
+* error_signature (text)
+* incident_id (fk → incidents.id)
+
+Ensure indexes:
+
+* (workflow_id, error_signature, status)
+* last_seen_at
+
+---
+
+## STEP 2 — ERROR SIGNATURE FUNCTION
+
+Create a utility:
+
+generateErrorSignature(execution)
+
+Logic:
+
+1. Extract:
+
+   * workflow_id
+   * node_name (last failed node)
+   * error message
+
+2. Normalize error message:
+
+   * remove numbers (replace with *)
+   * remove IDs, emails, timestamps
+   * lowercase
+   * trim
+
+3. Create signature string:
+   workflow_id + node_name + normalized_error
+
+4. Hash it (simple hash or sha256)
+
+Return:
+
+* error_signature
+* normalized_error (optional for debugging)
+
+---
+
+## STEP 3 — INCIDENT MATCHING LOGIC
+
+Create a function:
+
+findOrCreateIncident(execution)
+
+Flow:
+
+1. Generate error_signature
+
+2. Query incidents:
+   WHERE
+   workflow_id = execution.workflow_id
+   AND error_signature = ?
+   AND status = 'open'
+   AND last_seen_at > NOW() - INTERVAL '15 minutes'
+   LIMIT 1
+
+3. If found:
+
+   * increment count
+   * update last_seen_at
+   * update last_execution_id
+
+4. If NOT found:
+
+   * create new incident
+   * count = 1
+   * first_seen_at = now
+   * last_seen_at = now
+
+5. Return incident_id
+
+---
+
+## STEP 4 — INTEGRATE INTO EXISTING FLOW
+
+Find where failed executions are:
+
+* inserted
+* or synced from n8n
+
+At that point:
+
+IF execution.status === 'error':
+
+* generate error_signature
+* call findOrCreateIncident()
+* store:
+  execution.error_signature
+  execution.incident_id
+
+Ensure:
+
+* no duplicate processing
+* idempotent behavior
+
+---
+
+## STEP 5 — INCIDENT RESOLUTION
+
+Add background logic (can be cron or part of sync):
+
+If:
+last_seen_at < NOW() - INTERVAL '30 minutes'
+
+Then:
+status = 'resolved'
+
+---
+
+## STEP 6 — API ENDPOINTS
+
+Create:
+
+GET /api/incidents
+
+* list incidents
+* filters: status, workflow_id
+
+GET /api/incidents/[id]
+
+* incident detail
+* include linked executions
+
+PATCH /api/incidents/[id]
+
+* allow manual resolve
+
+---
+
+## STEP 7 — KEEP IT SAFE
+
+* Do not break existing dashboard pages
+* If incidents page is mock → replace with real data
+* Keep backward compatibility
+
+---
+
+## STEP 8 — OPTIONAL (IF EASY)
+
+* add severity field:
+  based on count or frequency
+
+---
+
+Keep code clean, modular, and production-ready.
