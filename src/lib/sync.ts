@@ -70,24 +70,48 @@ async function runInstanceSync(
       return valid.includes(m) ? m : "trigger";
     }
 
+    // Fetch error details for failed executions (list endpoint doesn't include them)
+    const errorExecs = rawExecutions.filter((e) => e.status === "error" || e.status === "crashed");
+    const errorDetailMap = new Map<string, { failed_node: string | null; error_message: string | null; error_type: string | null }>();
+    await Promise.all(
+      errorExecs.map(async (e) => {
+        try {
+          const full = await client.getExecutionWithData(String(e.id));
+          const topError = full.data?.resultData?.error;
+          const runData = full.data?.resultData?.runData ?? {};
+          const failedNodeFromRun = Object.entries(runData).find(([, runs]) => runs[0]?.error)?.[0] ?? null;
+          errorDetailMap.set(String(e.id), {
+            failed_node: topError?.node?.name ?? failedNodeFromRun,
+            error_message: topError?.message ?? null,
+            error_type: topError?.name ?? null,
+          });
+        } catch {
+          // non-critical — leave nulls if fetch fails
+        }
+      })
+    );
+
     // Upsert executions — update on conflict so "running" → "success" transitions are captured
-    const execRows = rawExecutions.map((e) => ({
-      org_id: orgId,
-      instance_id: instanceId,
-      n8n_execution_id: String(e.id),
-      n8n_workflow_id: e.workflowId,
-      workflow_name: nameMap[e.workflowId] ?? e.workflowName ?? "Unknown Workflow",
-      status: normalizeStatus(e.status),
-      mode: normalizeMode(e.mode),
-      started_at: e.startedAt,
-      finished_at: e.stoppedAt ?? null,
-      duration_ms: e.stoppedAt
-        ? new Date(e.stoppedAt).getTime() - new Date(e.startedAt).getTime()
-        : null,
-      failed_node: null as string | null,
-      error_message: null as string | null,
-      error_type: null as string | null,
-    }));
+    const execRows = rawExecutions.map((e) => {
+      const errorDetail = errorDetailMap.get(String(e.id));
+      return {
+        org_id: orgId,
+        instance_id: instanceId,
+        n8n_execution_id: String(e.id),
+        n8n_workflow_id: e.workflowId,
+        workflow_name: nameMap[e.workflowId] ?? e.workflowName ?? "Unknown Workflow",
+        status: normalizeStatus(e.status),
+        mode: normalizeMode(e.mode),
+        started_at: e.startedAt,
+        finished_at: e.stoppedAt ?? null,
+        duration_ms: e.stoppedAt
+          ? new Date(e.stoppedAt).getTime() - new Date(e.startedAt).getTime()
+          : null,
+        failed_node: errorDetail?.failed_node ?? null,
+        error_message: errorDetail?.error_message ?? null,
+        error_type: errorDetail?.error_type ?? null,
+      };
+    });
 
     console.log(`[sync] instance ${instanceId}: ${rawWorkflows.length} workflows, ${rawExecutions.length} executions from n8n`);
 

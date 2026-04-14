@@ -73,9 +73,10 @@ export interface ExecutionNode {
   type: string;
   status: "success" | "error" | "skipped";
   duration_ms: number;
-  input?: unknown;
-  output?: unknown;
+  input_items?: unknown[];
+  output_items?: unknown[];
   error?: string;
+  error_description?: string;
 }
 
 // ─── Incident ─────────────────────────────────────────────────────────────────

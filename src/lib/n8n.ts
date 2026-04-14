@@ -29,15 +29,24 @@ export interface N8nExecutionRaw {
 interface N8nNodeRun {
   startTime: number;
   executionTime: number;
-  error?: { message: string; name: string };
+  error?: { message: string; name: string; description?: string };
   data?: { main?: Array<Array<{ json: unknown }>> };
+}
+
+interface N8nWorkflowNode {
+  name: string;
+  type: string;
 }
 
 export interface N8nExecutionRawWithData extends N8nExecutionRaw {
   data?: {
     resultData?: {
       runData?: Record<string, N8nNodeRun[]>;
-      error?: { message: string; name: string; node?: { name: string } };
+      error?: { message: string; name: string; description?: string; node?: { name: string } };
+    };
+    workflowData?: {
+      nodes?: N8nWorkflowNode[];
+      connections?: Record<string, unknown>;
     };
   };
 }
@@ -172,16 +181,35 @@ export function toExecution(e: N8nExecutionRaw, instanceId: string, workflowName
 export function toExecutionNodes(raw: N8nExecutionRawWithData): ExecutionNode[] {
   const runData = raw.data?.resultData?.runData;
   if (!runData) return [];
-  return Object.entries(runData).map(([name, runs]) => {
-    const run = runs[0];
+
+  // Build node type map from workflow definition
+  const typeMap = Object.fromEntries(
+    (raw.data?.workflowData?.nodes ?? []).map((n) => [n.name, n.type])
+  );
+
+  // Build input map: input to node B = output of its predecessor(s)
+  // We derive this by tracking which nodes ran before each node in execution order
+  const nodeNames = Object.keys(runData);
+  const inputMap: Record<string, unknown[]> = {};
+  for (let i = 1; i < nodeNames.length; i++) {
+    const prevRun = runData[nodeNames[i - 1]]?.[0];
+    const prevOutput = prevRun?.data?.main?.flat() ?? [];
+    inputMap[nodeNames[i]] = prevOutput.map((item) => (item as { json: unknown }).json);
+  }
+
+  return nodeNames.map((name) => {
+    const run = runData[name][0];
     const hasError = !!run?.error;
+    const outputItems = (run?.data?.main?.flat() ?? []).map((item) => (item as { json: unknown }).json);
     return {
       name,
-      type: "",
+      type: typeMap[name] ?? "",
       status: (hasError ? "error" : "success") as ExecutionNode["status"],
       duration_ms: run?.executionTime ?? 0,
+      input_items: inputMap[name],
+      output_items: outputItems.length > 0 ? outputItems : undefined,
       error: run?.error?.message,
-      output: run?.data?.main?.[0]?.[0]?.json,
+      error_description: run?.error?.description,
     };
   });
 }

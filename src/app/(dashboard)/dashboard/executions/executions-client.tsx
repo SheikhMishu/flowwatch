@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow, parseISO, format } from "date-fns";
 import {
@@ -18,6 +18,7 @@ import {
   Hand,
   Activity,
   ExternalLink,
+  Circle,
 } from "lucide-react";
 import { cn, formatDuration } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -139,16 +140,45 @@ function NodeTimeline({ nodes }: { nodes: NonNullable<Execution["data"]>["nodes"
   );
 }
 
+const MODE_LABELS: Record<Execution["mode"], string> = {
+  trigger: "Scheduled trigger",
+  webhook: "Webhook",
+  manual: "Manual run",
+  retry: "Retry",
+};
+
 function ExecutionDetail({ execution }: { execution: Execution }) {
   const router = useRouter();
+  const [nodes, setNodes] = useState(execution.data?.nodes ?? null);
+  const [loadingNodes, setLoadingNodes] = useState(false);
+
+  // Lazy-fetch node timeline for error executions that don't have it yet
+  useEffect(() => {
+    if (execution.status !== "error" || nodes !== null) return;
+    setLoadingNodes(true);
+    fetch(`/api/executions/${encodeURIComponent(execution.id)}`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (data?.nodes?.length) setNodes(data.nodes);
+      })
+      .catch(() => null)
+      .finally(() => setLoadingNodes(false));
+  }, [execution.id, execution.status, nodes]);
+
   return (
     <div className="border-t border-border bg-muted/30 px-4 py-5 space-y-5 animate-slide-in">
+      {/* ── Error block ── */}
       {execution.error_message && (
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-destructive" />
             <p className="text-xs font-semibold text-destructive uppercase tracking-wide">
-              {execution.error_type ?? "Error"} · {execution.failed_node}
+              {execution.error_type ?? "Error"}
+              {execution.failed_node && (
+                <span className="text-muted-foreground font-normal normal-case">
+                  {" "}in <span className="font-mono font-medium text-foreground">{execution.failed_node}</span>
+                </span>
+              )}
             </p>
           </div>
           <pre className="bg-muted rounded-lg p-3 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap break-all">
@@ -157,17 +187,47 @@ function ExecutionDetail({ execution }: { execution: Execution }) {
         </div>
       )}
 
-      {execution.data?.nodes && execution.data.nodes.length > 0 && (
-        <div className="space-y-3">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Node Timeline
-          </p>
-          <NodeTimeline nodes={execution.data.nodes} />
+      {/* ── Node timeline (error: lazy-fetched, success: from data if present) ── */}
+      {loadingNodes && (
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Node Timeline</p>
+          <div className="space-y-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-5 rounded bg-muted animate-pulse" style={{ width: `${60 + i * 10}%` }} />
+            ))}
+          </div>
         </div>
       )}
 
-      {!execution.error_message && !execution.data?.nodes && (
-        <p className="text-sm text-muted-foreground">No additional details available.</p>
+      {!loadingNodes && nodes && nodes.length > 0 && (
+        <div className="space-y-3">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Node Timeline</p>
+          <NodeTimeline nodes={nodes} />
+        </div>
+      )}
+
+      {/* ── Success summary ── */}
+      {execution.status === "success" && (
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <p className="text-xs text-muted-foreground mb-0.5">Duration</p>
+            <p className="text-sm font-medium text-foreground tabular-nums">
+              {execution.duration_ms != null ? formatDuration(execution.duration_ms) : "—"}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground mb-0.5">Triggered by</p>
+            <p className="text-sm font-medium text-foreground">{MODE_LABELS[execution.mode]}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground mb-0.5">Finished</p>
+            <p className="text-sm font-medium text-foreground">
+              {execution.finished_at
+                ? formatDistanceToNow(parseISO(execution.finished_at), { addSuffix: true })
+                : "—"}
+            </p>
+          </div>
+        </div>
       )}
 
       <div className="pt-2 border-t border-border flex justify-end">

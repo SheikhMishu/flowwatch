@@ -252,7 +252,8 @@ export default async function ExecutionDetailPage({
 
         {/* ── Error section ── */}
         {execution.error_message && (
-          <div className="rounded-xl border border-destructive/30 bg-destructive/5 shadow-card p-5 space-y-3 animate-slide-in">
+          <div className="rounded-xl border border-destructive/30 bg-destructive/5 shadow-card p-5 space-y-4 animate-slide-in">
+            {/* Header */}
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-2.5 min-w-0">
                 <AlertTriangle className="w-4 h-4 text-destructive shrink-0" />
@@ -268,6 +269,12 @@ export default async function ExecutionDetailPage({
                       </span>
                     )}
                   </p>
+                  {/* Node type */}
+                  {nodes.find((n) => n.name === execution.failed_node)?.type && (
+                    <p className="text-xs text-muted-foreground mt-0.5 font-mono">
+                      {nodes.find((n) => n.name === execution.failed_node)!.type}
+                    </p>
+                  )}
                 </div>
               </div>
               <RetryButton
@@ -276,9 +283,35 @@ export default async function ExecutionDetailPage({
                 className="shrink-0"
               />
             </div>
+
+            {/* Error message */}
             <pre className="text-xs font-mono text-destructive bg-destructive/10 rounded-lg p-3 overflow-x-auto whitespace-pre-wrap break-words leading-relaxed">
               {execution.error_message}
             </pre>
+
+            {/* Error description (extra context from n8n) */}
+            {nodes.find((n) => n.name === execution.failed_node)?.error_description && (
+              <p className="text-xs text-muted-foreground bg-muted rounded-lg px-3 py-2 leading-relaxed">
+                {nodes.find((n) => n.name === execution.failed_node)!.error_description}
+              </p>
+            )}
+
+            {/* Input data to the failed node */}
+            {(() => {
+              const failedNode = nodes.find((n) => n.name === execution.failed_node);
+              const items = failedNode?.input_items;
+              if (!items || items.length === 0) return null;
+              return (
+                <div className="space-y-1.5">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                    Input to failed node ({items.length} item{items.length !== 1 ? "s" : ""})
+                  </p>
+                  <pre className="text-xs font-mono text-foreground bg-muted rounded-lg p-3 overflow-x-auto whitespace-pre-wrap break-words leading-relaxed max-h-48">
+                    {JSON.stringify(items.length === 1 ? items[0] : items, null, 2)}
+                  </pre>
+                </div>
+              );
+            })()}
           </div>
         )}
 
@@ -319,14 +352,26 @@ export default async function ExecutionDetailPage({
                   <div key={i} className="space-y-1">
                     <div className="flex items-center gap-3">
                       {iconEl}
-                      <span className="text-sm text-foreground font-medium min-w-0 truncate flex-1">
-                        {node.name}
-                      </span>
-                      <span className="text-xs text-muted-foreground tabular-nums shrink-0">
-                        {node.status === "skipped"
-                          ? "skipped"
-                          : formatDuration(node.duration_ms)}
-                      </span>
+                      <div className="min-w-0 flex-1">
+                        <span className="text-sm text-foreground font-medium truncate block">
+                          {node.name}
+                        </span>
+                        {node.type && (
+                          <span className="text-xs text-muted-foreground font-mono truncate block">
+                            {node.type}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="text-xs text-muted-foreground tabular-nums block">
+                          {node.status === "skipped" ? "skipped" : formatDuration(node.duration_ms)}
+                        </span>
+                        {node.output_items && node.output_items.length > 0 && (
+                          <span className="text-xs text-muted-foreground tabular-nums block">
+                            {node.output_items.length} item{node.output_items.length !== 1 ? "s" : ""}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     {/* Progress bar */}
@@ -337,10 +382,15 @@ export default async function ExecutionDetailPage({
                       />
                     </div>
 
-                    {/* Node error message */}
+                    {/* Node error */}
                     {node.error && (
                       <p className="ml-7 text-xs text-destructive font-mono leading-relaxed">
                         {node.error}
+                      </p>
+                    )}
+                    {node.error_description && (
+                      <p className="ml-7 text-xs text-muted-foreground leading-relaxed">
+                        {node.error_description}
                       </p>
                     )}
                   </div>
