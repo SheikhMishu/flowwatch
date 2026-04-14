@@ -298,25 +298,248 @@ function TabBar() {
   );
 }
 
+// ─── Edit Instance Modal ──────────────────────────────────────────────────────
+
+function EditInstanceModal({
+  instance,
+  onClose,
+  onUpdated,
+}: {
+  instance: N8nInstance;
+  onClose: () => void;
+  onUpdated: (updated: N8nInstance) => void;
+}) {
+  const [name, setName] = useState(instance.name);
+  const [url, setUrl] = useState(instance.url);
+  const [apiKey, setApiKey] = useState("");
+  const [showKey, setShowKey] = useState(false);
+  const [testStatus, setTestStatus] = useState<TestStatus>("idle");
+  const [testError, setTestError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
+
+  async function handleTest(e: React.MouseEvent) {
+    e.preventDefault();
+    setTestStatus("testing");
+    setTestError("");
+    try {
+      // If user entered a new API key, test with that; otherwise test stored creds
+      const body = apiKey.trim()
+        ? { url: url.trim(), apiKey: apiKey.trim() }
+        : {};
+      const res = await fetch(`/api/instances/${instance.id}/test`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setTestStatus("ok");
+      } else {
+        setTestStatus("fail");
+        setTestError(data.error ?? "Connection failed");
+      }
+    } catch {
+      setTestStatus("fail");
+      setTestError("Network error — check the URL");
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!name.trim()) return;
+    setSaving(true);
+    setSaveError("");
+    try {
+      const body: Record<string, string> = { name: name.trim(), url: url.trim() };
+      if (apiKey.trim()) body.apiKey = apiKey.trim();
+      const res = await fetch(`/api/instances/${instance.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setSaveError(data.error ?? "Failed to update instance");
+        setSaving(false);
+        return;
+      }
+      onUpdated(data.instance);
+    } catch {
+      setSaveError("Something went wrong. Please try again.");
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-md rounded-2xl border border-border bg-card shadow-elevated animate-fade-in">
+        <div className="flex items-start justify-between p-5 pb-4 border-b border-border">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl gradient-primary flex items-center justify-center shrink-0">
+              <Pencil className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-foreground">Edit Instance</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">{instance.name}</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+          {saveError && (
+            <div className="rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2 text-sm text-destructive">
+              {saveError}
+            </div>
+          )}
+
+          <div className="space-y-1.5">
+            <Label htmlFor="edit-name">Instance name</Label>
+            <input
+              id="edit-name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              disabled={saving}
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow disabled:opacity-50"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="edit-url">n8n instance URL</Label>
+            <input
+              id="edit-url"
+              type="url"
+              value={url}
+              onChange={(e) => { setUrl(e.target.value); setTestStatus("idle"); }}
+              required
+              disabled={saving}
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow disabled:opacity-50"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="edit-key">API key <span className="text-muted-foreground font-normal">(leave blank to keep current)</span></Label>
+            <div className="relative">
+              <input
+                id="edit-key"
+                type={showKey ? "text" : "password"}
+                placeholder={`Current: ••••${instance.api_key_hint}`}
+                value={apiKey}
+                onChange={(e) => { setApiKey(e.target.value); setTestStatus("idle"); }}
+                disabled={saving}
+                className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow disabled:opacity-50"
+              />
+              <button
+                type="button"
+                onClick={() => setShowKey((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                {showKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleTest}
+              disabled={testStatus === "testing" || saving}
+              className="gap-1.5"
+            >
+              {testStatus === "testing" ? (
+                <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Testing&hellip;</>
+              ) : (
+                <>Test connection</>
+              )}
+            </Button>
+            {testStatus === "ok" && (
+              <span className="flex items-center gap-1.5 text-sm text-success">
+                <CheckCircle2 className="w-4 h-4" /> Connected
+              </span>
+            )}
+            {testStatus === "fail" && (
+              <span className="flex items-center gap-1.5 text-sm text-destructive">
+                <AlertCircle className="w-4 h-4" /> {testError}
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 pt-1 border-t border-border">
+            <Button type="submit" disabled={!name.trim() || saving} className="gap-1.5">
+              {saving ? (
+                <><Loader2 className="w-4 h-4 animate-spin" /> Saving&hellip;</>
+              ) : (
+                "Save changes"
+              )}
+            </Button>
+            <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 // ─── Instance card ────────────────────────────────────────────────────────────
 
 function InstanceCard({
   instance,
   onDisconnect,
   onSync,
+  onEdit,
 }: {
   instance: N8nInstance;
   onDisconnect: (id: string) => void;
   onSync: (id: string, lastSyncedAt: string) => void;
+  onEdit: (id: string) => void;
 }) {
   const [disconnecting, setDisconnecting] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [testStatus, setTestStatus] = useState<TestStatus>("idle");
+  const [testError, setTestError] = useState("");
 
   const lastSynced = instance.last_synced_at
     ? formatDistanceToNow(parseISO(instance.last_synced_at), {
         addSuffix: true,
       })
     : "Never";
+
+  async function handleTestConnection() {
+    setTestStatus("testing");
+    setTestError("");
+    try {
+      const res = await fetch(`/api/instances/${instance.id}/test`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setTestStatus("ok");
+        setTimeout(() => setTestStatus("idle"), 4000);
+      } else {
+        setTestStatus("fail");
+        setTestError(data.error ?? "Connection failed");
+      }
+    } catch {
+      setTestStatus("fail");
+      setTestError("Network error");
+    }
+  }
 
   async function handleSync() {
     setSyncing(true);
@@ -444,6 +667,29 @@ function InstanceCard({
         <div className="flex items-center gap-2 flex-wrap pt-1 border-t border-border">
           <button
             type="button"
+            onClick={handleTestConnection}
+            disabled={testStatus === "testing"}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary transition-colors disabled:opacity-50"
+          >
+            {testStatus === "testing" ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : testStatus === "ok" ? (
+              <CheckCircle2 className="w-3.5 h-3.5 text-success" />
+            ) : testStatus === "fail" ? (
+              <AlertCircle className="w-3.5 h-3.5 text-destructive" />
+            ) : (
+              <Activity className="w-3.5 h-3.5" />
+            )}
+            {testStatus === "testing"
+              ? "Testing…"
+              : testStatus === "ok"
+                ? "Connected"
+                : testStatus === "fail"
+                  ? testError || "Failed"
+                  : "Test Connection"}
+          </button>
+          <button
+            type="button"
             onClick={handleSync}
             disabled={syncing}
             className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary transition-colors disabled:opacity-50"
@@ -455,6 +701,7 @@ function InstanceCard({
           </button>
           <button
             type="button"
+            onClick={() => onEdit(instance.id)}
             className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary transition-colors"
           >
             <Pencil className="w-3.5 h-3.5" /> Edit
@@ -513,11 +760,23 @@ export function InstancesClient({
   initialInstances: N8nInstance[];
 }) {
   const [instances, setInstances] = useState<N8nInstance[]>(initialInstances);
-  const [showModal, setShowModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const editingInstance = editingId
+    ? instances.find((i) => i.id === editingId) ?? null
+    : null;
 
   function handleAdded(inst: N8nInstance) {
     setInstances((prev) => [...prev, inst]);
-    setShowModal(false);
+    setShowAddModal(false);
+  }
+
+  function handleUpdated(updated: N8nInstance) {
+    setInstances((prev) =>
+      prev.map((i) => (i.id === updated.id ? { ...i, ...updated } : i)),
+    );
+    setEditingId(null);
   }
 
   function handleDisconnected(id: string) {
@@ -536,10 +795,17 @@ export function InstancesClient({
 
   return (
     <>
-      {showModal && (
+      {showAddModal && (
         <AddInstanceModal
-          onClose={() => setShowModal(false)}
+          onClose={() => setShowAddModal(false)}
           onAdded={handleAdded}
+        />
+      )}
+      {editingInstance && (
+        <EditInstanceModal
+          instance={editingInstance}
+          onClose={() => setEditingId(null)}
+          onUpdated={handleUpdated}
         />
       )}
 
@@ -567,7 +833,7 @@ export function InstancesClient({
           </div>
           <button
             type="button"
-            onClick={() => setShowModal(true)}
+            onClick={() => setShowAddModal(true)}
             className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-2 text-sm font-medium transition-colors shadow-card-hover"
           >
             <Plus className="w-4 h-4" /> Add Instance
@@ -583,13 +849,14 @@ export function InstancesClient({
                 instance={inst}
                 onDisconnect={handleDisconnected}
                 onSync={handleSync}
+                onEdit={setEditingId}
               />
             ))}
           </div>
         )}
 
         {/* CTA */}
-        <AddInstanceCard onClick={() => setShowModal(true)} />
+        <AddInstanceCard onClick={() => setShowAddModal(true)} />
       </div>
     </>
   );
