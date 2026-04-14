@@ -35,7 +35,7 @@ export async function POST(
     const db = getServerDb();
     const { data: instance } = await db
       .from("n8n_instances")
-      .select("url, api_key_enc")
+      .select("url, api_key_encrypted")
       .eq("id", id)
       .eq("org_id", session.orgId)
       .single();
@@ -46,7 +46,7 @@ export async function POST(
 
     url = instance.url;
     try {
-      apiKey = decrypt(instance.api_key_enc);
+      apiKey = decrypt(instance.api_key_encrypted);
     } catch {
       return NextResponse.json({ error: "Could not decrypt stored API key" }, { status: 500 });
     }

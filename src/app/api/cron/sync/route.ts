@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     const succeeded = results.filter((r) => r.ok).length;
     const failed = results.filter((r) => !r.ok).length;
 
-    console.log(`[cron/sync] ${succeeded} synced, ${failed} failed`);
+    console.log(`[cron/sync] ${succeeded} synced, ${failed} failed`, JSON.stringify(results));
 
     return NextResponse.json({ ok: true, synced: succeeded, failed, results });
   } catch (err) {

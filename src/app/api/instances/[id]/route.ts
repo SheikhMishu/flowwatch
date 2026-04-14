@@ -31,8 +31,8 @@ export async function PATCH(
   if (body.name?.trim()) updates.name = body.name.trim();
   if (body.url?.trim()) updates.url = body.url.trim().replace(/\/+$/, "");
   if (body.apiKey?.trim()) {
-    updates.api_key_enc = encrypt(body.apiKey.trim());
-    updates.api_key_hint = body.apiKey.trim().slice(-4);
+    updates.api_key_encrypted = encrypt(body.apiKey.trim());
+    updates.api_key_hint = `••••${body.apiKey.trim().slice(-4)}`;
   }
 
   if (Object.keys(updates).length === 0) {

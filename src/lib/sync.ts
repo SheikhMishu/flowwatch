@@ -51,9 +51,10 @@ async function runInstanceSync(
     }));
 
     if (workflowRows.length > 0) {
-      await db.from("workflow_snapshots").upsert(workflowRows, {
+      const { error: wfErr } = await db.from("workflow_snapshots").upsert(workflowRows, {
         onConflict: "instance_id,n8n_workflow_id",
       });
+      if (wfErr) console.error("[sync] workflow_snapshots upsert error:", wfErr.message, wfErr.details);
     }
 
     // Build workflow name map
@@ -88,10 +89,13 @@ async function runInstanceSync(
       error_type: null as string | null,
     }));
 
+    console.log(`[sync] instance ${instanceId}: ${rawWorkflows.length} workflows, ${rawExecutions.length} executions from n8n`);
+
     if (execRows.length > 0) {
-      await db.from("synced_executions").upsert(execRows, {
+      const { error: execErr } = await db.from("synced_executions").upsert(execRows, {
         onConflict: "instance_id,n8n_execution_id",
       });
+      if (execErr) console.error("[sync] synced_executions upsert error:", execErr.message, execErr.details);
     }
 
     // Update last_synced_at
