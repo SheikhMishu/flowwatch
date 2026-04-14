@@ -509,6 +509,8 @@ function InstanceCard({
 }) {
   const [disconnecting, setDisconnecting] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [syncResult, setSyncResult] = useState<{ workflows: number; executions: number } | null>(null);
+  const [syncError, setSyncError] = useState("");
   const [testStatus, setTestStatus] = useState<TestStatus>("idle");
   const [testError, setTestError] = useState("");
 
@@ -543,14 +545,20 @@ function InstanceCard({
 
   async function handleSync() {
     setSyncing(true);
+    setSyncResult(null);
+    setSyncError("");
     try {
-      const res = await fetch(`/api/instances/${instance.id}/sync`, {
-        method: "POST",
-      });
+      const res = await fetch(`/api/instances/${instance.id}/sync`, { method: "POST" });
       const data = await res.json();
       if (res.ok) {
         onSync(instance.id, data.last_synced_at);
+        setSyncResult({ workflows: data.workflowsUpserted ?? 0, executions: data.executionsUpserted ?? 0 });
+        setTimeout(() => setSyncResult(null), 8000);
+      } else {
+        setSyncError(data.error ?? "Sync failed");
       }
+    } catch {
+      setSyncError("Network error during sync");
     } finally {
       setSyncing(false);
     }
@@ -692,12 +700,24 @@ function InstanceCard({
             type="button"
             onClick={handleSync}
             disabled={syncing}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary transition-colors disabled:opacity-50"
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-50",
+              syncError
+                ? "border-destructive/30 bg-destructive/5 text-destructive"
+                : syncResult
+                  ? "border-success/30 bg-success/5 text-success"
+                  : "border-border bg-background text-foreground hover:bg-secondary",
+            )}
           >
-            <RefreshCw
-              className={cn("w-3.5 h-3.5", syncing && "animate-spin")}
-            />
-            {syncing ? "Syncing…" : "Sync Now"}
+            {syncing ? (
+              <><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Syncing…</>
+            ) : syncError ? (
+              <><AlertCircle className="w-3.5 h-3.5" /> {syncError}</>
+            ) : syncResult ? (
+              <><CheckCircle2 className="w-3.5 h-3.5" /> {syncResult.workflows} workflows · {syncResult.executions} executions</>
+            ) : (
+              <><RefreshCw className="w-3.5 h-3.5" /> Sync Now</>
+            )}
           </button>
           <button
             type="button"

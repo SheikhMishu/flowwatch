@@ -18,7 +18,7 @@ export async function POST(
     return NextResponse.json({ error: result.error }, { status: 422 });
   }
 
-  // Return last_synced_at so the UI can update the "Last synced" display
+  // Return last_synced_at + counts so the UI can show what was synced
   const { getServerDb } = await import("@/lib/db");
   const db = getServerDb();
   const { data: inst } = await db
@@ -27,5 +27,10 @@ export async function POST(
     .eq("id", id)
     .single();
 
-  return NextResponse.json({ ok: true, last_synced_at: inst?.last_synced_at ?? new Date().toISOString() });
+  return NextResponse.json({
+    ok: true,
+    last_synced_at: inst?.last_synced_at ?? new Date().toISOString(),
+    workflowsUpserted: result.workflowsUpserted,
+    executionsUpserted: result.executionsUpserted,
+  });
 }
