@@ -30,7 +30,10 @@ export interface AiDebugResult {
 
 // ─── Cache ────────────────────────────────────────────────────────────────────
 
-async function getCached(signature: string, tier: AiTier): Promise<AiDebugResult | null> {
+async function getCached(
+  signature: string,
+  tier: AiTier,
+): Promise<AiDebugResult | null> {
   const db = getServerDb();
   const { data } = await db
     .from("ai_analyses")
@@ -54,7 +57,10 @@ async function getCached(signature: string, tier: AiTier): Promise<AiDebugResult
   };
 }
 
-async function storeResult(signature: string, result: Omit<AiDebugResult, "cached">) {
+async function storeResult(
+  signature: string,
+  result: Omit<AiDebugResult, "cached">,
+) {
   const db = getServerDb();
   await db.from("ai_analyses").insert({
     error_signature: signature,
@@ -69,7 +75,9 @@ async function storeResult(signature: string, result: Omit<AiDebugResult, "cache
 
 // ─── Free path — OpenRouter ───────────────────────────────────────────────────
 
-const FREE_MODEL = "meta-llama/llama-3.1-8b-instruct:free";
+// "openrouter/free" auto-routes to available free models (50 req/day free, 1000/day with credits)
+// Override via OPENROUTER_FREE_MODEL env var to pin a specific model
+const FREE_MODEL = process.env.OPENROUTER_FREE_MODEL ?? "openrouter/free";
 
 async function callOpenRouter(input: AiDebugInput): Promise<string> {
   const apiKey = process.env.OPENROUTER_API_KEY;
@@ -87,7 +95,8 @@ async function callOpenRouter(input: AiDebugInput): Promise<string> {
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
-      "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL ?? "https://flowmonix.com",
+      "HTTP-Referer":
+        process.env.NEXT_PUBLIC_APP_URL ?? "https://flowmonix.com",
       "X-Title": "FlowMonix",
     },
     body: JSON.stringify({
@@ -110,12 +119,15 @@ async function callOpenRouter(input: AiDebugInput): Promise<string> {
 
 const PRO_MODEL = "claude-haiku-4-5-20251001";
 
-async function callClaude(input: AiDebugInput): Promise<{ cause: string; fix_steps: string[]; prevention: string }> {
+async function callClaude(
+  input: AiDebugInput,
+): Promise<{ cause: string; fix_steps: string[]; prevention: string }> {
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-  const inputContext = input.inputItems && input.inputItems.length > 0
-    ? `\nInput to failed node (first item): ${JSON.stringify(input.inputItems[0]).slice(0, 500)}`
-    : "";
+  const inputContext =
+    input.inputItems && input.inputItems.length > 0
+      ? `\nInput to failed node (first item): ${JSON.stringify(input.inputItems[0]).slice(0, 500)}`
+      : "";
 
   const prompt = [
     `You are an n8n workflow debugging assistant. Analyze this error and return a JSON object only — no prose, no markdown.`,
@@ -135,7 +147,8 @@ async function callClaude(input: AiDebugInput): Promise<{ cause: string; fix_ste
     messages: [{ role: "user", content: prompt }],
   });
 
-  const text = message.content[0].type === "text" ? message.content[0].text.trim() : "";
+  const text =
+    message.content[0].type === "text" ? message.content[0].text.trim() : "";
 
   // Extract JSON — Haiku sometimes wraps in ```json
   const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -151,7 +164,10 @@ async function callClaude(input: AiDebugInput): Promise<{ cause: string; fix_ste
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 
-export async function getAiDebug(input: AiDebugInput, tier: AiTier): Promise<AiDebugResult> {
+export async function getAiDebug(
+  input: AiDebugInput,
+  tier: AiTier,
+): Promise<AiDebugResult> {
   const signature = generateErrorSignature(
     input.workflowId,
     input.failedNode,

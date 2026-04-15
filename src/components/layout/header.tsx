@@ -19,6 +19,7 @@ import {
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { useSearchParams, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { AutoRefreshToggle } from "@/components/dashboard/auto-refresh-toggle";
 import { cn } from "@/lib/utils";
 import type { N8nInstance } from "@/types";
 import type { AppNotification } from "@/app/api/notifications/route";
@@ -286,6 +287,9 @@ export function Header({ title }: { title?: string }) {
             </div>
           )}
         </div>
+
+        {/* Auto-refresh toggle */}
+        <AutoRefreshToggle />
 
         {/* Notifications */}
         <div className="relative">
