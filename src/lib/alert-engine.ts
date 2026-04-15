@@ -134,7 +134,7 @@ async function upsertIncident(
 // ─── Delivery ─────────────────────────────────────────────────────────────────
 
 async function fireAlert(alert: AlertRow, failureCount: number, workflowNames: string[]): Promise<void> {
-  const subject = `FlowWatch Alert: ${alert.name} — ${failureCount} failure${failureCount !== 1 ? "s" : ""} in ${alert.threshold_minutes}min`;
+  const subject = `FlowMonix Alert: ${alert.name} — ${failureCount} failure${failureCount !== 1 ? "s" : ""} in ${alert.threshold_minutes}min`;
 
   if (alert.channel === "email") {
     await sendAlertEmail(alert.destination, subject, buildEmailHtml(alert, failureCount, workflowNames));
@@ -199,7 +199,7 @@ function buildEmailHtml(alert: AlertRow, count: number, workflows: string[]): st
       <p style="color:#9ca3af;font-size:12px;margin-top:28px;line-height:1.5;">
         Cooldown is set to ${alert.cooldown_minutes} minute${alert.cooldown_minutes !== 1 ? "s" : ""}.
         You won't receive another notification for this alert until the cooldown expires.<br/>
-        To manage your alerts, visit <a href="${appUrl}/dashboard/alerts" style="color:#6366f1;">FlowWatch</a>.
+        To manage your alerts, visit <a href="${appUrl}/dashboard/alerts" style="color:#6366f1;">FlowMonix</a>.
       </p>
     </div>
   `;
@@ -208,7 +208,7 @@ function buildEmailHtml(alert: AlertRow, count: number, workflows: string[]): st
 function buildSlackPayload(alert: AlertRow, count: number, workflows: string[]): object {
   const wfText = workflows.map((n) => `• ${n}`).join("\n");
   return {
-    text: `🚨 FlowWatch Alert: ${alert.name} — ${count} failure${count !== 1 ? "s" : ""}`,
+    text: `🚨 FlowMonix Alert: ${alert.name} — ${count} failure${count !== 1 ? "s" : ""}`,
     blocks: [
       {
         type: "header",

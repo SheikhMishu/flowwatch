@@ -2,7 +2,8 @@
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { Zap, Users, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Users, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import { FlowMonixMark } from "@/components/brand/mark";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -209,9 +210,12 @@ export default function InvitePage() {
       <div className="hidden lg:flex lg:w-1/2 gradient-primary flex-col justify-between p-12 relative overflow-hidden">
         <div className="relative z-10 flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
-            <Zap className="w-5 h-5 text-white" />
+            <FlowMonixMark className="w-5 h-5" />
           </div>
-          <span className="text-white font-bold text-xl tracking-tight">FlowWatch</span>
+          <span className="font-bold text-xl tracking-tight">
+            <span className="text-white">Flow</span>
+            <span className="text-white/70">monix</span>
+          </span>
         </div>
 
         <div className="relative z-10 space-y-6">
@@ -246,9 +250,17 @@ export default function InvitePage() {
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-2 mb-10">
             <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
-              <Zap className="w-5 h-5 text-white" />
+              <FlowMonixMark className="w-5 h-5" />
             </div>
-            <span className="font-bold text-xl text-foreground">FlowWatch</span>
+            <span className="font-bold text-xl tracking-tight">
+              <span className="text-foreground">Flow</span>
+              <span style={{
+                background: "linear-gradient(135deg, #818CF8, #A78BFA)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}>monix</span>
+            </span>
           </div>
 
           {/* Loading */}
@@ -285,7 +297,7 @@ export default function InvitePage() {
                 <div>
                   <h1 className="text-2xl font-bold text-foreground">You&rsquo;re invited</h1>
                   <p className="text-sm text-muted-foreground mt-0.5">
-                    Join <span className="font-semibold text-foreground">{invite.orgName}</span> on FlowWatch
+                    Join <span className="font-semibold text-foreground">{invite.orgName}</span> on FlowMonix
                   </p>
                 </div>
               </div>

@@ -13,10 +13,10 @@ import {
   CreditCard,
   ChevronLeft,
   ChevronRight,
-  Zap,
   Server,
   BarChart3,
 } from "lucide-react";
+import { FlowMonixMark } from "@/components/brand/mark";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -102,11 +102,17 @@ export function Sidebar() {
           collapsed ? "justify-center" : "gap-2.5"
         )}>
           <div className="flex items-center justify-center w-7 h-7 rounded-lg gradient-primary shrink-0">
-            <Zap className="w-4 h-4 text-white" />
+            <FlowMonixMark className="w-4 h-4" />
           </div>
           {!collapsed && (
-            <span className="font-bold text-base tracking-tight text-foreground">
-              FlowWatch
+            <span className="font-bold text-base tracking-tight">
+              <span className="text-foreground">Flow</span>
+              <span style={{
+                background: "linear-gradient(135deg, #818CF8, #A78BFA)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}>monix</span>
             </span>
           )}
         </div>

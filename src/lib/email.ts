@@ -53,11 +53,11 @@ async function sendEmail({
 export async function sendPinEmail(email: string, pin: string): Promise<void> {
   await sendEmail({
     to: email,
-    subject: `Your FlowWatch verification code: ${pin}`,
+    subject: `Your FlowMonix verification code: ${pin}`,
     fromEnvKey: "REG_MAIL_FROM",
     html: `
       <div style="font-family:sans-serif;max-width:400px;margin:0 auto;padding:40px 20px;">
-        <h2 style="color:#1a1a2e;margin-bottom:8px;">FlowWatch verification code</h2>
+        <h2 style="color:#1a1a2e;margin-bottom:8px;">FlowMonix verification code</h2>
         <p style="color:#6b7280;margin-bottom:24px;">Enter this code to sign in. It expires in 10 minutes.</p>
         <div style="background:#f3f4f6;border-radius:12px;padding:24px;text-align:center;letter-spacing:8px;font-size:32px;font-weight:700;color:#1a1a2e;">
           ${pin}
@@ -76,14 +76,14 @@ export async function sendInviteEmail(
 ): Promise<void> {
   await sendEmail({
     to: email,
-    subject: `${inviterName} invited you to join ${orgName} on FlowWatch`,
+    subject: `${inviterName} invited you to join ${orgName} on FlowMonix`,
     fromEnvKey: "REG_MAIL_FROM",
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:40px 20px;">
         <h2 style="color:#1a1a2e;margin-bottom:8px;">You've been invited</h2>
         <p style="color:#6b7280;margin-bottom:24px;">
           <strong style="color:#1a1a2e;">${inviterName}</strong> invited you to join
-          <strong style="color:#1a1a2e;">${orgName}</strong> on FlowWatch.
+          <strong style="color:#1a1a2e;">${orgName}</strong> on FlowMonix.
         </p>
         <a href="${inviteUrl}"
            style="display:inline-block;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:600;font-size:15px;">

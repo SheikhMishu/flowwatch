@@ -1,0 +1,1613 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowMonix â€” Brand Guidelines</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --indigo:       #5B4FE8;
+      --violet:       #7B5FED;
+      --grad-start:   #5B4FE8;
+      --grad-end:     #7B5FED;
+      --success:      #1DB954;
+      --warning:      #F59E0B;
+      --destructive:  #EF4444;
+      --bg-light:     #FAFAFA;
+      --bg-dark:      #0F1117;
+      --card-light:   #FFFFFF;
+      --card-dark:    #16192A;
+      --border-light: #E4E7ED;
+      --border-dark:  #1E2235;
+      --text-primary: #1A1D2E;
+      --text-muted:   #6B7280;
+      --text-light:   #F3F4FF;
+      --radius-sm:    6px;
+      --radius-md:    10px;
+      --radius-lg:    16px;
+      --radius-xl:    20px;
+      --font: 'Inter', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg-dark);
+      color: var(--text-light);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+
+    /* â”€â”€ GRADIENT UTILITY â”€â”€ */
+    .grad { background: linear-gradient(135deg, var(--grad-start), var(--grad-end)); }
+    .grad-text {
+      background: linear-gradient(135deg, var(--grad-start), var(--grad-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* â”€â”€ LAYOUT â”€â”€ */
+    .section { padding: 96px 0; }
+    .section--light { background: var(--bg-light); color: var(--text-primary); }
+    .section--dark  { background: var(--bg-dark);  color: var(--text-light); }
+    .section--mid   { background: #0B0D18;          color: var(--text-light); }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .section--light .section-label { color: #9CA3AF; }
+
+    .section-title {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .section-sub {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 520px;
+      line-height: 1.7;
+      margin-bottom: 56px;
+    }
+    .section--light .section-sub { color: #6B7280; }
+
+    /* â”€â”€ HERO â”€â”€ */
+    .hero {
+      background: var(--bg-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 80px 0;
+    }
+
+    .hero-grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(91,79,232,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(91,79,232,0.06) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 40%, transparent 100%);
+    }
+
+    .hero-glow {
+      position: absolute;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(91,79,232,0.18) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      border: 1px solid rgba(91,79,232,0.3);
+      padding: 6px 14px;
+      border-radius: 100px;
+      margin-bottom: 40px;
+      background: rgba(91,79,232,0.08);
+    }
+
+    .hero-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 40px;
+    }
+
+    .hero-wordmark {
+      font-size: 56px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    .hero-wordmark .flow { color: #fff; }
+    .hero-wordmark .monix {
+      background: linear-gradient(135deg, var(--grad-start), var(--grad-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-tagline {
+      font-size: 18px;
+      color: #8892B0;
+      letter-spacing: -0.01em;
+      margin-bottom: 16px;
+    }
+
+    .hero-meta {
+      font-size: 13px;
+      color: #4A5568;
+      letter-spacing: 0.04em;
+    }
+
+    /* â”€â”€ NAV BAR â”€â”€ */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15,17,23,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-dark);
+      padding: 0 40px;
+    }
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      height: 52px;
+    }
+    .nav-link {
+      font-size: 13px;
+      font-weight: 500;
+      color: #6B7280;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: color 0.15s, background 0.15s;
+    }
+    .nav-link:hover { color: #fff; background: rgba(255,255,255,0.05); }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      color: #fff;
+      text-decoration: none;
+      margin-right: auto;
+    }
+
+    /* â”€â”€ LOGO SVG â”€â”€ */
+    .logo-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* â”€â”€ LOGO SHOWCASE GRID â”€â”€ */
+    .logo-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2px;
+    }
+
+    .logo-cell {
+      padding: 56px 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 32px;
+      position: relative;
+    }
+    .logo-cell--dark  { background: var(--bg-dark); }
+    .logo-cell--light { background: var(--bg-light); }
+    .logo-cell--mid   { background: #16192A; }
+    .logo-cell--grad  {
+      background: linear-gradient(135deg, #3A2EC4 0%, #5B4FE8 40%, #7B5FED 100%);
+    }
+
+    .logo-cell-label {
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+    }
+    .logo-cell--light .logo-cell-label { color: rgba(0,0,0,0.25); }
+
+    .logo-lockup {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-lockup-wordmark {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    /* on dark: flow=white, monix=grad */
+    .on-dark .logo-lockup-wordmark .flow  { color: #FFFFFF; }
+    .on-dark .logo-lockup-wordmark .monix {
+      background: linear-gradient(135deg, #818CF8, #A78BFA);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    /* on light: flow=dark, monix=grad */
+    .on-light .logo-lockup-wordmark .flow  { color: var(--text-primary); }
+    .on-light .logo-lockup-wordmark .monix {
+      background: linear-gradient(135deg, var(--grad-start), var(--grad-end));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    /* on gradient: all white */
+    .on-grad .logo-lockup-wordmark { color: #fff; }
+    .on-grad .logo-lockup-wordmark .monix { background: none; -webkit-text-fill-color: #fff; }
+    /* mono */
+    .on-mono .logo-lockup-wordmark { color: #1A1D2E; }
+    .on-mono .logo-lockup-wordmark .monix { background: none; -webkit-text-fill-color: #1A1D2E; }
+
+    /* â”€â”€ COLOR PALETTE â”€â”€ */
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .palette-grid--wide {
+      grid-template-columns: repeat(7, 1fr);
+    }
+
+    .swatch {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.06);
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .swatch:hover { transform: translateY(-3px); }
+    .section--light .swatch { border-color: var(--border-light); }
+
+    .swatch-color {
+      height: 80px;
+      display: flex;
+      align-items: flex-end;
+      padding: 8px 10px;
+    }
+    .swatch-copied {
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      opacity: 0;
+      transition: opacity 0.2s;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .swatch.copied .swatch-copied { opacity: 1; }
+
+    .swatch-info {
+      padding: 10px 12px;
+      background: var(--card-dark);
+    }
+    .section--light .swatch-info { background: var(--card-light); }
+
+    .swatch-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: 2px;
+    }
+    .section--light .swatch-name { color: var(--text-primary); }
+
+    .swatch-hex {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      color: var(--text-muted);
+    }
+
+    /* â”€â”€ GRAD SWATCH â”€â”€ */
+    .swatch-grad .swatch-color {
+      background: linear-gradient(135deg, var(--grad-start), var(--grad-end));
+    }
+
+    /* â”€â”€ TYPOGRAPHY â”€â”€ */
+    .type-scale {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .type-row {
+      display: grid;
+      grid-template-columns: 180px 1fr 120px;
+      align-items: center;
+      gap: 24px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border-dark);
+    }
+    .section--light .type-row { border-bottom-color: var(--border-light); }
+    .type-row:last-child { border-bottom: none; }
+
+    .type-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .type-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--indigo);
+    }
+    .type-spec {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+    .type-sample-text { line-height: 1.2; }
+
+    .weight-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      margin-bottom: 56px;
+    }
+    .weight-cell {
+      background: var(--card-dark);
+      padding: 28px 24px;
+      border-radius: var(--radius-md);
+    }
+    .section--light .weight-cell { background: var(--card-light); border: 1px solid var(--border-light); }
+    .weight-number { font-size: 40px; letter-spacing: -0.04em; line-height: 1; margin-bottom: 12px; }
+    .weight-name   { font-size: 12px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    /* â”€â”€ SPACING â”€â”€ */
+    .spacing-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .spacing-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .spacing-bar-wrap {
+      display: flex;
+      align-items: center;
+    }
+    .spacing-bar {
+      height: 32px;
+      background: linear-gradient(135deg, var(--grad-start), var(--grad-end));
+      border-radius: 4px;
+      opacity: 0.8;
+    }
+    .spacing-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-light);
+      width: 56px;
+      flex-shrink: 0;
+    }
+    .section--light .spacing-label { color: var(--text-primary); }
+    .spacing-value {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    /* â”€â”€ RADIUS â”€â”€ */
+    .radius-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      margin-top: 40px;
+    }
+    .radius-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .radius-box {
+      width: 72px;
+      height: 72px;
+      background: linear-gradient(135deg, rgba(91,79,232,0.25), rgba(123,95,237,0.25));
+      border: 2px solid var(--indigo);
+    }
+    .radius-label { font-size: 13px; font-weight: 600; }
+    .radius-val   { font-size: 11px; color: var(--text-muted); font-family: monospace; }
+
+    /* â”€â”€ COMPONENTS â”€â”€ */
+    .components-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+    .component-cell {
+      background: var(--card-dark);
+      padding: 40px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      border-radius: 0;
+    }
+    .component-cell--light {
+      background: var(--bg-light);
+    }
+    .component-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .component-cell--light .component-title { color: #9CA3AF; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      padding: 10px 20px;
+      transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
+      text-decoration: none;
+    }
+    .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--grad-start), var(--grad-end));
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(91,79,232,0.35);
+    }
+    .btn-primary:hover { box-shadow: 0 6px 24px rgba(91,79,232,0.50); }
+
+    .btn-secondary-dark {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .btn-secondary-light {
+      background: #fff;
+      color: var(--text-primary);
+      border: 1px solid var(--border-light);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--indigo);
+      border: 1px solid rgba(91,79,232,0.4);
+    }
+    .btn-sm { font-size: 12px; padding: 7px 14px; border-radius: 7px; }
+    .btn-lg { font-size: 16px; padding: 13px 28px; border-radius: 12px; }
+
+    .btn-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 100px;
+      letter-spacing: 0.01em;
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    .badge-success {
+      background: rgba(29,185,84,0.12);
+      color: #1DB954;
+      border: 1px solid rgba(29,185,84,0.25);
+    }
+    .badge-success .badge-dot { background: #1DB954; }
+
+    .badge-warning {
+      background: rgba(245,158,11,0.12);
+      color: #F59E0B;
+      border: 1px solid rgba(245,158,11,0.25);
+    }
+    .badge-warning .badge-dot { background: #F59E0B; }
+
+    .badge-error {
+      background: rgba(239,68,68,0.12);
+      color: #EF4444;
+      border: 1px solid rgba(239,68,68,0.25);
+    }
+    .badge-error .badge-dot { background: #EF4444; }
+
+    .badge-neutral {
+      background: rgba(255,255,255,0.07);
+      color: #8892B0;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .badge-primary {
+      background: rgba(91,79,232,0.15);
+      color: #818CF8;
+      border: 1px solid rgba(91,79,232,0.3);
+    }
+
+    .badge-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    /* Mini Card */
+    .mini-card {
+      border-radius: 12px;
+      border: 1px solid var(--border-dark);
+      background: var(--card-dark);
+      padding: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+    .mini-card--light {
+      background: #fff;
+      border-color: var(--border-light);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .mini-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .mini-card-title { font-size: 13px; font-weight: 600; }
+    .mini-card--light .mini-card-title { color: var(--text-primary); }
+
+    .mini-card-meta { font-size: 11px; color: var(--text-muted); }
+
+    .mini-card-stat { font-size: 28px; font-weight: 800; letter-spacing: -0.04em; line-height: 1; margin-bottom: 6px; }
+    .mini-card--light .mini-card-stat { color: var(--text-primary); }
+    .mini-card-sub { font-size: 12px; color: var(--text-muted); }
+
+    .mini-card-bar-track {
+      height: 4px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 2px;
+      margin-top: 16px;
+      overflow: hidden;
+    }
+    .mini-card--light .mini-card-bar-track { background: var(--border-light); }
+    .mini-card-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--grad-start), var(--grad-end));
+    }
+
+    /* â”€â”€ ICON CLEAR SPACE â”€â”€ */
+    .clearspace-demo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      position: relative;
+    }
+    .clearspace-inner {
+      position: relative;
+      display: inline-flex;
+      padding: 20px;
+    }
+    .clearspace-box {
+      position: absolute;
+      inset: 0;
+      border: 1px dashed rgba(91,79,232,0.4);
+      border-radius: 4px;
+      pointer-events: none;
+    }
+    .clearspace-label {
+      position: absolute;
+      font-size: 10px;
+      color: rgba(91,79,232,0.7);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .clearspace-label.top    { top: -18px; left: 50%; transform: translateX(-50%); }
+    .clearspace-label.bottom { bottom: -18px; left: 50%; transform: translateX(-50%); }
+    .clearspace-label.left   { left: -24px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+    .clearspace-label.right  { right: -24px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+
+    /* â”€â”€ SIZE VARIANTS â”€â”€ */
+    .icon-sizes {
+      display: flex;
+      align-items: flex-end;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+    .icon-size-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .icon-size-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+    }
+
+    /* â”€â”€ FOOTER â”€â”€ */
+    .footer {
+      background: #080A12;
+      border-top: 1px solid var(--border-dark);
+      padding: 48px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      text-align: center;
+    }
+    .footer-text { font-size: 13px; color: #4A5568; }
+    .footer-version {
+      font-size: 11px;
+      color: #2D3748;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* â”€â”€ DIVIDER â”€â”€ */
+    .divider { height: 1px; background: var(--border-dark); }
+    .section--light .divider { background: var(--border-light); }
+
+    /* â”€â”€ ANIMATIONS â”€â”€ */
+    @keyframes pulse-ring {
+      0%   { opacity: 0.6; transform: scale(1); }
+      50%  { opacity: 0.3; transform: scale(1.08); }
+      100% { opacity: 0.6; transform: scale(1); }
+    }
+    .hero-glow { animation: pulse-ring 4s ease-in-out infinite; }
+
+    @keyframes trace {
+      from { stroke-dashoffset: 200; }
+      to   { stroke-dashoffset: 0; }
+    }
+    .logo-path-animated {
+      stroke-dasharray: 200;
+      stroke-dashoffset: 200;
+      animation: trace 1.2s cubic-bezier(0.25,0.46,0.45,0.94) 0.3s forwards;
+    }
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fade-up 0.7s ease both; }
+    .fade-up-1 { animation-delay: 0.1s; }
+    .fade-up-2 { animation-delay: 0.2s; }
+    .fade-up-3 { animation-delay: 0.35s; }
+    .fade-up-4 { animation-delay: 0.5s; }
+
+    /* â”€â”€ COPY TOOLTIP â”€â”€ */
+    .copy-tip {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      margin-top: 8px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .swatch:hover .copy-tip { opacity: 1; }
+
+    /* â”€â”€ DON'T USE LIST â”€â”€ */
+    .dont-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .dont-cell {
+      border-radius: var(--radius-md);
+      padding: 24px;
+      background: rgba(239,68,68,0.06);
+      border: 1px solid rgba(239,68,68,0.15);
+    }
+    .dont-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #EF4444;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .dont-text {
+      font-size: 13px;
+      color: #8892B0;
+      line-height: 1.6;
+    }
+
+    /* â”€â”€ INPUT PREVIEW â”€â”€ */
+    .input-preview {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-dark);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-family: var(--font);
+      font-size: 14px;
+      color: #fff;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .input-preview:focus {
+      border-color: var(--indigo);
+      box-shadow: 0 0 0 3px rgba(91,79,232,0.2);
+    }
+
+    /* â”€â”€ RESPONSIVE â”€â”€ */
+    @media (max-width: 768px) {
+      .logo-grid, .components-grid { grid-template-columns: 1fr; }
+      .palette-grid { grid-template-columns: repeat(2, 1fr); }
+      .palette-grid--wide { grid-template-columns: repeat(4, 1fr); }
+      .weight-row { grid-template-columns: repeat(2, 1fr); }
+      .radius-grid { grid-template-columns: repeat(3, 1fr); }
+      .dont-grid { grid-template-columns: 1fr; }
+      .section-title { font-size: 28px; }
+      .container { padding: 0 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ NAV â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="#">
+      <!-- 16px inline icon -->
+      <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="url(#ng)"/>
+        <line x1="9" y1="16" x2="11.5" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/>
+        <line x1="20.5" y1="16" x2="23" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/>
+        <circle cx="5.5" cy="16" r="3.5" fill="white"/>
+        <circle cx="16" cy="16" r="4.8" fill="none" stroke="white" stroke-width="2.4"/>
+        <circle cx="16" cy="16" r="2.1" fill="white"/>
+        <circle cx="26.5" cy="16" r="3.5" fill="white"/>
+        <defs>
+          <linearGradient id="ng" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#5B4FE8"/>
+            <stop offset="1" stop-color="#7B5FED"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      FlowMonix
+    </a>
+    <a class="nav-link" href="#logo">Logo</a>
+    <a class="nav-link" href="#colors">Colors</a>
+    <a class="nav-link" href="#typography">Typography</a>
+    <a class="nav-link" href="#spacing">Spacing</a>
+    <a class="nav-link" href="#components">Components</a>
+  </div>
+</nav>
+
+<!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="container hero-content">
+    <div class="hero-eyebrow fade-up fade-up-1">
+      <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>
+      Brand Guidelines v1.0
+    </div>
+    <div class="hero-logo fade-up fade-up-2">
+      <!-- Large hero logo icon -->
+      <svg width="72" height="72" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="9" fill="url(#hg)"/>
+        <line x1="9" y1="16" x2="11.5" y2="16" stroke="white" stroke-width="2.2" opacity="0.75" class="logo-path-animated"/>
+        <line x1="20.5" y1="16" x2="23" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/>
+        <circle cx="5.5" cy="16" r="3.5" fill="white"/>
+        <circle cx="16" cy="16" r="4.8" fill="none" stroke="white" stroke-width="2.4"/>
+        <circle cx="16" cy="16" r="2.1" fill="white"/>
+        <circle cx="26.5" cy="16" r="3.5" fill="white"/>
+        <defs>
+          <linearGradient id="hg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#5B4FE8"/>
+            <stop offset="1" stop-color="#7B5FED"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="hero-wordmark">
+        <span class="flow">Flow</span><span class="monix">monix</span>
+      </div>
+    </div>
+    <p class="hero-tagline fade-up fade-up-3">Automation Observability Platform</p>
+    <p class="hero-meta fade-up fade-up-4">flowmonix.com &nbsp;Â·&nbsp; Brand Guidelines 2025</p>
+  </div>
+</section>
+
+<!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ LOGO SECTION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+<section class="section section--mid" id="logo">
+  <div class="container">
+    <div class="section-label">01 â€” Logo System</div>
+    <h2 class="section-title">Logo &amp; Mark</h2>
+    <p class="section-sub">The FlowMonix logo is a lockup of the flow nodes mark and the wordmark. The mark depicts a connected pipeline with a hub node â€” mapping directly to the automation workflow metaphor.</p>
+  </div>
+
+  <!-- Logo grid - full bleed -->
+  <div style="margin-top: 0;" class="logo-grid">
+    <!-- Dark bg -->
+    <div class="logo-cell logo-cell--dark on-dark">
+      <span class="logo-cell-label">On Dark</span>
+      <div class="logo-lockup">
+        <svg width="40" height="40" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="8" fill="url(#lg1)"/>
+          <line x1="9" y1="16" x2="11.5" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><line x1="20.5" y1="16" x2="23" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><circle cx="5.5" cy="16" r="3.5" fill="white"/><circle cx="16" cy="16" r="4.8" fill="none" stroke="white" stroke-width="2.4"/><circle cx="16" cy="16" r="2.1" fill="white"/><circle cx="26.5" cy="16" r="3.5" fill="white"/>
+          <defs><linearGradient id="lg1" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#5B4FE8"/><stop offset="1" stop-color="#7B5FED"/></linearGradient></defs>
+        </svg>
+        <div class="logo-lockup-wordmark"><span class="flow">Flow</span><span class="monix">monix</span></div>
+      </div>
+      <p style="font-size:12px;color:#4A5568;">Preferred usage on dark backgrounds.<br>Primary brand application.</p>
+    </div>
+
+    <!-- Light bg -->
+    <div class="logo-cell logo-cell--light on-light">
+      <span class="logo-cell-label">On Light</span>
+      <div class="logo-lockup">
+        <svg width="40" height="40" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="8" fill="url(#lg2)"/>
+          <line x1="9" y1="16" x2="11.5" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><line x1="20.5" y1="16" x2="23" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><circle cx="5.5" cy="16" r="3.5" fill="white"/><circle cx="16" cy="16" r="4.8" fill="none" stroke="white" stroke-width="2.4"/><circle cx="16" cy="16" r="2.1" fill="white"/><circle cx="26.5" cy="16" r="3.5" fill="white"/>
+          <defs><linearGradient id="lg2" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#5B4FE8"/><stop offset="1" stop-color="#7B5FED"/></linearGradient></defs>
+        </svg>
+        <div class="logo-lockup-wordmark"><span class="flow">Flow</span><span class="monix">monix</span></div>
+      </div>
+      <p style="font-size:12px;color:#9CA3AF;">Use on white or light grey backgrounds.<br>Marketing pages and documents.</p>
+    </div>
+
+    <!-- Gradient bg -->
+    <div class="logo-cell logo-cell--grad on-grad">
+      <span class="logo-cell-label" style="color:rgba(255,255,255,0.5);">On Brand Color</span>
+      <div class="logo-lockup">
+        <svg width="40" height="40" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="8" fill="rgba(255,255,255,0.18)"/>
+          <line x1="9" y1="16" x2="11.5" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><line x1="20.5" y1="16" x2="23" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><circle cx="5.5" cy="16" r="3.5" fill="white"/><circle cx="16" cy="16" r="4.8" fill="none" stroke="white" stroke-width="2.4"/><circle cx="16" cy="16" r="2.1" fill="white"/><circle cx="26.5" cy="16" r="3.5" fill="white"/>
+        </svg>
+        <div class="logo-lockup-wordmark"><span class="flow">Flow</span><span class="monix">monix</span></div>
+      </div>
+      <p style="font-size:12px;color:rgba(255,255,255,0.55);">For brand-coloured backgrounds.<br>Social media, swag, presentations.</p>
+    </div>
+
+    <!-- Monochrome -->
+    <div class="logo-cell logo-cell--light on-mono">
+      <span class="logo-cell-label">Monochrome</span>
+      <div class="logo-lockup">
+        <svg width="40" height="40" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="8" fill="#1A1D2E"/>
+          <line x1="9" y1="16" x2="11.5" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><line x1="20.5" y1="16" x2="23" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><circle cx="5.5" cy="16" r="3.5" fill="white"/><circle cx="16" cy="16" r="4.8" fill="none" stroke="white" stroke-width="2.4"/><circle cx="16" cy="16" r="2.1" fill="white"/><circle cx="26.5" cy="16" r="3.5" fill="white"/>
+        </svg>
+        <div class="logo-lockup-wordmark"><span class="flow">Flow</span><span class="monix">monix</span></div>
+      </div>
+      <p style="font-size:12px;color:#9CA3AF;">Single-colour for print, embroidery,<br>and restricted-colour contexts.</p>
+    </div>
+  </div>
+
+  <!-- Icon only + sizes -->
+  <div class="container" style="margin-top: 80px;">
+    <div class="section-label">Icon mark</div>
+    <h3 style="font-size:22px;font-weight:700;letter-spacing:-0.02em;margin-bottom:40px;">Size variants</h3>
+    <div class="icon-sizes">
+      <div class="icon-size-item">
+        <svg width="16" height="16" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="7" fill="url(#si1)"/><line x1="9" y1="16" x2="11.5" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><line x1="20.5" y1="16" x2="23" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><circle cx="5.5" cy="16" r="3.5" fill="white"/><circle cx="16" cy="16" r="4.8" fill="none" stroke="white" stroke-width="2.4"/><circle cx="16" cy="16" r="2.1" fill="white"/><circle cx="26.5" cy="16" r="3.5" fill="white"/><defs><linearGradient id="si1" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#5B4FE8"/><stop offset="1" stop-color="#7B5FED"/></linearGradient></defs></svg>
+        <span class="icon-size-label">16px</span>
+      </div>
+      <div class="icon-size-item">
+        <svg width="24" height="24" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="7" fill="url(#si2)"/><line x1="9" y1="16" x2="11.5" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><line x1="20.5" y1="16" x2="23" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><circle cx="5.5" cy="16" r="3.5" fill="white"/><circle cx="16" cy="16" r="4.8" fill="none" stroke="white" stroke-width="2.4"/><circle cx="16" cy="16" r="2.1" fill="white"/><circle cx="26.5" cy="16" r="3.5" fill="white"/><defs><linearGradient id="si2" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#5B4FE8"/><stop offset="1" stop-color="#7B5FED"/></linearGradient></defs></svg>
+        <span class="icon-size-label">24px</span>
+      </div>
+      <div class="icon-size-item">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#si3)"/><line x1="9" y1="16" x2="11.5" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><line x1="20.5" y1="16" x2="23" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><circle cx="5.5" cy="16" r="3.5" fill="white"/><circle cx="16" cy="16" r="4.8" fill="none" stroke="white" stroke-width="2.4"/><circle cx="16" cy="16" r="2.1" fill="white"/><circle cx="26.5" cy="16" r="3.5" fill="white"/><defs><linearGradient id="si3" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#5B4FE8"/><stop offset="1" stop-color="#7B5FED"/></linearGradient></defs></svg>
+        <span class="icon-size-label">32px</span>
+      </div>
+      <div class="icon-size-item">
+        <svg width="48" height="48" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#si4)"/><line x1="9" y1="16" x2="11.5" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><line x1="20.5" y1="16" x2="23" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><circle cx="5.5" cy="16" r="3.5" fill="white"/><circle cx="16" cy="16" r="4.8" fill="none" stroke="white" stroke-width="2.4"/><circle cx="16" cy="16" r="2.1" fill="white"/><circle cx="26.5" cy="16" r="3.5" fill="white"/><defs><linearGradient id="si4" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#5B4FE8"/><stop offset="1" stop-color="#7B5FED"/></linearGradient></defs></svg>
+        <span class="icon-size-label">48px</span>
+      </div>
+      <div class="icon-size-item">
+        <svg width="64" height="64" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#si5)"/><line x1="9" y1="16" x2="11.5" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><line x1="20.5" y1="16" x2="23" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><circle cx="5.5" cy="16" r="3.5" fill="white"/><circle cx="16" cy="16" r="4.8" fill="none" stroke="white" stroke-width="2.4"/><circle cx="16" cy="16" r="2.1" fill="white"/><circle cx="26.5" cy="16" r="3.5" fill="white"/><defs><linearGradient id="si5" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#5B4FE8"/><stop offset="1" stop-color="#7B5FED"/></linearGradient></defs></svg>
+        <span class="icon-size-label">64px</span>
+      </div>
+      <div class="icon-size-item">
+        <svg width="96" height="96" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#si6)"/><line x1="9" y1="16" x2="11.5" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><line x1="20.5" y1="16" x2="23" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><circle cx="5.5" cy="16" r="3.5" fill="white"/><circle cx="16" cy="16" r="4.8" fill="none" stroke="white" stroke-width="2.4"/><circle cx="16" cy="16" r="2.1" fill="white"/><circle cx="26.5" cy="16" r="3.5" fill="white"/><defs><linearGradient id="si6" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#5B4FE8"/><stop offset="1" stop-color="#7B5FED"/></linearGradient></defs></svg>
+        <span class="icon-size-label">96px</span>
+      </div>
+      <div class="icon-size-item">
+        <svg width="128" height="128" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#si7)"/><line x1="9" y1="16" x2="11.5" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><line x1="20.5" y1="16" x2="23" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><circle cx="5.5" cy="16" r="3.5" fill="white"/><circle cx="16" cy="16" r="4.8" fill="none" stroke="white" stroke-width="2.4"/><circle cx="16" cy="16" r="2.1" fill="white"/><circle cx="26.5" cy="16" r="3.5" fill="white"/><defs><linearGradient id="si7" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#5B4FE8"/><stop offset="1" stop-color="#7B5FED"/></linearGradient></defs></svg>
+        <span class="icon-size-label">128px</span>
+      </div>
+    </div>
+
+    <!-- Don'ts -->
+    <div style="margin-top: 64px;">
+      <div class="section-label">Logo â€” Usage rules</div>
+      <h3 style="font-size:22px;font-weight:700;letter-spacing:-0.02em;margin-bottom:24px;">Don'ts</h3>
+      <div class="dont-grid">
+        <div class="dont-cell">
+          <div class="dont-title">âœ• Don't distort</div>
+          <div class="dont-text">Never stretch, skew, or alter the proportions of the logo mark or wordmark.</div>
+        </div>
+        <div class="dont-cell">
+          <div class="dont-title">âœ• Don't recolor the mark</div>
+          <div class="dont-text">The icon must appear on the gradient, white, or solid dark â€” not custom colors.</div>
+        </div>
+        <div class="dont-cell">
+          <div class="dont-title">âœ• Don't add effects</div>
+          <div class="dont-text">No drop shadows, glows, outlines, or filters on the logo lockup.</div>
+        </div>
+        <div class="dont-cell">
+          <div class="dont-title">âœ• Don't rearrange</div>
+          <div class="dont-text">Always keep the icon to the left of the wordmark. Never stack vertically.</div>
+        </div>
+        <div class="dont-cell">
+          <div class="dont-title">âœ• Don't use on busy backgrounds</div>
+          <div class="dont-text">Ensure minimum contrast. Use the gradient version only on solid brand-colour fills.</div>
+        </div>
+        <div class="dont-cell">
+          <div class="dont-title">âœ• Don't go below 16px</div>
+          <div class="dont-text">The icon mark is not legible below 16px. Use a text-only wordmark instead.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ COLORS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+<section class="section section--light" id="colors">
+  <div class="container">
+    <div class="section-label">02 â€” Color System</div>
+    <h2 class="section-title" style="color:var(--text-primary);">Palette</h2>
+    <p class="section-sub">FlowMonix uses a cool indigo-violet primary that communicates trust, precision, and technology. Status colors carry universal semantic meaning at a glance.</p>
+
+    <!-- Brand -->
+    <div class="section-label" style="margin-bottom:16px;">Brand Colors</div>
+    <div class="palette-grid" style="grid-template-columns: repeat(3,1fr); margin-bottom: 48px;">
+      <div class="swatch" onclick="copyHex(this, '#5B4FE8')">
+        <div class="swatch-color" style="background:#5B4FE8;">
+          <span class="swatch-copied">Copied!</span>
+        </div>
+        <div class="swatch-info">
+          <div class="swatch-name">Indigo 500</div>
+          <div class="swatch-hex">#5B4FE8 Â· hsl(243 75% 59%)</div>
+        </div>
+        <div class="copy-tip">Click to copy</div>
+      </div>
+      <div class="swatch" onclick="copyHex(this, '#7B5FED')">
+        <div class="swatch-color" style="background:#7B5FED;">
+          <span class="swatch-copied">Copied!</span>
+        </div>
+        <div class="swatch-info">
+          <div class="swatch-name">Violet 500</div>
+          <div class="swatch-hex">#7B5FED Â· hsl(263 70% 62%)</div>
+        </div>
+        <div class="copy-tip">Click to copy</div>
+      </div>
+      <div class="swatch swatch-grad" onclick="copyHex(this, 'linear-gradient(135deg, #5B4FE8, #7B5FED)')">
+        <div class="swatch-color">
+          <span class="swatch-copied">Copied!</span>
+        </div>
+        <div class="swatch-info">
+          <div class="swatch-name">Primary Gradient</div>
+          <div class="swatch-hex">135Â° Â· #5B4FE8 â†’ #7B5FED</div>
+        </div>
+        <div class="copy-tip">Click to copy</div>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div class="section-label" style="margin-bottom:16px;">Status Colors</div>
+    <div class="palette-grid" style="grid-template-columns: repeat(3,1fr); margin-bottom: 48px;">
+      <div class="swatch" onclick="copyHex(this, '#1DB954')">
+        <div class="swatch-color" style="background:#1DB954;"><span class="swatch-copied">Copied!</span></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Success Green</div>
+          <div class="swatch-hex">#1DB954 Â· hsl(142 71% 45%)</div>
+        </div>
+        <div class="copy-tip">Click to copy</div>
+      </div>
+      <div class="swatch" onclick="copyHex(this, '#F59E0B')">
+        <div class="swatch-color" style="background:#F59E0B;"><span class="swatch-copied">Copied!</span></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Warning Amber</div>
+          <div class="swatch-hex">#F59E0B Â· hsl(38 92% 50%)</div>
+        </div>
+        <div class="copy-tip">Click to copy</div>
+      </div>
+      <div class="swatch" onclick="copyHex(this, '#EF4444')">
+        <div class="swatch-color" style="background:#EF4444;"><span class="swatch-copied">Copied!</span></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Destructive Red</div>
+          <div class="swatch-hex">#EF4444 Â· hsl(0 84% 60%)</div>
+        </div>
+        <div class="copy-tip">Click to copy</div>
+      </div>
+    </div>
+
+    <!-- Neutrals -->
+    <div class="section-label" style="margin-bottom:16px;">Neutrals &amp; Surface</div>
+    <div class="palette-grid" style="grid-template-columns: repeat(4,1fr);">
+      <div class="swatch" onclick="copyHex(this, '#0F1117')">
+        <div class="swatch-color" style="background:#0F1117; border: 1px solid #333;"><span class="swatch-copied">Copied!</span></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Background Dark</div>
+          <div class="swatch-hex">#0F1117</div>
+        </div>
+        <div class="copy-tip">Click to copy</div>
+      </div>
+      <div class="swatch" onclick="copyHex(this, '#16192A')">
+        <div class="swatch-color" style="background:#16192A;"><span class="swatch-copied">Copied!</span></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Card Dark</div>
+          <div class="swatch-hex">#16192A</div>
+        </div>
+        <div class="copy-tip">Click to copy</div>
+      </div>
+      <div class="swatch" onclick="copyHex(this, '#FAFAFA')">
+        <div class="swatch-color" style="background:#FAFAFA; border: 1px solid #E4E7ED;"><span class="swatch-copied" style="color:#999">Copied!</span></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Background Light</div>
+          <div class="swatch-hex">#FAFAFA</div>
+        </div>
+        <div class="copy-tip">Click to copy</div>
+      </div>
+      <div class="swatch" onclick="copyHex(this, '#FFFFFF')">
+        <div class="swatch-color" style="background:#FFFFFF; border: 1px solid #E4E7ED;"><span class="swatch-copied" style="color:#999">Copied!</span></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Card Light</div>
+          <div class="swatch-hex">#FFFFFF</div>
+        </div>
+        <div class="copy-tip">Click to copy</div>
+      </div>
+      <div class="swatch" onclick="copyHex(this, '#1A1D2E')">
+        <div class="swatch-color" style="background:#1A1D2E;"><span class="swatch-copied">Copied!</span></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Text Primary</div>
+          <div class="swatch-hex">#1A1D2E</div>
+        </div>
+        <div class="copy-tip">Click to copy</div>
+      </div>
+      <div class="swatch" onclick="copyHex(this, '#6B7280')">
+        <div class="swatch-color" style="background:#6B7280;"><span class="swatch-copied">Copied!</span></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Text Muted</div>
+          <div class="swatch-hex">#6B7280</div>
+        </div>
+        <div class="copy-tip">Click to copy</div>
+      </div>
+      <div class="swatch" onclick="copyHex(this, '#E4E7ED')">
+        <div class="swatch-color" style="background:#E4E7ED;"><span class="swatch-copied" style="color:#999">Copied!</span></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Border Light</div>
+          <div class="swatch-hex">#E4E7ED</div>
+        </div>
+        <div class="copy-tip">Click to copy</div>
+      </div>
+      <div class="swatch" onclick="copyHex(this, '#1E2235')">
+        <div class="swatch-color" style="background:#1E2235;"><span class="swatch-copied">Copied!</span></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Border Dark</div>
+          <div class="swatch-hex">#1E2235</div>
+        </div>
+        <div class="copy-tip">Click to copy</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ TYPOGRAPHY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+<section class="section section--dark" id="typography">
+  <div class="container">
+    <div class="section-label">03 â€” Typography</div>
+    <h2 class="section-title">Type System</h2>
+    <p class="section-sub">Inter across all weights. Tightly tracked headings at âˆ’0.03em to âˆ’0.04em. Body text at default tracking with generous line height.</p>
+
+    <!-- Weights -->
+    <div class="section-label" style="margin-bottom:16px;">Weights</div>
+    <div class="weight-row">
+      <div class="weight-cell">
+        <div class="weight-number" style="font-weight:400;">Aa</div>
+        <div class="weight-name">Regular Â· 400</div>
+      </div>
+      <div class="weight-cell">
+        <div class="weight-number" style="font-weight:500;">Aa</div>
+        <div class="weight-name">Medium Â· 500</div>
+      </div>
+      <div class="weight-cell">
+        <div class="weight-number" style="font-weight:600;">Aa</div>
+        <div class="weight-name">Semibold Â· 600</div>
+      </div>
+      <div class="weight-cell">
+        <div class="weight-number" style="font-weight:800;">Aa</div>
+        <div class="weight-name">Extrabold Â· 800</div>
+      </div>
+    </div>
+
+    <!-- Type scale -->
+    <div class="section-label" style="margin-bottom:0;">Type scale</div>
+    <div class="type-scale">
+      <div class="type-row">
+        <div class="type-meta">
+          <span class="type-tag">Display</span>
+          <span class="type-spec">48px / 800 / âˆ’0.04em</span>
+        </div>
+        <div class="type-sample-text" style="font-size:48px;font-weight:800;letter-spacing:-0.04em;line-height:1.05;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">FlowMonix</div>
+        <span style="font-size:12px;color:var(--text-muted);text-align:right;">Hero, Landing page</span>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <span class="type-tag">H1</span>
+          <span class="type-spec">36px / 800 / âˆ’0.03em</span>
+        </div>
+        <div class="type-sample-text" style="font-size:36px;font-weight:800;letter-spacing:-0.03em;line-height:1.1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">Automation Observability</div>
+        <span style="font-size:12px;color:var(--text-muted);text-align:right;">Page titles</span>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <span class="type-tag">H2</span>
+          <span class="type-spec">24px / 700 / âˆ’0.02em</span>
+        </div>
+        <div class="type-sample-text" style="font-size:24px;font-weight:700;letter-spacing:-0.02em;">Monitor every workflow</div>
+        <span style="font-size:12px;color:var(--text-muted);text-align:right;">Section headings</span>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <span class="type-tag">H3</span>
+          <span class="type-spec">20px / 600 / âˆ’0.01em</span>
+        </div>
+        <div class="type-sample-text" style="font-size:20px;font-weight:600;letter-spacing:-0.01em;">Execution History</div>
+        <span style="font-size:12px;color:var(--text-muted);text-align:right;">Card titles</span>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <span class="type-tag">Body</span>
+          <span class="type-spec">16px / 400 / 0em / 1.7</span>
+        </div>
+        <div class="type-sample-text" style="font-size:16px;font-weight:400;line-height:1.7;color:#8892B0;">Monitor your n8n workflows in real time. Get alerted the moment a workflow fails, investigate root causes with full execution context, and resolve incidents faster.</div>
+        <span style="font-size:12px;color:var(--text-muted);text-align:right;">Body copy</span>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <span class="type-tag">Small</span>
+          <span class="type-spec">14px / 500 / 0em</span>
+        </div>
+        <div class="type-sample-text" style="font-size:14px;font-weight:500;color:#8892B0;">Last synced 2 minutes ago</div>
+        <span style="font-size:12px;color:var(--text-muted);text-align:right;">Labels, metadata</span>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <span class="type-tag">Caption</span>
+          <span class="type-spec">12px / 500 / +0.04em</span>
+        </div>
+        <div class="type-sample-text" style="font-size:12px;font-weight:500;letter-spacing:0.04em;color:#4A5568;">WORKFLOW STATUS Â· 5 MIN AGO</div>
+        <span style="font-size:12px;color:var(--text-muted);text-align:right;">Eyebrows, tags</span>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <span class="type-tag">Mono</span>
+          <span class="type-spec">13px / 400 / 0em</span>
+        </div>
+        <div class="type-sample-text" style="font-size:13px;font-family:monospace;color:#818CF8;">const { executions } = await flowmonix.sync()</div>
+        <span style="font-size:12px;color:var(--text-muted);text-align:right;">Code, IDs, hashes</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ SPACING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+<section class="section section--light" id="spacing">
+  <div class="container">
+    <div class="section-label">04 â€” Spacing &amp; Radius</div>
+    <h2 class="section-title" style="color:var(--text-primary);">Tokens</h2>
+    <p class="section-sub">An 8-point base grid. All spacing values are multiples of 4px â€” use the named tokens rather than raw values.</p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start;">
+      <!-- Spacing scale -->
+      <div>
+        <div class="section-label" style="margin-bottom:20px;">Spacing Scale</div>
+        <div class="spacing-grid">
+          <div class="spacing-row">
+            <span class="spacing-label">space-1</span>
+            <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:4px;"></div></div>
+            <span class="spacing-value">4px</span>
+          </div>
+          <div class="spacing-row">
+            <span class="spacing-label">space-2</span>
+            <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:8px;"></div></div>
+            <span class="spacing-value">8px</span>
+          </div>
+          <div class="spacing-row">
+            <span class="spacing-label">space-3</span>
+            <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:12px;"></div></div>
+            <span class="spacing-value">12px</span>
+          </div>
+          <div class="spacing-row">
+            <span class="spacing-label">space-4</span>
+            <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:16px;"></div></div>
+            <span class="spacing-value">16px Â· 1rem</span>
+          </div>
+          <div class="spacing-row">
+            <span class="spacing-label">space-5</span>
+            <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:20px;"></div></div>
+            <span class="spacing-value">20px</span>
+          </div>
+          <div class="spacing-row">
+            <span class="spacing-label">space-6</span>
+            <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:24px;"></div></div>
+            <span class="spacing-value">24px</span>
+          </div>
+          <div class="spacing-row">
+            <span class="spacing-label">space-8</span>
+            <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:32px;"></div></div>
+            <span class="spacing-value">32px Â· 2rem</span>
+          </div>
+          <div class="spacing-row">
+            <span class="spacing-label">space-10</span>
+            <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:40px;"></div></div>
+            <span class="spacing-value">40px</span>
+          </div>
+          <div class="spacing-row">
+            <span class="spacing-label">space-12</span>
+            <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:48px;"></div></div>
+            <span class="spacing-value">48px Â· 3rem</span>
+          </div>
+          <div class="spacing-row">
+            <span class="spacing-label">space-16</span>
+            <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:64px;"></div></div>
+            <span class="spacing-value">64px Â· 4rem</span>
+          </div>
+          <div class="spacing-row">
+            <span class="spacing-label">space-24</span>
+            <div class="spacing-bar-wrap"><div class="spacing-bar" style="width:96px;"></div></div>
+            <span class="spacing-value">96px Â· 6rem</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Border Radius -->
+      <div>
+        <div class="section-label" style="margin-bottom:20px;">Border Radius</div>
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div style="width:40px;height:40px;background:linear-gradient(135deg,rgba(91,79,232,0.2),rgba(123,95,237,0.2));border:2px solid var(--indigo);border-radius:4px;flex-shrink:0;"></div>
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text-primary);">radius-sm</div>
+              <div style="font-size:12px;color:#9CA3AF;font-family:monospace;">4px â€” Tags, badges, inputs</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div style="width:40px;height:40px;background:linear-gradient(135deg,rgba(91,79,232,0.2),rgba(123,95,237,0.2));border:2px solid var(--indigo);border-radius:6px;flex-shrink:0;"></div>
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text-primary);">radius-base</div>
+              <div style="font-size:12px;color:#9CA3AF;font-family:monospace;">6px â€” Buttons, small chips</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div style="width:40px;height:40px;background:linear-gradient(135deg,rgba(91,79,232,0.2),rgba(123,95,237,0.2));border:2px solid var(--indigo);border-radius:10px;flex-shrink:0;"></div>
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text-primary);">radius-md</div>
+              <div style="font-size:12px;color:#9CA3AF;font-family:monospace;">10px â€” Cards, dropdowns, modals</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div style="width:40px;height:40px;background:linear-gradient(135deg,rgba(91,79,232,0.2),rgba(123,95,237,0.2));border:2px solid var(--indigo);border-radius:16px;flex-shrink:0;"></div>
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text-primary);">radius-lg</div>
+              <div style="font-size:12px;color:#9CA3AF;font-family:monospace;">16px â€” Page sections, panels</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div style="width:40px;height:40px;background:linear-gradient(135deg,rgba(91,79,232,0.2),rgba(123,95,237,0.2));border:2px solid var(--indigo);border-radius:9999px;flex-shrink:0;"></div>
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text-primary);">radius-full</div>
+              <div style="font-size:12px;color:#9CA3AF;font-family:monospace;">9999px â€” Pills, avatar rings</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ COMPONENTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+<section class="section section--mid" id="components">
+  <div class="container">
+    <div class="section-label">05 â€” Components</div>
+    <h2 class="section-title">UI Primitives</h2>
+    <p class="section-sub">Core components that form the FlowMonix interface. All built on the design tokens above.</p>
+  </div>
+
+  <div class="components-grid" style="margin-top: 0;">
+
+    <!-- Buttons -->
+    <div class="component-cell">
+      <div class="component-title">Buttons</div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <div style="font-size:11px;color:#4A5568;margin-bottom:8px;letter-spacing:0.06em;text-transform:uppercase;">Primary</div>
+          <div class="btn-row">
+            <button class="btn btn-primary btn-sm">Sync Now</button>
+            <button class="btn btn-primary">Connect Instance</button>
+            <button class="btn btn-primary btn-lg">Get Started Free</button>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:#4A5568;margin-bottom:8px;letter-spacing:0.06em;text-transform:uppercase;">Secondary</div>
+          <div class="btn-row">
+            <button class="btn btn-secondary-dark btn-sm">Cancel</button>
+            <button class="btn btn-secondary-dark">View Details</button>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:#4A5568;margin-bottom:8px;letter-spacing:0.06em;text-transform:uppercase;">Ghost</div>
+          <div class="btn-row">
+            <button class="btn btn-ghost btn-sm">Learn more</button>
+            <button class="btn btn-ghost">Upgrade to Pro</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Badges -->
+    <div class="component-cell">
+      <div class="component-title">Status Badges</div>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div>
+          <div style="font-size:11px;color:#4A5568;margin-bottom:10px;letter-spacing:0.06em;text-transform:uppercase;">Workflow states</div>
+          <div class="badge-row">
+            <span class="badge badge-success"><span class="badge-dot"></span>Running</span>
+            <span class="badge badge-warning"><span class="badge-dot"></span>Degraded</span>
+            <span class="badge badge-error"><span class="badge-dot"></span>Failed</span>
+            <span class="badge badge-neutral"><span class="badge-dot"></span>Inactive</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:#4A5568;margin-bottom:10px;letter-spacing:0.06em;text-transform:uppercase;">Incident states</div>
+          <div class="badge-row">
+            <span class="badge badge-error">Open</span>
+            <span class="badge badge-warning">Investigating</span>
+            <span class="badge badge-success">Resolved</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:#4A5568;margin-bottom:10px;letter-spacing:0.06em;text-transform:uppercase;">Plan / feature</div>
+          <div class="badge-row">
+            <span class="badge badge-primary">Pro</span>
+            <span class="badge badge-neutral">Free</span>
+            <span class="badge" style="background:linear-gradient(135deg,rgba(91,79,232,0.2),rgba(123,95,237,0.2));color:#A78BFA;border:1px solid rgba(123,95,237,0.35);">Team</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:#4A5568;margin-bottom:10px;letter-spacing:0.06em;text-transform:uppercase;">Input field</div>
+          <input class="input-preview" placeholder="Enter your n8n instance URLâ€¦" readonly />
+        </div>
+      </div>
+    </div>
+
+    <!-- Card -->
+    <div class="component-cell">
+      <div class="component-title">Cards</div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <!-- Dark card -->
+        <div class="mini-card">
+          <div class="mini-card-header">
+            <span class="mini-card-title">Workflow Health</span>
+            <span class="badge badge-success" style="font-size:11px;padding:3px 8px;"><span class="badge-dot"></span>Live</span>
+          </div>
+          <div class="mini-card-stat grad-text">98.4%</div>
+          <div class="mini-card-sub">Success rate Â· last 24 hours</div>
+          <div class="mini-card-bar-track">
+            <div class="mini-card-bar-fill" style="width:98.4%;"></div>
+          </div>
+        </div>
+
+        <!-- Stats row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="mini-card">
+            <div class="mini-card-meta">Executions today</div>
+            <div class="mini-card-stat" style="font-size:22px;margin-top:6px;">1,284</div>
+          </div>
+          <div class="mini-card">
+            <div class="mini-card-meta">Open incidents</div>
+            <div class="mini-card-stat" style="font-size:22px;margin-top:6px;color:#EF4444;">3</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Second row: light mode preview -->
+  <div class="components-grid" style="margin-top: 2px; grid-template-columns: 1fr 2fr !important;">
+    <div class="component-cell component-cell--light">
+      <div class="component-title">Light Mode Cards</div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="mini-card mini-card--light">
+          <div class="mini-card-header">
+            <span class="mini-card-title">Instance #1</span>
+            <span class="badge badge-success" style="font-size:11px;padding:3px 8px;"><span class="badge-dot"></span>Connected</span>
+          </div>
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">https://n8n.acme.io</div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-secondary-light btn-sm">Edit</button>
+            <button class="btn btn-primary btn-sm">Sync</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="component-cell component-cell--light">
+      <div class="component-title">Light Mode Buttons &amp; Badges</div>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="btn-row">
+          <button class="btn btn-primary">Connect Instance</button>
+          <button class="btn btn-secondary-light">View All</button>
+          <button class="btn btn-ghost">Upgrade</button>
+        </div>
+        <div class="badge-row">
+          <span class="badge badge-success"><span class="badge-dot"></span>Running</span>
+          <span class="badge badge-warning"><span class="badge-dot"></span>Degraded</span>
+          <span class="badge badge-error"><span class="badge-dot"></span>Failed</span>
+          <span class="badge badge-primary">Pro</span>
+          <span class="badge" style="background:rgba(91,79,232,0.08);color:var(--indigo);border:1px solid rgba(91,79,232,0.2);">New</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+          <div class="mini-card mini-card--light" style="text-align:center;">
+            <div style="font-size:22px;font-weight:800;letter-spacing:-0.04em;color:var(--text-primary);">247</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Workflows</div>
+          </div>
+          <div class="mini-card mini-card--light" style="text-align:center;">
+            <div style="font-size:22px;font-weight:800;letter-spacing:-0.04em;color:var(--text-primary);">5</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Instances</div>
+          </div>
+          <div class="mini-card mini-card--light" style="text-align:center;">
+            <div style="font-size:22px;font-weight:800;letter-spacing:-0.04em;color:#EF4444;">0</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Incidents</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shadow tokens -->
+  <div class="container" style="margin-top:80px;">
+    <div class="section-label" style="margin-bottom:16px;">Shadow Tokens</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+      <div style="background:var(--card-dark);padding:24px;border-radius:var(--radius-md);box-shadow:0 1px 3px rgba(0,0,0,0.4);">
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px;">shadow-card</div>
+        <div style="font-size:12px;color:var(--text-muted);font-family:monospace;">0 1px 3px rgba(0,0,0,0.4)</div>
+      </div>
+      <div style="background:var(--card-dark);padding:24px;border-radius:var(--radius-md);box-shadow:0 4px 16px rgba(0,0,0,0.4);">
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px;">shadow-card-hover</div>
+        <div style="font-size:12px;color:var(--text-muted);font-family:monospace;">0 4px 16px rgba(0,0,0,0.4)</div>
+      </div>
+      <div style="background:var(--card-dark);padding:24px;border-radius:var(--radius-md);box-shadow:0 8px 32px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.05);">
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px;">shadow-elevated</div>
+        <div style="font-size:12px;color:var(--text-muted);font-family:monospace;">0 8px 32px rgba(0,0,0,0.5)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ VOICE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+<section class="section section--light">
+  <div class="container">
+    <div class="section-label">06 â€” Brand Voice</div>
+    <h2 class="section-title" style="color:var(--text-primary);">Tone &amp; Messaging</h2>
+    <p class="section-sub">FlowMonix is technical but not cold. Confident but not arrogant. The language of a senior engineer who has been on-call.</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+      <div style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);padding:24px;">
+        <div style="font-size:12px;font-weight:700;color:var(--indigo);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;">Precise</div>
+        <p style="font-size:14px;color:var(--text-primary);line-height:1.6;margin-bottom:8px;">"3 workflows failed in the last 15 minutes."</p>
+        <p style="font-size:13px;color:#9CA3AF;">Not "some issues detected." Be specific with numbers, timestamps, and workflow names.</p>
+      </div>
+      <div style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);padding:24px;">
+        <div style="font-size:12px;font-weight:700;color:var(--indigo);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;">Calm</div>
+        <p style="font-size:14px;color:var(--text-primary);line-height:1.6;margin-bottom:8px;">"Incident auto-resolved. No action needed."</p>
+        <p style="font-size:13px;color:#9CA3AF;">Reduce noise. Every alert must be actionable. No false urgency â€” operators trust the system.</p>
+      </div>
+      <div style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius-md);padding:24px;">
+        <div style="font-size:12px;font-weight:700;color:var(--indigo);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;">Empowering</div>
+        <p style="font-size:14px;color:var(--text-primary);line-height:1.6;margin-bottom:8px;">"Retry execution" not "Try again."</p>
+        <p style="font-size:13px;color:#9CA3AF;">Action labels are verbs. Users are in control. The interface never blames the user.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ FOOTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+<footer class="footer">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+    <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+      <rect width="32" height="32" rx="7" fill="url(#fg)"/>
+      <line x1="9" y1="16" x2="11.5" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><line x1="20.5" y1="16" x2="23" y2="16" stroke="white" stroke-width="2.2" opacity="0.75"/><circle cx="5.5" cy="16" r="3.5" fill="white"/><circle cx="16" cy="16" r="4.8" fill="none" stroke="white" stroke-width="2.4"/><circle cx="16" cy="16" r="2.1" fill="white"/><circle cx="26.5" cy="16" r="3.5" fill="white"/>
+      <defs><linearGradient id="fg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#5B4FE8"/><stop offset="1" stop-color="#7B5FED"/></linearGradient></defs>
+    </svg>
+    <span style="font-size:15px;font-weight:700;color:#fff;">FlowMonix</span>
+  </div>
+  <p class="footer-text">flowmonix.com â€” Automation Observability Platform</p>
+  <p class="footer-version">Brand Guidelines Â· Version 1.0 Â· 2025</p>
+</footer>
+
+<script>
+  // Copy hex to clipboard
+  function copyHex(el, value) {
+    navigator.clipboard.writeText(value).then(() => {
+      el.classList.add('copied');
+      setTimeout(() => el.classList.remove('copied'), 1400);
+    });
+  }
+
+  // Animate logo path on scroll into view
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.animation = 'none';
+        e.target.offsetHeight; // reflow
+        e.target.style.animation = '';
+      }
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('.logo-path-animated').forEach(el => observer.observe(el));
+
+  // Smooth active nav
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    navLinks.forEach(l => {
+      l.style.color = l.getAttribute('href') === '#' + current ? '#fff' : '';
+      l.style.background = l.getAttribute('href') === '#' + current ? 'rgba(255,255,255,0.07)' : '';
+    });
+  });
+</script>
+</body>
+</html>

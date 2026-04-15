@@ -2,7 +2,8 @@
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Zap, ArrowLeft, ArrowRight, Building2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Building2 } from "lucide-react";
+import { FlowMonixMark } from "@/components/brand/mark";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -257,9 +258,12 @@ export default function LoginPage() {
         <div className="relative z-10">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
-              <Zap className="w-5 h-5 text-white" />
+              <FlowMonixMark className="w-5 h-5" />
             </div>
-            <span className="text-white font-bold text-xl tracking-tight">FlowWatch</span>
+            <span className="font-bold text-xl tracking-tight">
+              <span className="text-white">Flow</span>
+              <span className="text-white/70">monix</span>
+            </span>
           </div>
         </div>
 
@@ -295,16 +299,24 @@ export default function LoginPage() {
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-2 mb-10">
             <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
-              <Zap className="w-5 h-5 text-white" />
+              <FlowMonixMark className="w-5 h-5" />
             </div>
-            <span className="font-bold text-xl text-foreground">FlowWatch</span>
+            <span className="font-bold text-xl tracking-tight">
+              <span className="text-foreground">Flow</span>
+              <span style={{
+                background: "linear-gradient(135deg, #818CF8, #A78BFA)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}>monix</span>
+            </span>
           </div>
 
           {/* ── Step: EMAIL ──────────────────────────────────────── */}
           {step === "email" && (
             <div key="email" className="animate-fade-in space-y-6">
               <div>
-                <h1 className="text-2xl font-bold text-foreground">Welcome to FlowWatch</h1>
+                <h1 className="text-2xl font-bold text-foreground">Welcome to FlowMonix</h1>
                 <p className="text-sm text-muted-foreground mt-1">
                   Enter your email to sign in or create an account
                 </p>

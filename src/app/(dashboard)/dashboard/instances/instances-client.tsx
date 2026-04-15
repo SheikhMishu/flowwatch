@@ -567,7 +567,7 @@ function InstanceCard({
   async function handleDisconnect() {
     if (
       !confirm(
-        `Disconnect "${instance.name}"? This will remove the instance from FlowWatch.`,
+        `Disconnect "${instance.name}"? This will remove the instance from FlowMonix.`,
       )
     )
       return;

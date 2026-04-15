@@ -11,11 +11,14 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "FlowWatch — n8n Observability",
-    template: "%s | FlowWatch",
+    default: "FlowMonix — n8n Observability",
+    template: "%s | FlowMonix",
   },
   description: "Production monitoring and debugging for n8n workflows. Know exactly what broke and why.",
   keywords: ["n8n", "workflow monitoring", "automation observability", "n8n dashboard"],
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export const viewport: Viewport = {
