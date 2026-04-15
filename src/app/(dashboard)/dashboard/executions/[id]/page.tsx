@@ -20,6 +20,7 @@ import { fetchExecutionWithData } from "@/lib/n8n-data";
 import { mockExecutions } from "@/lib/mock-data";
 import { Header } from "@/components/layout/header";
 import { RetryButton } from "@/components/dashboard/retry-button";
+import { AiExplainPanel } from "@/components/dashboard/ai-explain-panel";
 import { formatDuration } from "@/lib/utils";
 import type { Execution, ExecutionStatus } from "@/types";
 
@@ -312,6 +313,17 @@ export default async function ExecutionDetailPage({
                 </div>
               );
             })()}
+
+            {/* AI explain */}
+            <AiExplainPanel
+              workflowId={execution.workflow_id}
+              workflowName={execution.workflow_name}
+              failedNode={execution.failed_node}
+              errorMessage={execution.error_message!}
+              errorType={execution.error_type}
+              nodeType={nodes.find((n) => n.name === execution.failed_node)?.type}
+              inputItems={nodes.find((n) => n.name === execution.failed_node)?.input_items as unknown[]}
+            />
           </div>
         )}
 

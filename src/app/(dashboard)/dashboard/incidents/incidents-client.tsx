@@ -5,6 +5,7 @@ import { Flame, Clock, CheckCircle2, User, AlertTriangle, ChevronDown } from "lu
 import { formatDistanceToNow, parseISO, differenceInMinutes } from "date-fns";
 import { cn } from "@/lib/utils";
 import { RetryButton } from "@/components/dashboard/retry-button";
+import { AiExplainPanel } from "@/components/dashboard/ai-explain-panel";
 import type { Incident, IncidentSeverity, IncidentStatus } from "@/types";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -145,6 +146,18 @@ function IncidentCard({
       {/* Retry button — only for non-resolved incidents with a known execution */}
       {retryCompositeId && incident.status !== "resolved" && (
         <RetryButton executionId={retryCompositeId} variant="sm" />
+      )}
+
+      {/* AI explain — only when we have enough context */}
+      {incident.error_message && incident.n8n_workflow_id && incident.status !== "resolved" && (
+        <AiExplainPanel
+          workflowId={incident.n8n_workflow_id}
+          workflowName={incident.workflow_name}
+          failedNode={incident.node_name}
+          errorMessage={incident.error_message}
+          nodeType={null}
+          className="mt-3 pt-3 border-t border-border"
+        />
       )}
     </div>
   );

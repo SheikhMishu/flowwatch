@@ -88,6 +88,7 @@ export interface Incident {
   id: string;
   instance_id: string;
   workflow_id: string;
+  n8n_workflow_id: string | null;
   workflow_name: string;
   severity: IncidentSeverity;
   status: IncidentStatus;
@@ -98,6 +99,10 @@ export interface Incident {
   resolved_at: string | null;
   assigned_to: string | null;
   last_n8n_execution_id: string | null;
+  // AI debugging fields (added migration 006 / 008)
+  error_signature: string | null;
+  node_name: string | null;
+  error_message: string | null;
 }
 
 // ─── Alert ────────────────────────────────────────────────────────────────────

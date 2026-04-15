@@ -110,6 +110,7 @@ async function findOrCreateIncident(db: Db, exec: ErrorExecution): Promise<void>
         workflow_name: exec.workflow_name,
         error_signature: sig,
         node_name: exec.failed_node,
+        error_message: exec.error_message,
         severity: "low",
         status: "open",
         title,
