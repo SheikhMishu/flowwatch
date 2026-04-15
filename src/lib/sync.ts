@@ -6,6 +6,7 @@ import { decrypt } from "@/lib/crypto";
 import { N8nClient } from "@/lib/n8n";
 import { evaluateOrgAlerts } from "@/lib/alert-engine";
 import { processErrorExecutions, autoResolveIncidents } from "@/lib/incident-grouping";
+import { logger } from "@/lib/logger";
 export interface SyncResult {
   instanceId: string;
   ok: boolean;
@@ -54,7 +55,7 @@ async function runInstanceSync(
       const { error: wfErr } = await db.from("workflow_snapshots").upsert(workflowRows, {
         onConflict: "instance_id,n8n_workflow_id",
       });
-      if (wfErr) console.error("[sync] workflow_snapshots upsert error:", wfErr.message, wfErr.details);
+      if (wfErr) logger.error("workflow_snapshots upsert error", { category: "sync", orgId, instanceId, err: wfErr });
     }
 
     // Build workflow name map
@@ -113,13 +114,13 @@ async function runInstanceSync(
       };
     });
 
-    console.log(`[sync] instance ${instanceId}: ${rawWorkflows.length} workflows, ${rawExecutions.length} executions from n8n`);
+    logger.info("Instance sync data fetched", { category: "sync", orgId, instanceId, workflows: rawWorkflows.length, executions: rawExecutions.length });
 
     if (execRows.length > 0) {
       const { error: execErr } = await db.from("synced_executions").upsert(execRows, {
         onConflict: "instance_id,n8n_execution_id",
       });
-      if (execErr) console.error("[sync] synced_executions upsert error:", execErr.message, execErr.details);
+      if (execErr) logger.error("synced_executions upsert error", { category: "sync", orgId, instanceId, err: execErr });
     }
 
     // Update last_synced_at
@@ -128,6 +129,7 @@ async function runInstanceSync(
       .update({ last_synced_at: new Date().toISOString() })
       .eq("id", instanceId);
 
+    logger.info("Instance sync complete", { category: "sync", orgId, instanceId, workflowsUpserted: workflowRows.length, executionsUpserted: execRows.length });
     return {
       instanceId,
       ok: true,
@@ -135,6 +137,7 @@ async function runInstanceSync(
       executionsUpserted: execRows.length,
     };
   } catch (err) {
+    logger.error("Instance sync failed", { category: "sync", orgId, instanceId, err });
     return {
       instanceId,
       ok: false,
@@ -163,19 +166,20 @@ export async function syncInstance(instanceId: string, orgId: string): Promise<S
     return { instanceId, ok: false, error: "Instance not found", workflowsUpserted: 0, executionsUpserted: 0 };
   }
 
+  logger.info("syncInstance started", { category: "sync", orgId, instanceId });
   const result = await runInstanceSync(db, orgId, instanceId, inst.url, inst.api_key_encrypted);
 
   if (result.ok) {
     await Promise.all([
       evaluateOrgAlerts(orgId).catch((err) =>
-        console.error("[sync] alert evaluation failed:", err.message)
+        logger.error("Alert evaluation failed after sync", { category: "sync", orgId, instanceId, err })
       ),
       processErrorExecutions(db, orgId, instanceId).catch((err) =>
-        console.error("[sync] incident grouping failed:", err.message)
+        logger.error("Incident grouping failed after sync", { category: "sync", orgId, instanceId, err })
       ),
     ]);
     await autoResolveIncidents(db, orgId).catch((err) =>
-      console.error("[sync] incident auto-resolve failed:", err.message)
+      logger.error("Incident auto-resolve failed after sync", { category: "sync", orgId, instanceId, err })
     );
   }
 
@@ -210,7 +214,7 @@ export async function syncAllInstances(): Promise<SyncResult[]> {
   await Promise.all(
     orgIds.map((orgId) =>
       evaluateOrgAlerts(orgId).catch((err) =>
-        console.error(`[sync] alert evaluation failed for org ${orgId}:`, err.message)
+        logger.error("Alert evaluation failed after cron sync", { category: "sync", orgId, err })
       )
     )
   );
@@ -218,7 +222,7 @@ export async function syncAllInstances(): Promise<SyncResult[]> {
   await Promise.all(
     succeededInstances.map((inst) =>
       processErrorExecutions(db, inst.org_id, inst.id).catch((err) =>
-        console.error(`[sync] incident grouping failed for instance ${inst.id}:`, err.message)
+        logger.error("Incident grouping failed after cron sync", { category: "sync", orgId: inst.org_id, instanceId: inst.id, err })
       )
     )
   );
@@ -226,7 +230,7 @@ export async function syncAllInstances(): Promise<SyncResult[]> {
   await Promise.all(
     orgIds.map((orgId) =>
       autoResolveIncidents(db, orgId).catch((err) =>
-        console.error(`[sync] incident auto-resolve failed for org ${orgId}:`, err.message)
+        logger.error("Incident auto-resolve failed after cron sync", { category: "sync", orgId, err })
       )
     )
   );

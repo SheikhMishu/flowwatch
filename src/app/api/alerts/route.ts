@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
+import { logger } from "@/lib/logger";
+import { logActivity } from "@/lib/activity";
 
 // GET /api/alerts — list org's alert rules
 export async function GET() {
@@ -54,6 +56,16 @@ export async function POST(req: NextRequest) {
     .select("*")
     .single();
 
-  if (error) return NextResponse.json({ error: "Failed to create alert" }, { status: 500 });
+  if (error) {
+    logger.error("Failed to create alert", { category: "alert-engine", orgId: session.orgId, err: error });
+    return NextResponse.json({ error: "Failed to create alert" }, { status: 500 });
+  }
+
+  logger.info("Alert created", { category: "alert-engine", orgId: session.orgId, alertId: data.id, alertName: name });
+  logActivity(session, "alert.created", {
+    resourceType: "alert",
+    resourceId: data.id,
+    metadata: { name, channel },
+  });
   return NextResponse.json({ alert: data }, { status: 201 });
 }

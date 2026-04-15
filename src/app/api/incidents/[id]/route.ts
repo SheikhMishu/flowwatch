@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
+import { logger } from "@/lib/logger";
+import { logActivity } from "@/lib/activity";
 
 export async function PATCH(
   req: NextRequest,
@@ -19,6 +21,16 @@ export async function PATCH(
   }
 
   const db = getServerDb();
+
+  // Fetch current status so we can log the transition
+  const { data: existing } = await db
+    .from("incidents")
+    .select("status")
+    .eq("id", id)
+    .eq("org_id", session.orgId)
+    .single();
+  const oldStatus = existing?.status ?? "unknown";
+
   const update: Record<string, unknown> = { status };
   if (status === "resolved") update.resolved_at = new Date().toISOString();
 
@@ -31,9 +43,16 @@ export async function PATCH(
     .single();
 
   if (error) {
-    console.error("[PATCH /api/incidents/:id]", error.message);
+    logger.error("Failed to update incident status", { category: "incident", orgId: session.orgId, incidentId: id, err: error });
     return NextResponse.json({ error: "Failed to update incident" }, { status: 500 });
   }
+
+  logger.info("Incident status changed", { category: "incident", orgId: session.orgId, incidentId: id, from: oldStatus, to: status });
+  logActivity(session, "incident.status_changed", {
+    resourceType: "incident",
+    resourceId: id,
+    metadata: { from: oldStatus, to: status },
+  });
 
   return NextResponse.json({ incident: data });
 }

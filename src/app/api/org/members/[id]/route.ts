@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
+import { logger } from "@/lib/logger";
+import { logActivity } from "@/lib/activity";
 
 async function getMember(memberId: string, orgId: string) {
   const db = getServerDb();
@@ -44,7 +46,17 @@ export async function PATCH(
     .update({ role })
     .eq("id", id);
 
-  if (error) return NextResponse.json({ error: "Failed to update role" }, { status: 500 });
+  if (error) {
+    logger.error("Failed to update member role", { category: "api", orgId: session.orgId, memberId: id, err: error });
+    return NextResponse.json({ error: "Failed to update role" }, { status: 500 });
+  }
+
+  logger.info("Member role changed", { category: "api", orgId: session.orgId, memberId: id, role });
+  logActivity(session, "team.role_changed", {
+    resourceType: "member",
+    resourceId: id,
+    metadata: { newRole: role, targetUserId: member.user_id },
+  });
   return NextResponse.json({ ok: true, role });
 }
 
@@ -73,6 +85,16 @@ export async function DELETE(
     .delete()
     .eq("id", id);
 
-  if (error) return NextResponse.json({ error: "Failed to remove member" }, { status: 500 });
+  if (error) {
+    logger.error("Failed to remove member", { category: "api", orgId: session.orgId, memberId: id, err: error });
+    return NextResponse.json({ error: "Failed to remove member" }, { status: 500 });
+  }
+
+  logger.info("Member removed", { category: "api", orgId: session.orgId, memberId: id });
+  logActivity(session, "team.member_removed", {
+    resourceType: "member",
+    resourceId: id,
+    metadata: { removedUserId: member.user_id },
+  });
   return NextResponse.json({ ok: true });
 }

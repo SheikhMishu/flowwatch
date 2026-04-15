@@ -3,6 +3,8 @@ import { verifyPin } from "@/lib/pin";
 import { createSession, getSessionCookieOptions } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
 import type { OrgRole } from "@/types";
+import { logger } from "@/lib/logger";
+import { logActivity } from "@/lib/activity";
 
 const DEMO_EMAIL = "demo@flowwatch.app";
 const DEMO_PIN = "123456";
@@ -56,6 +58,8 @@ export async function POST(req: NextRequest) {
     // ── Verify PIN hash ────────────────────────────────────────────────────────
     const valid = await verifyPin(pin, pinRecord.pin_hash);
     if (!valid) {
+      logger.warn("PIN verification failed", { category: "auth", email });
+      logActivity({ orgId: "unknown", email }, "auth.pin_failed");
       return NextResponse.json({ error: "Incorrect PIN." }, { status: 401 });
     }
 
@@ -88,7 +92,7 @@ export async function POST(req: NextRequest) {
         .single();
 
       if (createError || !newUser) {
-        console.error("Failed to create user:", createError);
+        logger.error("Failed to create user", { category: "auth", email, err: createError });
         return NextResponse.json({ error: "Failed to create account." }, { status: 500 });
       }
       userId = newUser.id;
@@ -146,6 +150,9 @@ export async function POST(req: NextRequest) {
         orgName: org.name,
         role: invite.role as OrgRole,
       });
+      const inviteSession = { userId, email, orgId: org.id };
+      logger.info("PIN verified — invite login", { category: "auth", userId, email, orgId: org.id });
+      logActivity(inviteSession, "auth.login");
       const response = NextResponse.json({ ok: true, redirect: "/dashboard" });
       response.cookies.set({ ...getSessionCookieOptions(), value: sessionToken });
       return response;
@@ -176,6 +183,8 @@ export async function POST(req: NextRequest) {
         orgName: org.name,
         role: membership.role as OrgRole,
       });
+      logger.info("PIN verified — login", { category: "auth", userId, email, orgId: org.id });
+      logActivity({ userId, email, orgId: org.id }, "auth.login");
       const response = NextResponse.json({ ok: true, redirect: "/dashboard" });
       response.cookies.set({ ...getSessionCookieOptions(), value: token });
       return response;
@@ -189,7 +198,7 @@ export async function POST(req: NextRequest) {
       email,
     });
   } catch (err) {
-    console.error("verify-pin error:", err);
+    logger.error("verify-pin unhandled error", { category: "auth", err });
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

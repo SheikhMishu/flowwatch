@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 // GET /api/org/members — list org members with user info
 export async function GET() {
@@ -17,7 +18,10 @@ export async function GET() {
     .eq("org_id", session.orgId)
     .order("created_at", { ascending: true });
 
-  if (error) return NextResponse.json({ error: "Failed to fetch members" }, { status: 500 });
+  if (error) {
+    logger.error("Failed to fetch members", { category: "api", orgId: session.orgId, err: error });
+    return NextResponse.json({ error: "Failed to fetch members" }, { status: 500 });
+  }
 
   const members = (data ?? []).map((row: any) => ({
     id: row.id,

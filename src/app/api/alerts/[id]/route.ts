@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
+import { logger } from "@/lib/logger";
+import { logActivity } from "@/lib/activity";
 
 async function getAlertForOrg(id: string, orgId: string) {
   const db = getServerDb();
@@ -47,7 +49,17 @@ export async function PATCH(
     .select("*")
     .single();
 
-  if (error) return NextResponse.json({ error: "Failed to update alert" }, { status: 500 });
+  if (error) {
+    logger.error("Failed to update alert", { category: "alert-engine", orgId: session.orgId, alertId: id, err: error });
+    return NextResponse.json({ error: "Failed to update alert" }, { status: 500 });
+  }
+
+  logger.info("Alert updated", { category: "alert-engine", orgId: session.orgId, alertId: id });
+  logActivity(session, "alert.updated", {
+    resourceType: "alert",
+    resourceId: id,
+    metadata: { updatedFields: Object.keys(updates) },
+  });
   return NextResponse.json({ alert: data });
 }
 
@@ -66,7 +78,16 @@ export async function DELETE(
 
   const db = getServerDb();
   const { error } = await db.from("alerts").delete().eq("id", id);
-  if (error) return NextResponse.json({ error: "Failed to delete alert" }, { status: 500 });
+  if (error) {
+    logger.error("Failed to delete alert", { category: "alert-engine", orgId: session.orgId, alertId: id, err: error });
+    return NextResponse.json({ error: "Failed to delete alert" }, { status: 500 });
+  }
+
+  logger.info("Alert deleted", { category: "alert-engine", orgId: session.orgId, alertId: id });
+  logActivity(session, "alert.deleted", {
+    resourceType: "alert",
+    resourceId: id,
+  });
 
   return NextResponse.json({ ok: true });
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerDb } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 export async function GET(
   _req: NextRequest,
@@ -46,7 +47,7 @@ export async function GET(
       orgName: org.name,
     });
   } catch (err) {
-    console.error("invites/[token] GET error:", err);
+    logger.error("invites/[token] GET error", { category: "invite", err });
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

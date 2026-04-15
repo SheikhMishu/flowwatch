@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { getServerDb } from "@/lib/db";
 import { generateErrorSignature } from "@/lib/error-signature";
+import { logger } from "@/lib/logger";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -176,10 +177,16 @@ export async function getAiDebug(
 
   // Cache hit
   const cached = await getCached(signature, tier);
-  if (cached) return cached;
+  if (cached) {
+    logger.debug("AI cache hit", { category: "ai", tier, workflowId: input.workflowId, model: cached.model });
+    return cached;
+  }
 
   if (tier === "free") {
+    const t0 = Date.now();
     const raw = await callOpenRouter(input);
+    const latencyMs = Date.now() - t0;
+    logger.info("OpenRouter AI call complete", { category: "ai", tier, model: FREE_MODEL, workflowId: input.workflowId, latencyMs });
     const result: Omit<AiDebugResult, "cached"> = {
       tier: "free",
       model: FREE_MODEL,
@@ -190,7 +197,10 @@ export async function getAiDebug(
   }
 
   // Pro
+  const t0 = Date.now();
   const { cause, fix_steps, prevention } = await callClaude(input);
+  const latencyMs = Date.now() - t0;
+  logger.info("Claude AI call complete", { category: "ai", tier, model: PRO_MODEL, workflowId: input.workflowId, latencyMs });
   const raw = `${cause}\n\nFix:\n${fix_steps.map((s, i) => `${i + 1}. ${s}`).join("\n")}\n\nPrevention: ${prevention}`;
   const result: Omit<AiDebugResult, "cached"> = {
     tier: "pro",

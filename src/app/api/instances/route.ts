@@ -3,6 +3,8 @@ import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
 import { encrypt } from "@/lib/crypto";
 import { N8nClient } from "@/lib/n8n";
+import { logger } from "@/lib/logger";
+import { logActivity } from "@/lib/activity";
 
 // GET /api/instances — list org's instances
 export async function GET() {
@@ -17,7 +19,11 @@ export async function GET() {
     .eq("org_id", session.orgId)
     .order("created_at", { ascending: true });
 
-  if (error) return NextResponse.json({ error: "Failed to fetch instances" }, { status: 500 });
+  if (error) {
+    logger.error("Failed to fetch instances", { category: "instance", orgId: session.orgId, err: error });
+    return NextResponse.json({ error: "Failed to fetch instances" }, { status: 500 });
+  }
+  logger.info("Instances fetched", { category: "instance", orgId: session.orgId, count: (data ?? []).length });
   return NextResponse.json({ instances: data ?? [] });
 }
 
@@ -66,9 +72,16 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) {
-    console.error("Failed to create instance:", error);
+    logger.error("Failed to create instance", { category: "instance", orgId: session.orgId, err: error });
     return NextResponse.json({ error: "Failed to save instance" }, { status: 500 });
   }
+
+  logger.info("Instance created", { category: "instance", orgId: session.orgId, instanceId: data.id, instanceName: name });
+  logActivity(session, "instance.created", {
+    resourceType: "instance",
+    resourceId: data.id,
+    metadata: { name, url },
+  });
 
   return NextResponse.json({ instance: data }, { status: 201 });
 }

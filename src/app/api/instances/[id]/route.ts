@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
 import { encrypt } from "@/lib/crypto";
+import { logger } from "@/lib/logger";
+import { logActivity } from "@/lib/activity";
 
 // PATCH /api/instances/[id] — update name, url, and/or API key
 export async function PATCH(
@@ -46,7 +48,17 @@ export async function PATCH(
     .select("id, name, url, api_key_hint, is_active, last_synced_at")
     .single();
 
-  if (error) return NextResponse.json({ error: "Failed to update instance" }, { status: 500 });
+  if (error) {
+    logger.error("Failed to update instance", { category: "instance", orgId: session.orgId, instanceId: id, err: error });
+    return NextResponse.json({ error: "Failed to update instance" }, { status: 500 });
+  }
+
+  logger.info("Instance updated", { category: "instance", orgId: session.orgId, instanceId: id });
+  logActivity(session, "instance.updated", {
+    resourceType: "instance",
+    resourceId: id,
+    metadata: { updatedFields: Object.keys(updates) },
+  });
 
   return NextResponse.json({ ok: true, instance: updated });
 }
@@ -74,7 +86,16 @@ export async function DELETE(
   if (!instance) return NextResponse.json({ error: "Instance not found" }, { status: 404 });
 
   const { error } = await db.from("n8n_instances").delete().eq("id", id);
-  if (error) return NextResponse.json({ error: "Failed to remove instance" }, { status: 500 });
+  if (error) {
+    logger.error("Failed to delete instance", { category: "instance", orgId: session.orgId, instanceId: id, err: error });
+    return NextResponse.json({ error: "Failed to remove instance" }, { status: 500 });
+  }
+
+  logger.info("Instance deleted", { category: "instance", orgId: session.orgId, instanceId: id });
+  logActivity(session, "instance.deleted", {
+    resourceType: "instance",
+    resourceId: id,
+  });
 
   return NextResponse.json({ ok: true });
 }

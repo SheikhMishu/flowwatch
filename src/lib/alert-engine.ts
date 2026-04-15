@@ -5,6 +5,7 @@
 
 import { getServerDb } from "@/lib/db";
 import { sendAlertEmail } from "@/lib/email";
+import { logger } from "@/lib/logger";
 
 interface AlertRow {
   id: string;
@@ -60,6 +61,7 @@ export async function evaluateOrgAlerts(orgId: string): Promise<void> {
 
     // Fire
     const workflowNames = [...new Set(failures.map((f) => f.workflow_name))];
+    logger.info("Alert fired", { category: "alert-engine", orgId, alertId: alert.id, alertName: alert.name, failureCount: failures.length, workflowNames });
     await fireAlert(alert, failures.length, workflowNames);
 
     // Record firing and update last_fired_at
@@ -146,7 +148,7 @@ async function fireAlert(alert: AlertRow, failureCount: number, workflowNames: s
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(buildSlackPayload(alert, failureCount, workflowNames)),
-    }).catch((err) => console.error(`[alert-engine] slack delivery failed for ${alert.id}:`, err.message));
+    }).catch((err) => logger.warn("Slack delivery failed", { category: "alert-engine", alertId: alert.id, err }));
     return;
   }
 
@@ -160,7 +162,7 @@ async function fireAlert(alert: AlertRow, failureCount: number, workflowNames: s
       threshold: { count: alert.threshold_count, minutes: alert.threshold_minutes },
       fired_at: new Date().toISOString(),
     }),
-  }).catch((err) => console.error(`[alert-engine] webhook delivery failed for ${alert.id}:`, err.message));
+  }).catch((err) => logger.warn("Webhook delivery failed", { category: "alert-engine", alertId: alert.id, err }));
 }
 
 // ─── Payload builders ─────────────────────────────────────────────────────────

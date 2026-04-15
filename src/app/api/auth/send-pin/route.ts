@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { generatePin, hashPin, pinExpiresAt } from "@/lib/pin";
 import { sendPinEmail } from "@/lib/email";
 import { getServerDb } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 const DEMO_EMAIL = "demo@flowwatch.app";
 
@@ -57,16 +58,17 @@ export async function POST(req: NextRequest) {
     });
 
     if (insertError) {
-      console.error("Failed to insert pin_verification:", insertError);
+      logger.error("Failed to insert pin_verification", { category: "auth", email, err: insertError });
       return NextResponse.json({ error: "Failed to send PIN. Please try again." }, { status: 500 });
     }
 
     // Send email
     await sendPinEmail(email, pin);
 
+    logger.info("PIN sent", { category: "auth", email });
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error("send-pin error:", err);
+    logger.error("send-pin unhandled error", { category: "auth", err });
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

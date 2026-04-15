@@ -3,6 +3,8 @@ import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
 import { decrypt } from "@/lib/crypto";
 import { N8nClient } from "@/lib/n8n";
+import { logger } from "@/lib/logger";
+import { logActivity } from "@/lib/activity";
 
 // POST /api/instances/[id]/test
 // Body { url, apiKey } → test those credentials (used by Add modal, id is ignored)
@@ -54,6 +56,17 @@ export async function POST(
 
   const client = new N8nClient(url, apiKey);
   const result = await client.testConnection();
+
+  if (result.ok) {
+    logger.info("Instance test succeeded", { category: "instance", orgId: session.orgId, instanceId: id });
+    logActivity(session, "instance.tested", {
+      resourceType: "instance",
+      resourceId: id,
+      metadata: { ok: true },
+    });
+  } else {
+    logger.warn("Instance test failed", { category: "instance", orgId: session.orgId, instanceId: id, error: result.error });
+  }
 
   return NextResponse.json(result, { status: result.ok ? 200 : 422 });
 }

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
 import { getAiDebug, type AiTier } from "@/lib/ai-debug";
+import { logger } from "@/lib/logger";
+import { logActivity } from "@/lib/activity";
 
 // ─── Resolve org plan → AI tier ───────────────────────────────────────────────
 
@@ -54,6 +56,8 @@ export async function POST(req: NextRequest) {
 
   const tier = await getOrgTier(session.orgId);
 
+  logger.info("AI explain requested", { category: "ai", orgId: session.orgId, userId: session.userId, tier, workflowId });
+
   try {
     const result = await getAiDebug(
       {
@@ -68,9 +72,24 @@ export async function POST(req: NextRequest) {
       tier,
     );
 
+    logger.info("AI explain complete", {
+      category: "ai",
+      orgId: session.orgId,
+      userId: session.userId,
+      tier: result.tier,
+      model: result.model,
+      cached: result.cached,
+      workflowId,
+    });
+    logActivity(session, "ai.explain_requested", {
+      resourceType: "workflow",
+      resourceId: workflowId,
+      metadata: { tier: result.tier, cached: result.cached, model: result.model },
+    });
+
     return NextResponse.json({ result });
   } catch (err) {
-    console.error("[ai/explain]", err);
+    logger.error("AI explain failed", { category: "ai", orgId: session.orgId, userId: session.userId, tier, workflowId, err });
     return NextResponse.json(
       { error: "AI analysis failed. Please try again." },
       { status: 500 },

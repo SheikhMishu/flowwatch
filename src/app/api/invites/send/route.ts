@@ -3,6 +3,8 @@ import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
 import { sendInviteEmail } from "@/lib/email";
 import type { OrgRole } from "@/types";
+import { logger } from "@/lib/logger";
+import { logActivity } from "@/lib/activity";
 
 export async function POST(req: NextRequest) {
   try {
@@ -75,7 +77,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (insertError) {
-      console.error("Failed to create invite:", insertError);
+      logger.error("Failed to create invite", { category: "invite", orgId: session.orgId, email, err: insertError });
       return NextResponse.json({ error: "Failed to create invitation" }, { status: 500 });
     }
 
@@ -84,9 +86,14 @@ export async function POST(req: NextRequest) {
 
     await sendInviteEmail(email, session.orgName, session.name || session.email, inviteUrl);
 
+    logger.info("Team member invited", { category: "invite", orgId: session.orgId, invitedEmail: email, role });
+    logActivity(session, "team.member_invited", {
+      metadata: { invitedEmail: email, role },
+    });
+
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error("invite/send error:", err);
+    logger.error("invite/send unhandled error", { category: "invite", err });
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

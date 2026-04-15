@@ -15,6 +15,7 @@ import {
   ChevronRight,
   Server,
   BarChart3,
+  ScrollText,
 } from "lucide-react";
 import { FlowMonixMark } from "@/components/brand/mark";
 import { cn } from "@/lib/utils";
@@ -43,6 +44,11 @@ const navItems = [
     href: "/dashboard/incidents",
     icon: AlertTriangle,
     badge: true,
+  },
+  {
+    label: "Logs",
+    href: "/dashboard/logs",
+    icon: ScrollText,
   },
   {
     label: "Analytics",

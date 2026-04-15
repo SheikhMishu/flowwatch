@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSession, getSessionCookieOptions } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
 import type { OrgRole } from "@/types";
+import { logger } from "@/lib/logger";
+import { logActivity } from "@/lib/activity";
 
 function slugify(name: string): string {
   return name
@@ -71,7 +73,7 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (orgError || !org) {
-      console.error("Failed to create organization:", orgError);
+      logger.error("Failed to create organization", { category: "auth", userId, email, err: orgError });
       return NextResponse.json({ error: "Failed to create organization" }, { status: 500 });
     }
 
@@ -84,7 +86,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (memberError) {
-      console.error("Failed to create membership:", memberError);
+      logger.error("Failed to create membership", { category: "auth", userId, orgId: org.id, err: memberError });
       // Rollback org (best effort)
       await db.from("organizations").delete().eq("id", org.id);
       return NextResponse.json({ error: "Failed to set up organization membership" }, { status: 500 });
@@ -100,11 +102,18 @@ export async function POST(req: NextRequest) {
       role: "owner" as OrgRole,
     });
 
+    logger.info("Organization created", { category: "auth", userId, orgId: org.id, orgName: org.name });
+    logActivity({ userId: user.id, email: user.email, orgId: org.id }, "auth.org_created", {
+      resourceType: "organization",
+      resourceId: org.id,
+      metadata: { orgName: org.name },
+    });
+
     const response = NextResponse.json({ ok: true, redirect: "/dashboard" });
     response.cookies.set({ ...getSessionCookieOptions(), value: token });
     return response;
   } catch (err) {
-    console.error("create-org error:", err);
+    logger.error("create-org unhandled error", { category: "auth", err });
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
