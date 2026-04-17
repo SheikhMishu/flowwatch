@@ -8,7 +8,7 @@ import {
   Workflow,
   ListChecks,
   AlertTriangle,
-  Settings,
+  HelpCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +17,7 @@ const mobileNavItems = [
   { label: "Workflows", href: "/dashboard/workflows", icon: Workflow },
   { label: "Executions", href: "/dashboard/executions", icon: ListChecks },
   { label: "Incidents", href: "/dashboard/incidents", icon: AlertTriangle, badge: true },
-  { label: "Settings", href: "/dashboard/settings", icon: Settings },
+  { label: "Help", href: "/dashboard/help", icon: HelpCircle },
 ];
 
 export function MobileNav() {

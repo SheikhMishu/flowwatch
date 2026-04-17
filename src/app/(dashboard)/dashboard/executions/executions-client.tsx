@@ -19,6 +19,7 @@ import {
   Activity,
   ExternalLink,
   Circle,
+  Sparkles,
 } from "lucide-react";
 import { cn, formatDuration } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -187,7 +188,7 @@ function ExecutionDetail({ execution }: { execution: Execution }) {
         </div>
       )}
 
-      {/* ── Node timeline (error: lazy-fetched, success: from data if present) ── */}
+      {/* ── Node timeline (error: lazy-fetched, condensed to failure context) ── */}
       {loadingNodes && (
         <div className="space-y-2">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Node Timeline</p>
@@ -199,12 +200,33 @@ function ExecutionDetail({ execution }: { execution: Execution }) {
         </div>
       )}
 
-      {!loadingNodes && nodes && nodes.length > 0 && (
-        <div className="space-y-3">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Node Timeline</p>
-          <NodeTimeline nodes={nodes} />
-        </div>
-      )}
+      {!loadingNodes && nodes && nodes.length > 0 && (() => {
+        const failedIdx = nodes.findIndex((n) => n.status === "error");
+        const succeededCount = nodes.filter((n) => n.status === "success").length;
+        // Show up to 2 nodes before the failed one + the failed node itself
+        const startIdx = failedIdx >= 0 ? Math.max(0, failedIdx - 2) : 0;
+        const visibleNodes = failedIdx >= 0 ? nodes.slice(startIdx, failedIdx + 1) : nodes.slice(0, 3);
+        const hiddenBefore = startIdx;
+
+        return (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Failure context</p>
+              {nodes.length > 1 && (
+                <span className="text-xs text-muted-foreground">
+                  {succeededCount} of {nodes.length} nodes succeeded
+                </span>
+              )}
+            </div>
+            {hiddenBefore > 0 && (
+              <p className="text-xs text-muted-foreground italic">
+                ↑ {hiddenBefore} earlier node{hiddenBefore !== 1 ? "s" : ""} ran successfully
+              </p>
+            )}
+            <NodeTimeline nodes={visibleNodes} />
+          </div>
+        );
+      })()}
 
       {/* ── Success summary ── */}
       {execution.status === "success" && (
@@ -230,13 +252,24 @@ function ExecutionDetail({ execution }: { execution: Execution }) {
         </div>
       )}
 
-      <div className="pt-2 border-t border-border flex justify-end">
+      <div className="pt-3 border-t border-border flex items-center justify-between gap-3">
+        {execution.status === "error" ? (
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-primary bg-primary/10 border border-primary/20 rounded-full px-2.5 py-1">
+            <Sparkles className="w-3 h-3" />
+            AI debugging available
+          </span>
+        ) : (
+          <span />
+        )}
         <button
           onClick={() => router.push(`/dashboard/executions/${encodeURIComponent(execution.id)}`)}
-          className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
+          className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
         >
-          <ExternalLink className="w-3 h-3" />
-          View full execution
+          {execution.status === "error" ? (
+            <>Analyze with AI <ExternalLink className="w-3 h-3" /></>
+          ) : (
+            <>View full execution <ExternalLink className="w-3 h-3" /></>
+          )}
         </button>
       </div>
     </div>
@@ -312,8 +345,16 @@ function ExecutionRow({ execution }: { execution: Execution }) {
         </td>
         {/* Expand */}
         <td className="px-4 py-3.5">
-          <div className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-            {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          <div className="flex items-center justify-end gap-2">
+            {!expanded && execution.status === "error" && (
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity inline-flex items-center gap-1 text-[10px] font-semibold text-primary bg-primary/10 border border-primary/20 rounded px-1.5 py-0.5">
+                <Sparkles className="w-2.5 h-2.5" />
+                AI
+              </span>
+            )}
+            <div className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+              {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </div>
           </div>
         </td>
       </tr>

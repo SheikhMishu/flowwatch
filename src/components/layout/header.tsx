@@ -177,7 +177,7 @@ export function Header({ title }: { title?: string }) {
 
       <div className="flex items-center gap-2">
         {/* Instance selector */}
-        <div className="relative">
+        <div className="relative" data-tour="instance-selector">
           <button
             onClick={() => {
               setInstanceOpen(!instanceOpen);
@@ -292,7 +292,7 @@ export function Header({ title }: { title?: string }) {
         <AutoRefreshToggle />
 
         {/* Notifications */}
-        <div className="relative">
+        <div className="relative" data-tour="notifications">
           <Button
             variant="outline"
             size="icon"

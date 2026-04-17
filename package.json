@@ -22,6 +22,8 @@
     "@radix-ui/react-switch": "^1.1.2",
     "@radix-ui/react-tabs": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.6",
+    "@stripe/react-stripe-js": "^6.2.0",
+    "@stripe/stripe-js": "^9.2.0",
     "@supabase/supabase-js": "^2.47.0",
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.1",
@@ -36,6 +38,7 @@
     "react-dom": "^19.0.0",
     "recharts": "^2.14.1",
     "resend": "^6.10.0",
+    "stripe": "^22.0.2",
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {

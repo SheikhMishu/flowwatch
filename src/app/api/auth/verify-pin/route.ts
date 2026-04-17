@@ -6,7 +6,7 @@ import type { OrgRole } from "@/types";
 import { logger } from "@/lib/logger";
 import { logActivity } from "@/lib/activity";
 
-const DEMO_EMAIL = "demo@flowwatch.app";
+const DEMO_EMAIL = "demo@flowmonix.com";
 const DEMO_PIN = "123456";
 
 export async function POST(req: NextRequest) {

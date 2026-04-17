@@ -5,6 +5,7 @@ import { encrypt } from "@/lib/crypto";
 import { N8nClient } from "@/lib/n8n";
 import { logger } from "@/lib/logger";
 import { logActivity } from "@/lib/activity";
+import { getPlanLimits } from "@/lib/plans";
 
 // GET /api/instances — list org's instances
 export async function GET() {
@@ -43,6 +44,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Name, URL, and API key are required" }, { status: 400 });
   }
 
+  // Enforce plan instance limit
+  const db = getServerDb();
+  const [{ data: orgData }, { count: instanceCount }] = await Promise.all([
+    db.from("organizations").select("plan").eq("id", session.orgId).single(),
+    db.from("n8n_instances").select("id", { count: "exact", head: true }).eq("org_id", session.orgId).eq("is_active", true),
+  ]);
+  const plan = orgData?.plan ?? "free";
+  const limits = getPlanLimits(plan);
+  if ((instanceCount ?? 0) >= limits.instances) {
+    return NextResponse.json(
+      {
+        error: `Your ${plan} plan allows up to ${limits.instances} instance${limits.instances !== 1 ? "s" : ""}. Upgrade your plan to add more.`,
+        limitReached: true,
+        currentPlan: plan,
+      },
+      { status: 403 }
+    );
+  }
+
   // Test connection before saving
   const client = new N8nClient(url, apiKey);
   const test = await client.testConnection();
@@ -56,7 +76,6 @@ export async function POST(req: NextRequest) {
   const apiKeyHint = `••••${apiKey.slice(-4)}`;
   const apiKeyEncrypted = encrypt(apiKey);
 
-  const db = getServerDb();
   const { data, error } = await db
     .from("n8n_instances")
     .insert({

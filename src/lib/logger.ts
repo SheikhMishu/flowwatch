@@ -27,6 +27,7 @@ export type LogCategory =
   | "email"
   | "invite"
   | "billing"
+  | "retention"
   | "general";
 
 export interface LogContext {

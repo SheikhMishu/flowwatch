@@ -4,7 +4,7 @@
 //   2. If count >= threshold and cooldown has elapsed → fire + record
 
 import { getServerDb } from "@/lib/db";
-import { sendAlertEmail } from "@/lib/email";
+import { sendAlertEmail, emailLayout, ctaButton } from "@/lib/email";
 import { logger } from "@/lib/logger";
 
 interface AlertRow {
@@ -136,7 +136,8 @@ async function upsertIncident(
 // ─── Delivery ─────────────────────────────────────────────────────────────────
 
 async function fireAlert(alert: AlertRow, failureCount: number, workflowNames: string[]): Promise<void> {
-  const subject = `FlowMonix Alert: ${alert.name} — ${failureCount} failure${failureCount !== 1 ? "s" : ""} in ${alert.threshold_minutes}min`;
+  const failWord = failureCount !== 1 ? "failures" : "failure";
+  const subject = `[FlowMonix] ${alert.name}: ${failureCount} ${failWord} in ${alert.threshold_minutes}min`;
 
   if (alert.channel === "email") {
     await sendAlertEmail(alert.destination, subject, buildEmailHtml(alert, failureCount, workflowNames));
@@ -168,43 +169,83 @@ async function fireAlert(alert: AlertRow, failureCount: number, workflowNames: s
 // ─── Payload builders ─────────────────────────────────────────────────────────
 
 function buildEmailHtml(alert: AlertRow, count: number, workflows: string[]): string {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-  const wfItems = workflows
-    .map((n) => `<li style="padding:3px 0;color:#374151;">${n}</li>`)
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://app.flowmonix.com";
+  const failureWord = count !== 1 ? "failures" : "failure";
+  const minuteWord = alert.threshold_minutes !== 1 ? "minutes" : "minute";
+  const cooldownWord = alert.cooldown_minutes !== 1 ? "minutes" : "minute";
+
+  const wfRows = workflows
+    .map(
+      (n) =>
+        `<tr><td style="padding:7px 0;border-bottom:1px solid #f3f4f6;font-size:14px;color:#374151;">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:10px;vertical-align:middle;"></span>
+          ${n}
+        </td></tr>`
+    )
     .join("");
 
-  return `
-    <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:40px 20px;">
-      <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:12px;padding:24px;margin-bottom:24px;">
-        <h2 style="color:#fff;margin:0 0 6px;font-size:20px;">Alert triggered</h2>
-        <p style="color:rgba(255,255,255,0.85);margin:0;font-size:16px;font-weight:600;">${alert.name}</p>
-      </div>
+  const severity = count >= 10 ? "critical" : count >= 5 ? "high" : "elevated";
+  const severityColor = count >= 10 ? "#dc2626" : count >= 5 ? "#d97706" : "#6366f1";
+  const severityBg = count >= 10 ? "#fef2f2" : count >= 5 ? "#fffbeb" : "#eef2ff";
+  const severityBorder = count >= 10 ? "#fecaca" : count >= 5 ? "#fde68a" : "#c7d2fe";
 
-      <p style="color:#374151;font-size:15px;margin:0 0 20px;line-height:1.5;">
-        <strong>${count} failure${count !== 1 ? "s" : ""}</strong> detected in the last
-        <strong>${alert.threshold_minutes} minute${alert.threshold_minutes !== 1 ? "s" : ""}</strong>
-        — exceeding your threshold of ${alert.threshold_count}.
-      </p>
+  const content = `
+    <!-- Alert name + severity badge -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
+      <tr>
+        <td>
+          <p style="margin:0 0 6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;">
+            Alert triggered
+          </p>
+          <h1 style="margin:0;font-size:22px;font-weight:700;color:#111827;letter-spacing:-0.3px;line-height:1.3;">
+            ${alert.name}
+          </h1>
+        </td>
+        <td align="right" valign="top" style="padding-top:4px;">
+          <span style="display:inline-block;background:${severityBg};border:1px solid ${severityBorder};color:${severityColor};font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;padding:4px 10px;border-radius:20px;">
+            ${severity}
+          </span>
+        </td>
+      </tr>
+    </table>
 
-      <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:16px;margin-bottom:24px;">
-        <p style="color:#991b1b;font-weight:600;margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:0.05em;">
-          Affected workflows
-        </p>
-        <ul style="margin:0;padding-left:18px;font-size:14px;">${wfItems}</ul>
-      </div>
+    <!-- Stats row -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"
+           style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:24px;">
+      <tr>
+        <td width="50%" style="padding:16px 20px;border-right:1px solid #e5e7eb;">
+          <p style="margin:0 0 4px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;">Failures detected</p>
+          <p style="margin:0;font-size:26px;font-weight:700;color:#ef4444;">${count}</p>
+          <p style="margin:2px 0 0;font-size:12px;color:#9ca3af;">in last ${alert.threshold_minutes} ${minuteWord}</p>
+        </td>
+        <td width="50%" style="padding:16px 20px;">
+          <p style="margin:0 0 4px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;">Threshold</p>
+          <p style="margin:0;font-size:26px;font-weight:700;color:#374151;">${alert.threshold_count}</p>
+          <p style="margin:2px 0 0;font-size:12px;color:#9ca3af;">${failureWord} to trigger</p>
+        </td>
+      </tr>
+    </table>
 
-      <a href="${appUrl}/dashboard"
-         style="display:inline-block;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;">
-        Open dashboard
-      </a>
+    <!-- Affected workflows -->
+    <p style="margin:0 0 10px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;">
+      Affected workflows
+    </p>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"
+           style="border:1px solid #fecaca;border-radius:10px;overflow:hidden;background:#fff;">
+      <tbody>
+        ${wfRows}
+      </tbody>
+    </table>
 
-      <p style="color:#9ca3af;font-size:12px;margin-top:28px;line-height:1.5;">
-        Cooldown is set to ${alert.cooldown_minutes} minute${alert.cooldown_minutes !== 1 ? "s" : ""}.
-        You won't receive another notification for this alert until the cooldown expires.<br/>
-        To manage your alerts, visit <a href="${appUrl}/dashboard/alerts" style="color:#6366f1;">FlowMonix</a>.
-      </p>
-    </div>
+    ${ctaButton("View incidents", `${appUrl}/dashboard/incidents`)}
+
+    <p style="margin:20px 0 0;font-size:13px;color:#9ca3af;line-height:1.6;">
+      Next notification for this alert: after the ${alert.cooldown_minutes}-${cooldownWord} cooldown expires.
+      <a href="${appUrl}/dashboard/alerts" style="color:#6366f1;text-decoration:none;">Manage alerts</a>
+    </p>
   `;
+
+  return emailLayout(content, "You received this because you have an active alert rule configured in FlowMonix.");
 }
 
 function buildSlackPayload(alert: AlertRow, count: number, workflows: string[]): object {

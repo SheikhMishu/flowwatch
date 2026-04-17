@@ -40,7 +40,13 @@ export type ActivityAction =
   | "team.member_removed"
   | "team.role_changed"
   // Profile
-  | "profile.updated";
+  | "profile.updated"
+  // Org settings
+  | "org.status_page_updated"
+  // Billing
+  | "billing.checkout_started"
+  | "billing.plan_upgraded"
+  | "billing.plan_canceled";
 
 export interface ActivityOptions {
   resourceType?: string;

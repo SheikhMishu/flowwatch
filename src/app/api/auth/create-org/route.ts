@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
       metadata: { orgName: org.name },
     });
 
-    const response = NextResponse.json({ ok: true, redirect: "/dashboard" });
+    const response = NextResponse.json({ ok: true, redirect: "/dashboard?welcome=1" });
     response.cookies.set({ ...getSessionCookieOptions(), value: token });
     return response;
   } catch (err) {

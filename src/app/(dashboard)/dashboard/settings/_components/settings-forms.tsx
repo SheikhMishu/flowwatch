@@ -17,6 +17,8 @@ import {
   X,
   Check,
   Loader2,
+  Globe,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -682,7 +684,167 @@ function TeamSection() {
   );
 }
 
-// ─── 4. Danger Zone ───────────────────────────────────────────────────────────
+// ─── 4. Status Page Section ───────────────────────────────────────────────────
+
+function StatusPageSection() {
+  const [slug, setSlug] = React.useState("");
+  const [enabled, setEnabled] = React.useState(false);
+  const [isOwner, setIsOwner] = React.useState(false);
+  const [isDemo, setIsDemo] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [saving, setSaving] = React.useState(false);
+  const [status, setStatus] = React.useState<"idle" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = React.useState("");
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://flowmonix.com";
+
+  React.useEffect(() => {
+    fetch("/api/auth/me").then((r) => r.json()).then((d) => {
+      if (d.user) {
+        setIsOwner(d.user.role === "owner");
+        setIsDemo(d.user.orgId === "org_demo");
+      }
+    }).catch(() => {});
+
+    setLoading(true);
+    fetch("/api/org/status-page").then((r) => r.json()).then((d) => {
+      setSlug(d.slug ?? "");
+      setEnabled(d.status_page_enabled ?? false);
+    }).catch(() => {}).finally(() => setLoading(false));
+  }, []);
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setStatus("idle");
+    setErrorMsg("");
+    try {
+      const res = await fetch("/api/org/status-page", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: slug.trim(), status_page_enabled: enabled }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorMsg(data.error || "Failed to save");
+        setStatus("error");
+        return;
+      }
+      setSlug(data.slug ?? "");
+      setEnabled(data.status_page_enabled);
+      setStatus("success");
+      setTimeout(() => setStatus("idle"), 3000);
+    } catch {
+      setErrorMsg("Something went wrong. Please try again.");
+      setStatus("error");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const publicUrl = slug ? `${appUrl}/status/${slug}` : null;
+  const canEdit = isOwner && !isDemo;
+
+  return (
+    <Card>
+      <SectionHeader
+        icon={Globe}
+        title="Public Status Page"
+        description="Share a public URL with clients showing your instance health and open incidents"
+      />
+
+      {loading ? (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          Loading…
+        </div>
+      ) : (
+        <form onSubmit={handleSave} className="space-y-5">
+
+          {/* Enable toggle */}
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-medium text-foreground">Enable status page</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Make your status page publicly accessible
+              </p>
+            </div>
+            <Toggle on={enabled} onToggle={() => canEdit && setEnabled((v) => !v)} />
+          </div>
+
+          {/* Slug input */}
+          <div className="space-y-1.5">
+            <Label htmlFor="status-slug">Page URL slug</Label>
+            <div className="flex items-center gap-0 rounded-lg border border-input overflow-hidden focus-within:ring-2 focus-within:ring-ring">
+              <span className="px-3 py-2 text-sm text-muted-foreground bg-muted border-r border-input shrink-0 select-none">
+                /status/
+              </span>
+              <input
+                id="status-slug"
+                type="text"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))}
+                placeholder="your-org-name"
+                disabled={!canEdit || saving}
+                maxLength={48}
+                className="flex-1 bg-background px-3 py-2 text-sm text-foreground focus:outline-none placeholder:text-muted-foreground disabled:opacity-60"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">Lowercase letters, numbers, and hyphens only. Min 3 characters.</p>
+          </div>
+
+          {/* Preview link */}
+          {publicUrl && enabled && (
+            <a
+              href={publicUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              {publicUrl}
+            </a>
+          )}
+
+          {/* Not owner notice */}
+          {!isOwner && !isDemo && (
+            <p className="text-xs text-muted-foreground">Only the workspace owner can manage the status page.</p>
+          )}
+          {isDemo && (
+            <p className="text-xs text-muted-foreground">Status page is not available in demo mode.</p>
+          )}
+
+          {status === "error" && (
+            <p className="text-xs text-destructive">{errorMsg}</p>
+          )}
+
+          <div className="flex items-center justify-end gap-3 pt-1">
+            {status === "success" && (
+              <span className="flex items-center gap-1 text-xs text-success">
+                <Check className="w-3.5 h-3.5" />
+                Saved
+              </span>
+            )}
+            <Button
+              type="submit"
+              size="sm"
+              className="min-w-[120px]"
+              disabled={!canEdit || saving || slug.trim().length < 3}
+            >
+              {saving ? (
+                <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Saving…</>
+              ) : (
+                "Save Changes"
+              )}
+            </Button>
+          </div>
+        </form>
+      )}
+    </Card>
+  );
+}
+
+// ─── 5. Danger Zone ───────────────────────────────────────────────────────────
 
 function DangerZoneSection() {
   return (
@@ -746,6 +908,7 @@ export function SettingsForms() {
       <ProfileSection />
       <NotificationsSection />
       <TeamSection />
+      <StatusPageSection />
       <SecuritySection />
       <DangerZoneSection />
     </>

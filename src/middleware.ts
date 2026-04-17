@@ -12,7 +12,11 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/cron") ||
     pathname.startsWith("/api/sync") ||
-    pathname.startsWith("/invite");
+    pathname.startsWith("/api/status") ||
+    pathname.startsWith("/api/billing/webhook") ||
+    pathname.startsWith("/api/invites") ||
+    pathname.startsWith("/invite") ||
+    pathname.startsWith("/status");
   const isAuthRoute = AUTH_ROUTES.some((r) => pathname.startsWith(r));
 
   const token = req.cookies.get("fw_session")?.value;

@@ -16,6 +16,7 @@ import {
   Server,
   BarChart3,
   ScrollText,
+  HelpCircle,
 } from "lucide-react";
 import { FlowMonixMark } from "@/components/brand/mark";
 import { cn } from "@/lib/utils";
@@ -44,6 +45,7 @@ const navItems = [
     href: "/dashboard/incidents",
     icon: AlertTriangle,
     badge: true,
+    tourId: "incidents-nav",
   },
   {
     label: "Logs",
@@ -59,6 +61,7 @@ const navItems = [
     label: "Alerts",
     href: "/dashboard/alerts",
     icon: Bell,
+    tourId: "alerts-nav",
   },
   {
     label: "Instances",
@@ -68,6 +71,7 @@ const navItems = [
 ];
 
 const bottomItems = [
+  { label: "Help", href: "/dashboard/help", icon: HelpCircle },
   { label: "Billing", href: "/dashboard/billing", icon: CreditCard },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
@@ -124,7 +128,7 @@ export function Sidebar() {
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
+        <nav data-tour="nav" className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
           {navItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
             const Icon = item.icon;
@@ -169,7 +173,7 @@ export function Sidebar() {
               );
             }
 
-            return <div key={item.href}>{linkContent}</div>;
+            return <div key={item.href} data-tour={item.tourId}>{linkContent}</div>;
           })}
         </nav>
 

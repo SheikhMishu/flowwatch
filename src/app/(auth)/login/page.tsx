@@ -370,10 +370,10 @@ export default function LoginPage() {
                   Use{" "}
                   <button
                     type="button"
-                    onClick={() => setEmail("demo@flowwatch.app")}
+                    onClick={() => setEmail("demo@flowmonix.com")}
                     className="font-mono text-primary hover:underline"
                   >
-                    demo@flowwatch.app
+                    demo@flowmonix.com
                   </button>{" "}
                   to try without an account
                 </p>
@@ -491,7 +491,7 @@ export default function LoginPage() {
               </div>
 
               {/* Demo hint for demo email */}
-              {email === "demo@flowwatch.app" && (
+              {email === "demo@flowmonix.com" && (
                 <div className="bg-accent border border-primary/20 rounded-lg px-3 py-2.5 text-xs">
                   <p className="font-semibold text-accent-foreground">Demo PIN</p>
                   <p className="text-muted-foreground mt-0.5">

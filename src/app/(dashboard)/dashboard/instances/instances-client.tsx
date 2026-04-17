@@ -494,6 +494,75 @@ function EditInstanceModal({
   );
 }
 
+// ─── Disconnect Confirm Modal ─────────────────────────────────────────────────
+
+function DisconnectConfirmModal({
+  instanceName,
+  disconnecting,
+  onConfirm,
+  onClose,
+}: {
+  instanceName: string;
+  disconnecting: boolean;
+  onConfirm: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={!disconnecting ? onClose : undefined} />
+      <div className="relative w-full max-w-sm rounded-2xl border border-border bg-card shadow-elevated animate-fade-in">
+        <div className="flex items-start justify-between p-5 pb-4 border-b border-border">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
+              <Unplug className="w-4 h-4 text-destructive" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-foreground">Disconnect instance</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">This action cannot be undone</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={disconnecting}
+            className="rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors disabled:opacity-50"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="p-5 space-y-4">
+          <p className="text-sm text-foreground">
+            Are you sure you want to disconnect{" "}
+            <span className="font-semibold">{instanceName}</span>? All synced data for this instance will be removed from FlowMonix.
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onConfirm}
+              disabled={disconnecting}
+              className="inline-flex items-center gap-1.5 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-60"
+            >
+              {disconnecting ? (
+                <><Loader2 className="w-4 h-4 animate-spin" /> Disconnecting…</>
+              ) : (
+                <><Unplug className="w-4 h-4" /> Disconnect</>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={disconnecting}
+              className="inline-flex items-center rounded-lg border border-border bg-background hover:bg-secondary px-4 py-2 text-sm font-medium text-foreground transition-colors disabled:opacity-50"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Instance card ────────────────────────────────────────────────────────────
 
 function InstanceCard({
@@ -508,6 +577,7 @@ function InstanceCard({
   onEdit: (id: string) => void;
 }) {
   const [disconnecting, setDisconnecting] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState<{ workflows: number; executions: number } | null>(null);
   const [syncError, setSyncError] = useState("");
@@ -564,25 +634,29 @@ function InstanceCard({
     }
   }
 
-  async function handleDisconnect() {
-    if (
-      !confirm(
-        `Disconnect "${instance.name}"? This will remove the instance from FlowMonix.`,
-      )
-    )
-      return;
+  async function handleDisconnectConfirmed() {
     setDisconnecting(true);
     try {
-      const res = await fetch(`/api/instances/${instance.id}`, {
-        method: "DELETE",
-      });
-      if (res.ok) onDisconnect(instance.id);
+      const res = await fetch(`/api/instances/${instance.id}`, { method: "DELETE" });
+      if (res.ok) {
+        setShowConfirm(false);
+        onDisconnect(instance.id);
+      }
     } finally {
       setDisconnecting(false);
     }
   }
 
   return (
+    <>
+    {showConfirm && (
+      <DisconnectConfirmModal
+        instanceName={instance.name}
+        disconnecting={disconnecting}
+        onConfirm={handleDisconnectConfirmed}
+        onClose={() => setShowConfirm(false)}
+      />
+    )}
     <div className="rounded-xl border border-border bg-card shadow-card overflow-hidden">
       <div className="flex items-start justify-between gap-4 p-5 pb-4">
         <div className="flex items-start gap-3 min-w-0">
@@ -728,20 +802,16 @@ function InstanceCard({
           </button>
           <button
             type="button"
-            onClick={handleDisconnect}
-            disabled={disconnecting}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-destructive hover:border-destructive/30 hover:bg-destructive/5 transition-colors ml-auto disabled:opacity-50"
+            onClick={() => setShowConfirm(true)}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-destructive hover:border-destructive/30 hover:bg-destructive/5 transition-colors ml-auto"
           >
-            {disconnecting ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <Unplug className="w-3.5 h-3.5" />
-            )}
+            <Unplug className="w-3.5 h-3.5" />
             Disconnect
           </button>
         </div>
       </div>
     </div>
+    </>
   );
 }
 

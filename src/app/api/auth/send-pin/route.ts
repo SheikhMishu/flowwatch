@@ -4,7 +4,7 @@ import { sendPinEmail } from "@/lib/email";
 import { getServerDb } from "@/lib/db";
 import { logger } from "@/lib/logger";
 
-const DEMO_EMAIL = "demo@flowwatch.app";
+const DEMO_EMAIL = "demo@flowmonix.com";
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);

@@ -149,7 +149,11 @@ export interface Organization {
   id: string;
   name: string;
   slug: string;
-  plan: "free" | "pro" | "enterprise";
+  plan: "free" | "pro" | "team";
+  plan_status: "active" | "past_due" | "canceled" | "canceling" | "trialing";
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  current_period_end: string | null;
   created_at: string;
 }
 
