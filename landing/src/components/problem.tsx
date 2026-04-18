@@ -5,7 +5,7 @@ const problems = [
     icon: EyeOff,
     title: 'No central visibility',
     description:
-      'Your workflows run across instances, environments, and clients — with no single view of what\'s actually healthy.',
+      'Workflows everywhere. No single source of truth.',
     iconColor: 'text-orange-400',
     iconBg: 'bg-orange-400/10',
     borderAccent: 'hover:border-orange-400/20',
@@ -14,7 +14,7 @@ const problems = [
     icon: FileSearch,
     title: 'Failures get buried in logs',
     description:
-      'n8n logs execution errors but gives you no way to surface patterns, group related failures, or spot what\'s recurring.',
+      'n8n logs errors. It doesn\'t surface patterns, group failures, or flag what keeps recurring.',
     iconColor: 'text-red-400',
     iconBg: 'bg-red-400/10',
     borderAccent: 'hover:border-red-400/20',
@@ -23,7 +23,7 @@ const problems = [
     icon: Timer,
     title: 'Debugging takes too long',
     description:
-      'Tracing a failure means opening n8n, finding the execution, inspecting nodes one by one. It\'s slow and entirely manual.',
+      'Find the execution. Open the node. Repeat. Fully manual. Completely slow.',
     iconColor: 'text-orange-500',
     iconBg: 'bg-orange-500/10',
     borderAccent: 'hover:border-orange-500/20',
@@ -32,7 +32,7 @@ const problems = [
     icon: MessageCircleWarning,
     title: 'Clients expect answers instantly',
     description:
-      'When an automation breaks, someone is waiting. Without real-time visibility you\'re always reacting too late.',
+      'When it breaks, someone\'s waiting. Without visibility, you\'re always last to know.',
     iconColor: 'text-red-500',
     iconBg: 'bg-red-500/10',
     borderAccent: 'hover:border-red-500/20',

@@ -25,14 +25,14 @@ export default function Waitlist() {
   }
 
   return (
-    <section id="waitlist" className="py-28 bg-[#09090b]">
+    <section id="signup" className="py-28 bg-[#09090b]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-xl mx-auto">
           {/* Header */}
           <div className="text-center mb-10">
             <p className="text-xs font-bold uppercase tracking-widest text-indigo-400 mb-4">Early Access</p>
             <h2 className="font-display font-bold text-4xl sm:text-5xl text-white mb-3">
-              Join the waitlist.
+              Get started free.
             </h2>
             <p className="text-zinc-500 text-base">
               First 200 users get <span className="text-indigo-400 font-semibold">Pro free for 3 months</span> — no credit card required.
@@ -127,11 +127,11 @@ export default function Waitlist() {
                 {status === 'loading' ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Joining...
+                    Starting...
                   </>
                 ) : (
                   <>
-                    Get Early Access
+                    Start for Free
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -139,6 +139,9 @@ export default function Waitlist() {
 
               <p className="text-zinc-700 text-xs text-center pt-1">
                 No spam. No credit card. Invite-only access.
+              </p>
+              <p className="text-indigo-400/60 text-xs text-center font-medium">
+                Limited early access — invites sent weekly
               </p>
             </form>
           )}

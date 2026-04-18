@@ -60,19 +60,9 @@ export default function Trust() {
 
         {/* Testimonials */}
         <div className="relative">
-          {/* "Placeholder" label above the cards */}
-          <p className="text-center text-[11px] font-mono text-zinc-700 uppercase tracking-widest mb-5">
-            Early access testimonials — placeholder
-          </p>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {testimonials.map((t) => (
               <div key={t.name} className="glass-card rounded-2xl p-6 relative group hover:border-white/10 transition-all duration-300">
-                {/* Placeholder watermark */}
-                <div className="absolute top-3 right-3 text-[9px] text-zinc-800 font-mono uppercase tracking-widest">
-                  placeholder
-                </div>
-
                 <Quote className="w-6 h-6 text-indigo-400/30 mb-4" />
 
                 <p className="text-zinc-400 text-sm leading-relaxed italic mb-6">&ldquo;{t.quote}&rdquo;</p>

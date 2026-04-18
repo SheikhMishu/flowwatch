@@ -13,7 +13,7 @@ const plans = [
       '2 alert rules',
       'Email & webhook alerts',
     ],
-    cta: 'Join Waitlist',
+    cta: 'Get Started',
     popular: false,
     cardStyle: 'glass-card hover:border-white/10',
     ctaStyle: 'border border-white/10 text-zinc-300 hover:border-white/20 hover:text-white hover:bg-white/5',
@@ -31,7 +31,7 @@ const plans = [
       'AI debugging (100 req/mo)',
       'Slack + email + webhook alerts',
     ],
-    cta: 'Join Waitlist',
+    cta: 'Get Started',
     popular: true,
     cardStyle: 'gradient-border bg-[#09090b] shadow-xl shadow-indigo-900/20',
     ctaStyle: 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:opacity-90',
@@ -49,7 +49,7 @@ const plans = [
       'AI debugging (500 req/mo)',
       'All alert channels',
     ],
-    cta: 'Join Waitlist',
+    cta: 'Get Started',
     popular: false,
     cardStyle: 'glass-card hover:border-white/10',
     ctaStyle: 'border border-white/10 text-zinc-300 hover:border-white/20 hover:text-white hover:bg-white/5',
@@ -71,6 +71,11 @@ export default function Pricing() {
             Join the waitlist for early access + launch pricing.
           </p>
         </div>
+
+        {/* Anchor nudge */}
+        <p className="text-center text-xs font-semibold text-indigo-400 uppercase tracking-widest mb-6">
+          Most agencies choose Team
+        </p>
 
         {/* Plan cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
@@ -107,7 +112,7 @@ export default function Pricing() {
 
               {/* CTA */}
               <a
-                href="#waitlist"
+                href="#signup"
                 className={`flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${plan.ctaStyle}`}
               >
                 {plan.cta}

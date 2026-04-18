@@ -14,6 +14,18 @@ const features = [
     ],
   },
   {
+    icon: RotateCcw,
+    title: 'One-Click Retry',
+    badge: null,
+    badgeColor: '',
+    description: 'Identify the issue, fix it, re-run the workflow — without opening n8n. Resolve incidents end-to-end from a single dashboard.',
+    points: [
+      'Retry directly from incident cards',
+      'No need to context-switch to n8n',
+      'Available to viewers — read + retry only',
+    ],
+  },
+  {
     icon: Brain,
     title: 'AI Debugging',
     badge: 'Pro',
@@ -35,18 +47,6 @@ const features = [
       'Trigger on real failure patterns',
       'Slack, email, and webhook channels',
       'Per-alert cooldowns — no spam',
-    ],
-  },
-  {
-    icon: RotateCcw,
-    title: 'One-Click Retry',
-    badge: null,
-    badgeColor: '',
-    description: 'Identify the issue, fix it, re-run the workflow — without opening n8n. Resolve incidents end-to-end from a single dashboard.',
-    points: [
-      'Retry directly from incident cards',
-      'No need to context-switch to n8n',
-      'Available to viewers — read + retry only',
     ],
   },
   {

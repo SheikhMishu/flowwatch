@@ -18,10 +18,10 @@ export default function Hero() {
           <span className="font-display font-extrabold text-white text-lg tracking-tight">FlowMonix</span>
         </div>
         <a
-          href="#waitlist"
+          href="#signup"
           className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white transition-colors duration-200"
         >
-          Join waitlist <ArrowRight className="w-3.5 h-3.5" />
+          Get Started <ArrowRight className="w-3.5 h-3.5" />
         </a>
       </nav>
 
@@ -38,7 +38,7 @@ export default function Hero() {
           Know exactly what broke
           <br />
           <span className="gradient-text">in your automations</span>
-          {' '}— instantly.
+          {' '}— before it costs you.
         </h1>
 
         {/* Subheadline */}
@@ -50,10 +50,10 @@ export default function Hero() {
         {/* CTAs */}
         <div className="animate-in delay-300 flex flex-col sm:flex-row gap-3 justify-center">
           <a
-            href="#waitlist"
+            href="#signup"
             className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-sm hover:opacity-90 hover:scale-[1.02] active:scale-100 transition-all duration-200 shadow-lg shadow-indigo-900/40"
           >
-            Join the Waitlist
+            Start Free
             <ArrowRight className="w-4 h-4" />
           </a>
           <a
@@ -65,8 +65,13 @@ export default function Hero() {
           </a>
         </div>
 
+        {/* Micro-proof */}
+        <p className="animate-in delay-350 text-xs text-zinc-500 mt-5">
+          Join 100+ n8n users already signed up
+        </p>
+
         {/* Trust pills */}
-        <div className="animate-in delay-400 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-10 text-xs text-zinc-600">
+        <div className="animate-in delay-400 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-4 text-xs text-zinc-600">
           {['Free to start', 'No credit card', 'Works with any n8n'].map((item, i, arr) => (
             <span key={item} className="flex items-center gap-6">
               <span className="text-zinc-400 font-medium">{item}</span>

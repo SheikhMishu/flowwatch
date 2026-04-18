@@ -33,7 +33,7 @@ export default function CtaFinal() {
             <h2 className="font-display font-extrabold text-5xl sm:text-6xl lg:text-7xl text-white mb-4 leading-[1.05]">
               Stop guessing.
               <br />
-              Start knowing.
+              Start knowing what broke — instantly.
             </h2>
 
             <p className="text-white/60 text-lg mb-10 max-w-sm mx-auto leading-relaxed">
@@ -41,10 +41,10 @@ export default function CtaFinal() {
             </p>
 
             <a
-              href="#waitlist"
+              href="#signup"
               className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-white text-indigo-700 font-bold text-base hover:bg-white/95 hover:scale-[1.02] active:scale-100 transition-all duration-200 shadow-2xl shadow-black/30"
             >
-              Join the Waitlist
+              Get Started Free
               <ArrowRight className="w-5 h-5" />
             </a>
           </div>
