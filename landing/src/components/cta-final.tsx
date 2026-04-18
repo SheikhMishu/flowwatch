@@ -37,7 +37,7 @@ export default function CtaFinal() {
             </h2>
 
             <p className="text-white/60 text-lg mb-10 max-w-sm mx-auto leading-relaxed">
-              Join the waitlist and be among the first to get access.
+              Create your free account and start monitoring in minutes.
             </p>
 
             <a

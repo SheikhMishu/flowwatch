@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { ArrowRight, CheckCircle2, Loader2 } from 'lucide-react'
 
-export default function Waitlist() {
+export default function SignupForm() {
   const [email, setEmail] = useState('')
   const [instances, setInstances] = useState('')
   const [agency, setAgency] = useState('')
@@ -19,9 +19,23 @@ export default function Waitlist() {
     setError('')
     setStatus('loading')
 
-    // TODO: wire up to Supabase / Resend / your backend
-    await new Promise((r) => setTimeout(r, 1200))
-    setStatus('success')
+    try {
+      const res = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, instances, agency }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error ?? 'Something went wrong. Please try again.')
+        setStatus('error')
+        return
+      }
+      setStatus('success')
+    } catch {
+      setError('Network error — please try again.')
+      setStatus('error')
+    }
   }
 
   return (
@@ -39,19 +53,22 @@ export default function Waitlist() {
             </p>
           </div>
 
-          {/* Form */}
+          {/* Success state */}
           {status === 'success' ? (
             <div className="glass-card rounded-2xl p-10 text-center">
               <div className="w-14 h-14 rounded-2xl bg-emerald-400/10 flex items-center justify-center mx-auto mb-5">
                 <CheckCircle2 className="w-7 h-7 text-emerald-400" />
               </div>
-              <h3 className="font-display font-bold text-white text-2xl mb-2">You&apos;re on the list!</h3>
-              <p className="text-zinc-500 text-sm leading-relaxed mb-1">
-                We&apos;ll invite users in batches — check your inbox for a confirmation.
+              <h3 className="font-display font-bold text-white text-2xl mb-2">You&apos;re in!</h3>
+              <p className="text-zinc-500 text-sm leading-relaxed mb-6">
+                Your spot is reserved. Head to the app to create your free account and start monitoring now.
               </p>
-              <p className="text-zinc-600 text-xs mt-4">
-                Share your link to move up the queue (coming soon)
-              </p>
+              <a
+                href="https://app.flowmonix.com"
+                className="inline-flex items-center gap-2 py-3 px-6 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-sm hover:opacity-90 transition-opacity"
+              >
+                Go to FlowMonix <ArrowRight className="w-4 h-4" />
+              </a>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="glass-card rounded-2xl p-8 space-y-4">
@@ -138,10 +155,7 @@ export default function Waitlist() {
               </button>
 
               <p className="text-zinc-700 text-xs text-center pt-1">
-                No spam. No credit card. Invite-only access.
-              </p>
-              <p className="text-indigo-400/60 text-xs text-center font-medium">
-                Limited early access — invites sent weekly
+                No credit card required. Cancel any time.
               </p>
             </form>
           )}

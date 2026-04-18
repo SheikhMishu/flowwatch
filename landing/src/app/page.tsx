@@ -6,7 +6,7 @@ import Features from '@/components/features'
 import WhoItsFor from '@/components/who-its-for'
 import Pricing from '@/components/pricing'
 import Trust from '@/components/trust'
-import Waitlist from '@/components/waitlist'
+import SignupForm from '@/components/signup-form'
 import CtaFinal from '@/components/cta-final'
 import Footer from '@/components/footer'
 
@@ -21,7 +21,7 @@ export default function Home() {
       <WhoItsFor />
       <Pricing />
       <Trust />
-      <Waitlist />
+      <SignupForm />
       <CtaFinal />
       <Footer />
     </main>

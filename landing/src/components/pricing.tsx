@@ -68,7 +68,7 @@ export default function Pricing() {
             <span className="text-zinc-600">No surprises.</span>
           </h2>
           <p className="mt-4 text-zinc-500 text-lg">
-            Join the waitlist for early access + launch pricing.
+            Start free — no credit card required.
           </p>
         </div>
 

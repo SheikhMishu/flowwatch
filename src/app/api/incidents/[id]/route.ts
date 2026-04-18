@@ -11,6 +11,7 @@ export async function PATCH(
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (session.orgId === "org_demo") return NextResponse.json({ error: "Demo mode" }, { status: 403 });
+  if (session.role === "viewer") return NextResponse.json({ error: "Viewers cannot update incidents" }, { status: 403 });
 
   const { id } = await params;
   const body = await req.json();

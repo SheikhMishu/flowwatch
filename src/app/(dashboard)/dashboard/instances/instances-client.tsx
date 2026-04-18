@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Plus,
   RefreshCw,
@@ -265,35 +265,6 @@ function AddInstanceModal({
           </div>
         </form>
       </div>
-    </div>
-  );
-}
-
-// ─── Tab bar ──────────────────────────────────────────────────────────────────
-
-function TabBar() {
-  return (
-    <div className="flex items-center gap-0.5 border-b border-border mb-4">
-      {(["Overview", "Workflows", "Health"] as const).map((tab) => (
-        <button
-          key={tab}
-          type="button"
-          disabled={tab !== "Overview"}
-          className={cn(
-            "px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px",
-            tab === "Overview"
-              ? "border-primary text-primary"
-              : "border-transparent text-muted-foreground cursor-not-allowed hover:text-foreground/60",
-          )}
-        >
-          {tab}
-          {tab !== "Overview" && (
-            <span className="ml-1.5 inline-flex items-center rounded-full bg-muted px-1.5 py-px text-[10px] font-medium text-muted-foreground">
-              Soon
-            </span>
-          )}
-        </button>
-      ))}
     </div>
   );
 }
@@ -583,6 +554,18 @@ function InstanceCard({
   const [syncError, setSyncError] = useState("");
   const [testStatus, setTestStatus] = useState<TestStatus>("idle");
   const [testError, setTestError] = useState("");
+  const [stats, setStats] = useState<{ workflowCount: number; executionsToday: number; successRate: number } | null>(null);
+
+  async function fetchStats() {
+    try {
+      const res = await fetch(`/api/instances/${instance.id}/stats`);
+      if (res.ok) setStats(await res.json());
+    } catch {
+      // silently ignore — stats are best-effort
+    }
+  }
+
+  useEffect(() => { fetchStats(); }, [instance.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const lastSynced = instance.last_synced_at
     ? formatDistanceToNow(parseISO(instance.last_synced_at), {
@@ -624,6 +607,7 @@ function InstanceCard({
         onSync(instance.id, data.last_synced_at);
         setSyncResult({ workflows: data.workflowsUpserted ?? 0, executions: data.executionsUpserted ?? 0 });
         setTimeout(() => setSyncResult(null), 8000);
+        fetchStats();
       } else {
         setSyncError(data.error ?? "Sync failed");
       }
@@ -698,23 +682,23 @@ function InstanceCard({
         </Badge>
       </div>
 
-      <div className="px-5">
-        <TabBar />
-      </div>
-
       <div className="px-5 pb-5 space-y-4">
         <div className="grid grid-cols-3 gap-3">
           <div className="rounded-lg border border-border bg-background p-3 flex flex-col gap-1">
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <Workflow className="w-3.5 h-3.5" /> Workflows
             </div>
-            <span className="text-xl font-bold text-foreground">—</span>
+            <span className="text-xl font-bold text-foreground">
+              {stats ? stats.workflowCount : "—"}
+            </span>
           </div>
           <div className="rounded-lg border border-border bg-background p-3 flex flex-col gap-1">
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <Activity className="w-3.5 h-3.5" /> Executions
             </div>
-            <span className="text-xl font-bold text-foreground">—</span>
+            <span className="text-xl font-bold text-foreground">
+              {stats ? stats.executionsToday : "—"}
+            </span>
             <span className="text-[10px] text-muted-foreground -mt-0.5">
               today
             </span>
@@ -723,7 +707,9 @@ function InstanceCard({
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <CheckCircle2 className="w-3.5 h-3.5" /> Success
             </div>
-            <span className="text-xl font-bold text-success">—</span>
+            <span className="text-xl font-bold text-success">
+              {stats ? `${stats.successRate}%` : "—"}
+            </span>
           </div>
         </div>
 
