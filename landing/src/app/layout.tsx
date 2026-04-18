@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Bricolage_Grotesque, DM_Sans } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 
 const bricolage = Bricolage_Grotesque({
@@ -37,7 +38,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${bricolage.variable} ${dmSans.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Script
+          defer
+          data-domain="flowmonix.com"
+          src="https://plausible.io/js/script.js"
+          strategy="afterInteractive"
+        />
+      </body>
     </html>
   )
 }
