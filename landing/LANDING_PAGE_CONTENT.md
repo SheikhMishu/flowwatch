@@ -5,7 +5,7 @@
 ---
 
 ## NAV
-- Logo: FlowMonix
+- Logo: FlowMonixMark SVG icon (3-node flow graph) + two-colour wordmark: "Flow" in white, "monix" in indigo→violet gradient (#818CF8 → #A78BFA)
 - CTA: "Get Started →"
 
 ---
@@ -154,7 +154,7 @@ Tags: Incident ownership · Shared dashboard · Team alerts
 ## SECTION: Pricing
 
 **Headline:** Simple pricing. No surprises.
-**Subheadline:** Join the waitlist for early access + launch pricing.
+**Subheadline:** Simple, transparent pricing. Start free, upgrade when you need more.
 
 **Anchor:** Most agencies choose Team
 
@@ -226,6 +226,7 @@ CTA on all plans: "Get Started →"
 
 ## FOOTER
 
-- Brand: FlowMonix · n8n observability
+- Logo: FlowMonixMark SVG icon + two-colour wordmark: "Flow" in zinc-400, "monix" in indigo→violet gradient
+- Tagline: · n8n observability
 - Email: support@flowmonix.com
 - Copyright: © 2026 FlowMonix. All rights reserved.
