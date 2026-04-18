@@ -18,14 +18,23 @@ export default function Icon() {
           justifyContent: 'center',
         }}
       >
-        <div
-          style={{
-            width: 14,
-            height: 14,
-            borderRadius: 3,
-            background: 'rgba(255, 255, 255, 0.92)',
-          }}
-        />
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 32 32"
+          fill="none"
+        >
+          {/* Connector lines */}
+          <line x1="9" y1="16" x2="11.5" y2="16" stroke="white" strokeWidth="2.2" strokeOpacity="0.75" />
+          <line x1="20.5" y1="16" x2="23" y2="16" stroke="white" strokeWidth="2.2" strokeOpacity="0.75" />
+          {/* Left node */}
+          <circle cx="5.5" cy="16" r="3.5" fill="white" />
+          {/* Center hub — ring + dot */}
+          <circle cx="16" cy="16" r="4.8" fill="none" stroke="white" strokeWidth="2.4" />
+          <circle cx="16" cy="16" r="2.1" fill="white" />
+          {/* Right node */}
+          <circle cx="26.5" cy="16" r="3.5" fill="white" />
+        </svg>
       </div>
     ),
     { ...size }
