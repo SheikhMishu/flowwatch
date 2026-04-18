@@ -1,4 +1,5 @@
 import { ArrowRight, Play } from 'lucide-react'
+import { FlowMonixMark } from './brand-mark'
 
 export default function Hero() {
   return (
@@ -13,9 +14,12 @@ export default function Hero() {
       <nav className="relative z-10 flex items-center justify-between max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-5">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-900/40">
-            <div className="w-3 h-3 rounded-sm bg-white/90" />
+            <FlowMonixMark className="w-5 h-5" />
           </div>
-          <span className="font-display font-extrabold text-white text-lg tracking-tight">FlowMonix</span>
+          <span className="font-display font-extrabold text-lg tracking-tight">
+            <span className="text-white">Flow</span>
+            <span style={{ background: 'linear-gradient(135deg, #818CF8, #A78BFA)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>monix</span>
+          </span>
         </div>
         <a
           href="#signup"

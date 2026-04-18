@@ -1,3 +1,5 @@
+import { FlowMonixMark } from './brand-mark'
+
 export default function Footer() {
   const year = new Date().getFullYear()
 
@@ -8,9 +10,12 @@ export default function Footer() {
           {/* Brand */}
           <div className="flex items-center gap-2.5">
             <div className="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-md shadow-indigo-900/30">
-              <div className="w-2.5 h-2.5 rounded-sm bg-white/90" />
+              <FlowMonixMark className="w-4 h-4" />
             </div>
-            <span className="font-display font-extrabold text-zinc-400 tracking-tight">FlowMonix</span>
+            <span className="font-display font-extrabold tracking-tight">
+              <span className="text-zinc-400">Flow</span>
+              <span style={{ background: 'linear-gradient(135deg, #818CF8, #A78BFA)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>monix</span>
+            </span>
             <span className="hidden sm:block text-zinc-700 text-xs font-medium">· n8n observability</span>
           </div>
 
