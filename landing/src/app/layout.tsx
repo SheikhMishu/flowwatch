@@ -18,20 +18,22 @@ const dmSans = DM_Sans({
 })
 
 export const metadata: Metadata = {
-  title: 'FlowMonix — n8n Workflow Monitoring',
+  title: 'FlowMonix — n8n Workflow Monitoring & Incident Detection',
   description:
-    'FlowMonix monitors your n8n workflows, groups failures into incidents, and explains errors with AI — so you can fix issues in seconds, not hours.',
+    'FlowMonix monitors your n8n workflows in real time, groups failures into incidents, and explains errors with AI — so you can find and fix issues in seconds, not hours. Built for agencies and freelancers.',
   metadataBase: new URL('https://flowmonix.com'),
   openGraph: {
-    title: 'FlowMonix — n8n Workflow Monitoring',
-    description: 'Know exactly what broke in your automations — instantly.',
+    title: 'FlowMonix — n8n Workflow Monitoring & Incident Detection',
+    description:
+      'Monitor every n8n workflow in real time. Group failures into incidents, get AI-powered root cause analysis, and retry executions in one click — without ever opening n8n.',
     type: 'website',
     siteName: 'FlowMonix',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'FlowMonix — n8n Workflow Monitoring',
-    description: 'Know exactly what broke in your automations — instantly.',
+    title: 'FlowMonix — n8n Workflow Monitoring & Incident Detection',
+    description:
+      'Monitor every n8n workflow in real time. Group failures into incidents, get AI-powered root cause analysis, and retry executions in one click — without ever opening n8n.',
   },
 }
 
