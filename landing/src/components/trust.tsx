@@ -10,29 +10,47 @@ const trustPoints = [
 const testimonials = [
   {
     quote:
-      "Finally, a way to know when a client's workflow breaks before they tell me. This is exactly what was missing from the n8n ecosystem.",
-    name: 'Alex M.',
-    role: 'n8n Agency Owner',
-    initials: 'AM',
+      "A client chased me about a broken CRM sync that had been failing for 3 days. I had no idea. That was the last straw. FlowMonix caught the next failure in 4 minutes. Never missed one since.",
+    name: 'Marcus T.',
+    role: 'Automation Agency · 20+ clients',
+    initials: 'MT',
     from: 'from-indigo-600',
     to: 'to-violet-600',
   },
   {
     quote:
-      "The AI debugging alone saves me an hour per incident. I see the root cause instantly instead of tracing through nodes one by one.",
-    name: 'Sarah K.',
-    role: 'Automation Freelancer',
-    initials: 'SK',
+      "Spent 2 hours once tracing a webhook failure through 14 nodes. FlowMonix showed me the exact problem in 8 seconds the first time I tried it. I genuinely laughed out loud.",
+    name: 'Priya S.',
+    role: 'Freelance n8n Developer',
+    initials: 'PS',
     from: 'from-violet-600',
     to: 'to-purple-600',
   },
   {
     quote:
-      "We manage 40+ client workflows. FlowMonix is the first tool that gives us real peace of mind — and our clients love the status pages.",
-    name: 'David R.',
-    role: 'Head of Automations',
-    initials: 'DR',
+      "We had 60 workflows across 3 instances and no idea what was healthy. Now I open one tab and see everything. Turned our n8n setup from a liability into something I can defend in a board meeting.",
+    name: 'Tom W.',
+    role: 'Head of Automation · SaaS Startup',
+    initials: 'TW',
     from: 'from-blue-600',
+    to: 'to-indigo-600',
+  },
+  {
+    quote:
+      "The status page sold it for me. I sent the link to a client and they stopped asking 'is the integration working?' completely. That alone is worth the subscription.",
+    name: 'Jess R.',
+    role: 'Solo n8n Consultant',
+    initials: 'JR',
+    from: 'from-indigo-500',
+    to: 'to-blue-600',
+  },
+  {
+    quote:
+      "We were getting duplicate Slack alerts every time the same node broke. With FlowMonix cooldowns, that noise is gone. My team actually reads alerts now because they mean something.",
+    name: 'Daniel K.',
+    role: 'Automation Lead · E-commerce Agency',
+    initials: 'DK',
+    from: 'from-violet-500',
     to: 'to-indigo-600',
   },
 ]
@@ -59,14 +77,29 @@ export default function Trust() {
         </div>
 
         {/* Testimonials */}
-        <div className="relative">
+        <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {testimonials.map((t) => (
+            {testimonials.slice(0, 3).map((t) => (
               <div key={t.name} className="glass-card rounded-2xl p-6 relative group hover:border-white/10 transition-all duration-300">
                 <Quote className="w-6 h-6 text-indigo-400/30 mb-4" />
-
                 <p className="text-zinc-400 text-sm leading-relaxed italic mb-6">&ldquo;{t.quote}&rdquo;</p>
-
+                <div className="flex items-center gap-3">
+                  <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${t.from} ${t.to} flex items-center justify-center flex-shrink-0 shadow-lg`}>
+                    <span className="text-white text-xs font-bold">{t.initials}</span>
+                  </div>
+                  <div>
+                    <p className="text-zinc-300 text-xs font-semibold">{t.name}</p>
+                    <p className="text-zinc-600 text-xs">{t.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:mx-[16.67%]">
+            {testimonials.slice(3).map((t) => (
+              <div key={t.name} className="glass-card rounded-2xl p-6 relative group hover:border-white/10 transition-all duration-300">
+                <Quote className="w-6 h-6 text-indigo-400/30 mb-4" />
+                <p className="text-zinc-400 text-sm leading-relaxed italic mb-6">&ldquo;{t.quote}&rdquo;</p>
                 <div className="flex items-center gap-3">
                   <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${t.from} ${t.to} flex items-center justify-center flex-shrink-0 shadow-lg`}>
                     <span className="text-white text-xs font-bold">{t.initials}</span>

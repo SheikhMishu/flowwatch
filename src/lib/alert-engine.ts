@@ -19,6 +19,7 @@ interface AlertRow {
   threshold_minutes: number;
   cooldown_minutes: number;
   last_fired_at: string | null;
+  snoozed_until: string | null;
 }
 
 // ─── Entry point ──────────────────────────────────────────────────────────────
@@ -37,6 +38,9 @@ export async function evaluateOrgAlerts(orgId: string): Promise<void> {
   const now = new Date();
 
   for (const alert of alerts as AlertRow[]) {
+    // Skip if snoozed
+    if (alert.snoozed_until && new Date(alert.snoozed_until) > now) continue;
+
     // Enforce cooldown
     if (alert.last_fired_at) {
       const elapsed = now.getTime() - new Date(alert.last_fired_at).getTime();

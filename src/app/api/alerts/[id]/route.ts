@@ -29,7 +29,7 @@ export async function PATCH(
   if (!existing) return NextResponse.json({ error: "Alert not found" }, { status: 404 });
 
   const body = await req.json();
-  const allowed = ["name", "channel", "destination", "threshold_count", "threshold_minutes", "cooldown_minutes", "workflow_id", "instance_id", "is_active"];
+  const allowed = ["name", "channel", "destination", "threshold_count", "threshold_minutes", "cooldown_minutes", "workflow_id", "instance_id", "is_active", "snoozed_until"];
   const updates: Record<string, unknown> = {};
   for (const key of allowed) {
     if (key in body) updates[key] = body[key];

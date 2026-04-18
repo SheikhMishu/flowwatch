@@ -118,6 +118,7 @@ export interface Alert {
   threshold_minutes: number;
   cooldown_minutes: number;
   is_active: boolean;
+  snoozed_until: string | null;
   created_at: string;
 }
 

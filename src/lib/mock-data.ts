@@ -331,6 +331,7 @@ export const mockAlerts: Alert[] = [
     threshold_minutes: 10,
     cooldown_minutes: 30,
     is_active: true,
+    snoozed_until: null,
     created_at: "2024-10-10T00:00:00Z",
   },
   {
@@ -344,6 +345,7 @@ export const mockAlerts: Alert[] = [
     threshold_minutes: 15,
     cooldown_minutes: 60,
     is_active: true,
+    snoozed_until: null,
     created_at: "2024-10-01T00:00:00Z",
   },
   {
@@ -357,6 +359,7 @@ export const mockAlerts: Alert[] = [
     threshold_minutes: 5,
     cooldown_minutes: 15,
     is_active: false,
+    snoozed_until: null,
     created_at: "2024-11-05T00:00:00Z",
   },
   {
@@ -370,6 +373,7 @@ export const mockAlerts: Alert[] = [
     threshold_minutes: 30,
     cooldown_minutes: 120,
     is_active: true,
+    snoozed_until: null,
     created_at: "2025-01-15T00:00:00Z",
   },
 ];

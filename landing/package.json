@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.1032.0",
     "lucide-react": "^0.469.0",
     "next": "15.3.9",
     "react": "^19.0.0",

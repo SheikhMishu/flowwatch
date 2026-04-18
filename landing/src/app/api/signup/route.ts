@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { sendSequenceEmail1 } from "@/lib/email";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
@@ -26,7 +27,7 @@ export async function POST(req: NextRequest) {
       "Content-Type": "application/json",
       Prefer: "return=minimal",
     },
-    body: JSON.stringify({ email, instances, agency }),
+    body: JSON.stringify({ email, instances, agency, sequence_step: 1 }),
   });
 
   // 409 = duplicate email — treat as success so we don't leak whether an email exists
@@ -34,6 +35,11 @@ export async function POST(req: NextRequest) {
     const text = await res.text();
     console.error("Supabase insert error", res.status, text);
     return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
+  }
+
+  // Send welcome email (fire-and-forget — don't block the response)
+  if (res.status !== 409) {
+    sendSequenceEmail1(email).catch((err) => console.error("Welcome email failed", err));
   }
 
   return NextResponse.json({ ok: true });

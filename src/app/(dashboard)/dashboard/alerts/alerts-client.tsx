@@ -3,8 +3,9 @@
 import React, { useState } from "react";
 import {
   Mail, Globe, MessageSquare, Pencil, Trash2, Plus, BellRing,
-  X, Loader2, CheckCircle2, AlertCircle, Zap,
+  X, Loader2, CheckCircle2, AlertCircle, Zap, BellOff, Clock,
 } from "lucide-react";
+import { formatDistanceToNow, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
@@ -281,19 +282,64 @@ function AlertModal({
 
 // ─── Alert Card ───────────────────────────────────────────────────────────────
 
+const SNOOZE_OPTIONS = [
+  { label: "1 hour", hours: 1 },
+  { label: "4 hours", hours: 4 },
+  { label: "24 hours", hours: 24 },
+  { label: "48 hours", hours: 48 },
+];
+
 function AlertCard({
   alert,
   onEdit,
   onDelete,
   onToggle,
+  onSnoozed,
 }: {
   alert: Alert;
   onEdit: (a: Alert) => void;
   onDelete: (id: string) => void;
   onToggle: (a: Alert) => void;
+  onSnoozed: (a: Alert) => void;
 }) {
   const [deleting, setDeleting] = useState(false);
   const [toggling, setToggling] = useState(false);
+  const [snoozeOpen, setSnoozeOpen] = useState(false);
+  const [snoozing, setSnoozing] = useState(false);
+
+  const isSnoozed = !!alert.snoozed_until && new Date(alert.snoozed_until) > new Date();
+
+  async function handleSnooze(hours: number) {
+    setSnoozing(true);
+    setSnoozeOpen(false);
+    const snoozed_until = new Date(Date.now() + hours * 60 * 60 * 1000).toISOString();
+    try {
+      const res = await fetch(`/api/alerts/${alert.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ snoozed_until }),
+      });
+      const data = await res.json();
+      if (res.ok) onSnoozed(data.alert);
+    } finally {
+      setSnoozing(false);
+    }
+  }
+
+  async function handleUnsnooze() {
+    setSnoozing(true);
+    try {
+      const res = await fetch(`/api/alerts/${alert.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ snoozed_until: null }),
+      });
+      const data = await res.json();
+      if (res.ok) onSnoozed(data.alert);
+    } finally {
+      setSnoozing(false);
+    }
+  }
 
   async function handleDelete() {
     if (!confirm(`Delete alert "${alert.name}"?`)) return;
@@ -322,14 +368,14 @@ function AlertCard({
   }
 
   return (
-    <div className={cn("rounded-xl border border-border bg-card shadow-card p-5 flex flex-col sm:flex-row sm:items-start gap-4 transition-all", !alert.is_active && "opacity-60")}>
+    <div className={cn("rounded-xl border border-border bg-card shadow-card p-5 flex flex-col sm:flex-row sm:items-start gap-4 transition-all", !alert.is_active && "opacity-60", isSnoozed && "border-warning/20")}>
       <div className="shrink-0 pt-0.5">
         <ChannelIcon channel={alert.channel} />
       </div>
 
       <div className="flex-1 min-w-0 space-y-2">
         <div className="flex items-start justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center gap-2 min-w-0 flex-wrap">
             <h3 className="font-semibold text-foreground text-sm leading-snug truncate">{alert.name}</h3>
             <button
               type="button"
@@ -342,9 +388,53 @@ function AlertCard({
                 {alert.is_active ? "Active" : "Inactive"}
               </Badge>
             </button>
+            {isSnoozed && alert.snoozed_until && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-warning/30 bg-warning/10 px-2 py-0.5 text-xs text-warning">
+                <BellOff className="w-3 h-3" />
+                Snoozed until {formatDistanceToNow(parseISO(alert.snoozed_until), { addSuffix: true })}
+              </span>
+            )}
           </div>
 
-          <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0 flex-wrap">
+            {/* Snooze / Unsnooze */}
+            {isSnoozed ? (
+              <button
+                type="button"
+                onClick={handleUnsnooze}
+                disabled={snoozing}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-warning/30 bg-warning/5 px-2.5 py-1.5 text-xs font-medium text-warning hover:bg-warning/10 transition-colors disabled:opacity-50"
+              >
+                {snoozing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Clock className="w-3 h-3" />}
+                Unsnooze
+              </button>
+            ) : (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setSnoozeOpen((o) => !o)}
+                  disabled={snoozing}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors disabled:opacity-50"
+                >
+                  {snoozing ? <Loader2 className="w-3 h-3 animate-spin" /> : <BellOff className="w-3 h-3" />}
+                  Snooze
+                </button>
+                {snoozeOpen && (
+                  <div className="absolute right-0 top-full mt-1 z-10 w-36 rounded-lg border border-border bg-card shadow-elevated overflow-hidden">
+                    {SNOOZE_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.hours}
+                        type="button"
+                        onClick={() => handleSnooze(opt.hours)}
+                        className="w-full text-left px-3 py-2 text-xs text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             <button
               type="button"
               onClick={() => onEdit(alert)}
@@ -416,6 +506,10 @@ export function AlertsClient({ initialAlerts }: { initialAlerts: Alert[] }) {
     setAlerts((prev) => prev.map((a) => (a.id === updated.id ? updated : a)));
   }
 
+  function handleSnoozed(updated: Alert) {
+    setAlerts((prev) => prev.map((a) => (a.id === updated.id ? updated : a)));
+  }
+
   const activeCount = alerts.filter((a) => a.is_active).length;
   const inactiveCount = alerts.length - activeCount;
 
@@ -473,6 +567,7 @@ export function AlertsClient({ initialAlerts }: { initialAlerts: Alert[] }) {
                 onEdit={(a) => setModal({ mode: "edit", alert: a })}
                 onDelete={handleDeleted}
                 onToggle={handleToggled}
+                onSnoozed={handleSnoozed}
               />
             ))}
           </div>
