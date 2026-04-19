@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Failed to create invitation" }, { status: 500 });
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://app.flowmonix.com";
     const inviteUrl = `${appUrl}/invite/${token}`;
 
     await sendInviteEmail(email, session.orgName, session.name || session.email, inviteUrl);

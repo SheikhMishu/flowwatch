@@ -23,7 +23,7 @@ export async function POST() {
     return NextResponse.json({ error: "No billing account found. Please subscribe first." }, { status: 404 });
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://app.flowmonix.com";
 
   try {
     const portalSession = await getStripe().billingPortal.sessions.create({

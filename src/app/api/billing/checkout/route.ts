@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "You already have an active subscription. Use the portal to manage it." }, { status: 409 });
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://app.flowmonix.com";
 
   try {
     const checkoutSession = await getStripe().checkout.sessions.create({
