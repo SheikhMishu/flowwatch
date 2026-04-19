@@ -44,12 +44,12 @@ export default function SignupForm() {
         <div className="max-w-xl mx-auto">
           {/* Header */}
           <div className="text-center mb-10">
-            <p className="text-xs font-bold uppercase tracking-widest text-indigo-400 mb-4">Early Access</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-indigo-400 mb-4">Free to start</p>
             <h2 className="font-display font-bold text-4xl sm:text-5xl text-white mb-3">
               Get started free.
             </h2>
             <p className="text-zinc-500 text-base">
-              First 200 users get <span className="text-indigo-400 font-semibold">Pro free for 3 months</span> — no credit card required.
+              No credit card required. Start monitoring your n8n workflows in minutes.
             </p>
           </div>
 

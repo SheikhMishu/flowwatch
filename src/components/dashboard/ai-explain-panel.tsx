@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Sparkles, Loader2, ArrowRight, ChevronDown, ChevronUp, Zap } from "lucide-react";
+import { Sparkles, Loader2, ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { AiDebugResult } from "@/lib/ai-debug";
 
@@ -46,15 +46,6 @@ function AiResult({ result }: { result: AiDebugResult }) {
     // Unstructured free response
     return (
       <div className="space-y-3">
-        <div className="flex items-center gap-1.5">
-          <Zap className="w-3.5 h-3.5 text-muted-foreground" />
-          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Basic AI Analysis
-          </span>
-          {result.cached && (
-            <span className="text-xs text-muted-foreground/60">(cached)</span>
-          )}
-        </div>
         <p className="text-sm text-foreground leading-relaxed">{result.raw_response}</p>
         <UpgradeNudge />
       </div>
@@ -64,16 +55,6 @@ function AiResult({ result }: { result: AiDebugResult }) {
   // Structured pro response
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-1.5">
-        <Sparkles className="w-3.5 h-3.5 text-primary" />
-        <span className="text-xs font-semibold text-primary uppercase tracking-wide">
-          AI Analysis
-        </span>
-        {result.cached && (
-          <span className="text-xs text-muted-foreground/60">(cached)</span>
-        )}
-      </div>
-
       {/* Cause */}
       <div>
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
@@ -210,9 +191,13 @@ export function AiExplainPanel({
             className="flex items-center gap-1.5 w-full text-left mb-2"
           >
             <Sparkles className="w-3.5 h-3.5 text-primary" />
-            <span className="text-xs font-semibold text-primary uppercase tracking-wide flex-1">
+            <span className="text-xs font-semibold text-primary uppercase tracking-wide">
               AI Analysis
             </span>
+            {result.cached && (
+              <span className="text-xs text-muted-foreground/60">(cached)</span>
+            )}
+            <span className="flex-1" />
             {collapsed
               ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
               : <ChevronUp className="w-3.5 h-3.5 text-muted-foreground" />

@@ -7,6 +7,7 @@ import {
   Activity,
 } from "lucide-react";
 import { FlowMonixMark } from "@/components/brand/mark";
+import { getServerDb } from "@/lib/db";
 import { AutoRefresh } from "./_components/auto-refresh";
 
 export const dynamic = "force-dynamic";
@@ -25,12 +26,42 @@ interface StatusData {
 }
 
 async function getStatusData(slug: string): Promise<StatusData | null> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-  const res = await fetch(`${baseUrl}/api/status/${slug}`, {
-    cache: "no-store",
+  const db = getServerDb();
+
+  const { data: org } = await db
+    .from("organizations")
+    .select("id, name, slug")
+    .eq("slug", slug)
+    .eq("status_page_enabled", true)
+    .single();
+
+  if (!org) return null;
+
+  const [{ data: instances }, { count: openIncidents }] = await Promise.all([
+    db.from("n8n_instances").select("name, last_synced_at").eq("org_id", org.id).order("name"),
+    db.from("incidents").select("id", { count: "exact", head: true }).eq("org_id", org.id).eq("status", "open"),
+  ]);
+
+  const now = new Date();
+  const instancesWithStatus: InstanceStatus[] = (instances ?? []).map((inst) => {
+    let status: InstanceStatus["status"];
+    if (!inst.last_synced_at) {
+      status = "unknown";
+    } else {
+      const diffMin = (now.getTime() - new Date(inst.last_synced_at).getTime()) / 60000;
+      if (diffMin <= 15) status = "operational";
+      else if (diffMin <= 60) status = "degraded";
+      else status = "issue";
+    }
+    return { name: inst.name, status, last_synced_at: inst.last_synced_at };
   });
-  if (!res.ok) return null;
-  return res.json();
+
+  return {
+    org: { name: org.name, slug: org.slug },
+    instances: instancesWithStatus,
+    open_incidents: openIncidents ?? 0,
+    checked_at: now.toISOString(),
+  };
 }
 
 function formatRelative(iso: string | null): string {

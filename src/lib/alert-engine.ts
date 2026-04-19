@@ -38,49 +38,61 @@ export async function evaluateOrgAlerts(orgId: string): Promise<void> {
   const now = new Date();
 
   for (const alert of alerts as AlertRow[]) {
-    // Skip if snoozed
-    if (alert.snoozed_until && new Date(alert.snoozed_until) > now) continue;
+    try {
+      // Skip if snoozed
+      if (alert.snoozed_until && new Date(alert.snoozed_until) > now) continue;
 
-    // Enforce cooldown
-    if (alert.last_fired_at) {
-      const elapsed = now.getTime() - new Date(alert.last_fired_at).getTime();
-      if (elapsed < alert.cooldown_minutes * 60 * 1000) continue;
+      // Enforce cooldown
+      if (alert.last_fired_at) {
+        const elapsed = now.getTime() - new Date(alert.last_fired_at).getTime();
+        if (elapsed < alert.cooldown_minutes * 60 * 1000) continue;
+      }
+
+      // Count failures in the threshold window
+      const windowStart = new Date(now.getTime() - alert.threshold_minutes * 60 * 1000).toISOString();
+
+      let query = db
+        .from("synced_executions")
+        .select("workflow_name, n8n_workflow_id, instance_id")
+        .eq("org_id", orgId)
+        .eq("status", "error")
+        .gte("started_at", windowStart);
+
+      if (alert.instance_id) query = query.eq("instance_id", alert.instance_id);
+      if (alert.workflow_id) query = query.eq("n8n_workflow_id", alert.workflow_id);
+
+      const { data: failures } = await query;
+      if (!failures || failures.length < alert.threshold_count) continue;
+
+      // Fire
+      const workflowNames = [...new Set(failures.map((f) => f.workflow_name))];
+      logger.info("Alert fired", { category: "alert-engine", orgId, alertId: alert.id, alertName: alert.name, failureCount: failures.length, workflowNames });
+      await fireAlert(alert, failures.length, workflowNames);
+
+      // Record firing and update last_fired_at
+      const firedAt = new Date().toISOString();
+      await Promise.all([
+        db.from("alerts").update({ last_fired_at: firedAt }).eq("id", alert.id),
+        db.from("alert_firings").insert({
+          alert_id: alert.id,
+          org_id: orgId,
+          fired_at: firedAt,
+          failure_count: failures.length,
+          workflow_names: workflowNames,
+        }),
+        upsertIncident(db, alert, orgId, failures),
+      ]);
+    } catch (err) {
+      // Catch per-alert so one bad alert never blocks the rest from being evaluated
+      logger.error("Alert evaluation failed for alert", {
+        category: "alert-engine",
+        orgId,
+        alertId: alert.id,
+        alertName: alert.name,
+        channel: alert.channel,
+        err,
+      });
     }
-
-    // Count failures in the threshold window
-    const windowStart = new Date(now.getTime() - alert.threshold_minutes * 60 * 1000).toISOString();
-
-    let query = db
-      .from("synced_executions")
-      .select("workflow_name, n8n_workflow_id, instance_id")
-      .eq("org_id", orgId)
-      .eq("status", "error")
-      .gte("started_at", windowStart);
-
-    if (alert.instance_id) query = query.eq("instance_id", alert.instance_id);
-    if (alert.workflow_id) query = query.eq("n8n_workflow_id", alert.workflow_id);
-
-    const { data: failures } = await query;
-    if (!failures || failures.length < alert.threshold_count) continue;
-
-    // Fire
-    const workflowNames = [...new Set(failures.map((f) => f.workflow_name))];
-    logger.info("Alert fired", { category: "alert-engine", orgId, alertId: alert.id, alertName: alert.name, failureCount: failures.length, workflowNames });
-    await fireAlert(alert, failures.length, workflowNames);
-
-    // Record firing and update last_fired_at
-    const firedAt = new Date().toISOString();
-    await Promise.all([
-      db.from("alerts").update({ last_fired_at: firedAt }).eq("id", alert.id),
-      db.from("alert_firings").insert({
-        alert_id: alert.id,
-        org_id: orgId,
-        fired_at: firedAt,
-        failure_count: failures.length,
-        workflow_names: workflowNames,
-      }),
-      upsertIncident(db, alert, orgId, failures),
-    ]);
   }
 }
 
@@ -114,14 +126,23 @@ async function upsertIncident(
     .maybeSingle();
 
   if (existing) {
-    await db.from("incidents").update({
+    const { error } = await db.from("incidents").update({
       failure_count: existing.failure_count + failureCount,
       last_seen_at: now,
       severity,
       title,
     }).eq("id", existing.id);
+    if (error) {
+      logger.error("upsertIncident: failed to update existing incident", {
+        category: "alert-engine",
+        orgId,
+        alertId: alert.id,
+        incidentId: existing.id,
+        err: error,
+      });
+    }
   } else {
-    await db.from("incidents").insert({
+    const { error } = await db.from("incidents").insert({
       org_id: orgId,
       instance_id: instanceId,
       alert_id: alert.id,
@@ -134,6 +155,15 @@ async function upsertIncident(
       first_seen_at: now,
       last_seen_at: now,
     });
+    if (error) {
+      logger.error("upsertIncident: failed to create new incident", {
+        category: "alert-engine",
+        orgId,
+        alertId: alert.id,
+        workflowName,
+        err: error,
+      });
+    }
   }
 }
 
@@ -144,7 +174,17 @@ async function fireAlert(alert: AlertRow, failureCount: number, workflowNames: s
   const subject = `[FlowMonix] ${alert.name}: ${failureCount} ${failWord} in ${alert.threshold_minutes}min`;
 
   if (alert.channel === "email") {
-    await sendAlertEmail(alert.destination, subject, buildEmailHtml(alert, failureCount, workflowNames));
+    try {
+      await sendAlertEmail(alert.destination, subject, buildEmailHtml(alert, failureCount, workflowNames));
+    } catch (err) {
+      logger.error("Email alert delivery failed", {
+        category: "alert-engine",
+        alertId: alert.id,
+        destination: alert.destination,
+        err,
+      });
+      throw err;
+    }
     return;
   }
 

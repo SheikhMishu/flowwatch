@@ -1,4 +1,4 @@
-import { ArrowRight, Play } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { FlowMonixMark } from './brand-mark'
 
 export default function Hero() {
@@ -60,19 +60,8 @@ export default function Hero() {
             Start Free
             <ArrowRight className="w-4 h-4" />
           </a>
-          <a
-            href="#demo"
-            className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl border border-white/10 text-zinc-300 font-semibold text-sm hover:border-white/20 hover:text-white hover:bg-white/5 transition-all duration-200"
-          >
-            <Play className="w-4 h-4 fill-current opacity-60" />
-            View Demo
-          </a>
+          {/* View Demo button hidden until demo video is recorded */}
         </div>
-
-        {/* Micro-proof */}
-        <p className="animate-in delay-350 text-xs text-zinc-500 mt-5">
-          Join 100+ n8n users already signed up
-        </p>
 
         {/* Trust pills */}
         <div className="animate-in delay-400 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-4 text-xs text-zinc-600">

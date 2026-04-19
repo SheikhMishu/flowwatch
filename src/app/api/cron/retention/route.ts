@@ -3,7 +3,7 @@ import { runRetention } from "@/lib/retention";
 import { logger } from "@/lib/logger";
 
 // GET /api/cron/retention — delete synced_executions beyond each org's plan retention window
-// Called by cron-job.org (or Vercel Cron) once per day
+// Called by cron-job.org once per day. Requires: Authorization: Bearer <CRON_SECRET>
 export async function GET(req: NextRequest) {
   if (process.env.NODE_ENV === "production") {
     const authHeader = req.headers.get("authorization");

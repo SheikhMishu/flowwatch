@@ -1,0 +1,69 @@
+FlowMonix — Pre-Launch Audit
+Date: 2026-04-19
+Resolved: 2026-04-19
+============================
+
+
+ALL ITEMS RESOLVED — LAUNCH READY
+====================================
+
+1. [DONE] Stripe keys switched to live
+   STRIPE_SECRET_KEY, NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, STRIPE_WEBHOOK_SECRET
+   all updated to live mode keys in Railway. New webhook endpoint created in Stripe
+   live mode pointing to https://app.flowmonix.com/api/billing/webhook.
+
+2. [DONE] ANTHROPIC_API_KEY set in Railway
+   Real Anthropic API key added to Railway main app. Pay-as-you-go account.
+   Monthly spend limit set in Anthropic console as a safeguard.
+   Powers Pro/Team AI debug via claude-haiku-4-5-20251001.
+
+3. [DONE] STRIPE_PRO_PRICE_ID and STRIPE_TEAM_PRICE_ID set in Railway
+   Live price IDs for Pro ($29 AUD/mo) and Team ($99 AUD/mo) confirmed in Railway.
+   Products created in Stripe live mode with correct AUD pricing.
+
+4. [DONE] Migration 012 and 013 run in Supabase
+   012: signups table created + snoozed_until added to alerts
+   013: ai_usage table + increment_ai_usage() function
+
+5. [DONE] Landing Railway service env vars set
+   NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, AWS_REGION,
+   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REG_MAIL_FROM, CRON_SECRET
+   all confirmed in Railway landing service.
+
+
+POST-AUDIT IMPROVEMENTS (also done)
+=====================================
+
+- Monthly AI usage limits implemented (Pro: 100/mo, Team: 500/mo)
+  ai_usage table tracks per-org monthly Anthropic calls.
+  Cached responses never count against quota.
+  DB failure during usage check blocks the request rather than bypassing the limit.
+
+- Logging gaps fixed across 4 files:
+  incident-grouping.ts  — console.error replaced with logger.error + full context.
+                          autoResolveIncidents now logs DB failures.
+  alert-engine.ts       — per-alert try/catch so one failure never blocks others.
+                          upsertIncident DB errors now logged.
+                          Email delivery errors now logged with alertId + destination.
+  ai-debug.ts           — getCached, storeResult, getMonthlyUsage all log DB errors.
+  email.ts              — SES errors logged with recipient + subject before re-throwing.
+
+
+VERIFIED WORKING
+=================
+
+- Auth (PIN flow, sessions, demo guard)                OK
+- Middleware (public routes, invite flow whitelisted)   OK
+- Cron endpoints (CRON_SECRET enforced in production)   OK
+- Stripe webhook (all 4 events, signature verified)     OK
+- Billing portal flow                                   OK
+- Plan limits enforcement (instances, members, alerts)  OK
+- Viewer role guard on PATCH /api/incidents/[id]        OK
+- Retention cron logic                                  OK
+- Sync + alert engine + incident grouping + auto-resolve OK
+- Demo mode guards (no DB writes for org_demo)          OK
+- AES-256-GCM encryption of n8n API keys               OK
+- Landing signup route + email sequence cron            OK
+- Main app build                                        CLEAN
+- Landing build                                         CLEAN
+- TypeScript                                            CLEAN

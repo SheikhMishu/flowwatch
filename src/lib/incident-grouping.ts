@@ -4,6 +4,7 @@
 
 import { getServerDb } from "@/lib/db";
 import { generateErrorSignature } from "@/lib/error-signature";
+import { logger } from "@/lib/logger";
 
 type Db = ReturnType<typeof getServerDb>;
 
@@ -48,7 +49,15 @@ export async function processErrorExecutions(
 
   for (const exec of errors as ErrorExecution[]) {
     await findOrCreateIncident(db, exec).catch((err) =>
-      console.error(`[incident-grouping] failed for exec ${exec.id}:`, err.message)
+      logger.error("Incident grouping: findOrCreateIncident failed", {
+        category: "incident",
+        orgId,
+        instanceId,
+        execId: exec.id,
+        n8nExecutionId: exec.n8n_execution_id,
+        workflowId: exec.n8n_workflow_id,
+        err,
+      })
     );
   }
 }
@@ -58,12 +67,15 @@ export async function processErrorExecutions(
  */
 export async function autoResolveIncidents(db: Db, orgId: string): Promise<void> {
   const threshold = new Date(Date.now() - 30 * 60 * 1000).toISOString();
-  await db
+  const { error } = await db
     .from("incidents")
     .update({ status: "resolved", resolved_at: new Date().toISOString() })
     .eq("org_id", orgId)
     .eq("status", "open")
     .lt("last_seen_at", threshold);
+  if (error) {
+    logger.error("Auto-resolve incidents DB update failed", { category: "incident", orgId, err: error });
+  }
 }
 
 // ─── Core logic ───────────────────────────────────────────────────────────────

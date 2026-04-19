@@ -2,6 +2,7 @@
 // Falls back to console.log when AWS credentials are absent (local dev without SES)
 
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+import { logger } from "@/lib/logger";
 
 function getSesClient(): SESClient | null {
   const region = process.env.AWS_REGION;
@@ -30,16 +31,21 @@ async function sendEmail({
     return;
   }
 
-  await ses.send(
-    new SendEmailCommand({
-      Source: from,
-      Destination: { ToAddresses: [to] },
-      Message: {
-        Subject: { Data: subject, Charset: "UTF-8" },
-        Body: { Html: { Data: html, Charset: "UTF-8" } },
-      },
-    })
-  );
+  try {
+    await ses.send(
+      new SendEmailCommand({
+        Source: from,
+        Destination: { ToAddresses: [to] },
+        Message: {
+          Subject: { Data: subject, Charset: "UTF-8" },
+          Body: { Html: { Data: html, Charset: "UTF-8" } },
+        },
+      })
+    );
+  } catch (err) {
+    logger.error("SES send failed", { category: "email", to, subject, fromEnvKey, err });
+    throw err;
+  }
 }
 
 // --- Shared layout wrapper ---

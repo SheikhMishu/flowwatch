@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
+import { getPlanLimits } from "@/lib/plans";
 import { logger } from "@/lib/logger";
 import { logActivity } from "@/lib/activity";
 
@@ -39,6 +40,31 @@ export async function POST(req: NextRequest) {
   }
 
   const db = getServerDb();
+
+  // Enforce plan alert-rule limit and channel restrictions
+  const [{ data: orgData }, { count: alertCount }] = await Promise.all([
+    db.from("organizations").select("plan").eq("id", session.orgId).single(),
+    db.from("alerts").select("id", { count: "exact", head: true }).eq("org_id", session.orgId).eq("is_active", true),
+  ]);
+  const plan = orgData?.plan ?? "free";
+  const limits = getPlanLimits(plan);
+
+  if (limits.alertRules !== null && (alertCount ?? 0) >= limits.alertRules) {
+    return NextResponse.json(
+      {
+        error: `Your ${plan} plan allows up to ${limits.alertRules} alert rule${limits.alertRules !== 1 ? "s" : ""}. Upgrade to add more.`,
+        limitReached: true,
+        currentPlan: plan,
+      },
+      { status: 403 }
+    );
+  }
+  if (channel === "slack" && !limits.slackAlerts) {
+    return NextResponse.json(
+      { error: "Slack alerts require a Pro or Team plan.", limitReached: true, currentPlan: plan },
+      { status: 403 }
+    );
+  }
   const { data, error } = await db
     .from("alerts")
     .insert({

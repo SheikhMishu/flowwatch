@@ -1,3 +1,6 @@
+// Migration required (run once in Supabase SQL editor):
+//   ALTER TABLE pin_verifications ADD COLUMN IF NOT EXISTS failed_attempts int NOT NULL DEFAULT 0;
+
 import { NextRequest, NextResponse } from "next/server";
 import { verifyPin } from "@/lib/pin";
 import { createSession, getSessionCookieOptions } from "@/lib/auth";
@@ -5,6 +8,8 @@ import { getServerDb } from "@/lib/db";
 import type { OrgRole } from "@/types";
 import { logger } from "@/lib/logger";
 import { logActivity } from "@/lib/activity";
+
+const MAX_PIN_ATTEMPTS = 5;
 
 const DEMO_EMAIL = "demo@flowmonix.com";
 const DEMO_PIN = "123456";
@@ -40,7 +45,7 @@ export async function POST(req: NextRequest) {
     // ── Find the latest valid (unexpired, unused) PIN for this email ───────────
     const { data: pinRecord, error: pinError } = await db
       .from("pin_verifications")
-      .select("id, pin_hash, expires_at, used_at")
+      .select("id, pin_hash, expires_at, used_at, failed_attempts")
       .eq("email", email)
       .gt("expires_at", new Date().toISOString())
       .is("used_at", null)
@@ -55,12 +60,35 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // ── Brute-force guard ──────────────────────────────────────────────────────
+    if ((pinRecord.failed_attempts ?? 0) >= MAX_PIN_ATTEMPTS) {
+      // Invalidate the PIN so the user must request a new one
+      await db
+        .from("pin_verifications")
+        .update({ used_at: new Date().toISOString() })
+        .eq("id", pinRecord.id);
+      logger.warn("PIN locked after too many attempts", { category: "auth", email });
+      return NextResponse.json(
+        { error: "Too many incorrect attempts. Please request a new PIN." },
+        { status: 429 }
+      );
+    }
+
     // ── Verify PIN hash ────────────────────────────────────────────────────────
     const valid = await verifyPin(pin, pinRecord.pin_hash);
     if (!valid) {
+      // Increment failed attempt counter
+      await db
+        .from("pin_verifications")
+        .update({ failed_attempts: (pinRecord.failed_attempts ?? 0) + 1 })
+        .eq("id", pinRecord.id);
       logger.warn("PIN verification failed", { category: "auth", email });
       logActivity({ orgId: "unknown", email }, "auth.pin_failed");
-      return NextResponse.json({ error: "Incorrect PIN." }, { status: 401 });
+      const remaining = MAX_PIN_ATTEMPTS - (pinRecord.failed_attempts ?? 0) - 1;
+      return NextResponse.json(
+        { error: remaining > 0 ? `Incorrect PIN. ${remaining} attempt${remaining !== 1 ? "s" : ""} remaining.` : "Incorrect PIN. Request a new one." },
+        { status: 401 }
+      );
     }
 
     // ── Mark PIN as used ───────────────────────────────────────────────────────

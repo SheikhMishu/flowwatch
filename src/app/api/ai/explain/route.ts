@@ -2,13 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
 import { getAiDebug, type AiTier } from "@/lib/ai-debug";
+import { getPlanLimits } from "@/lib/plans";
 import { logger } from "@/lib/logger";
 import { logActivity } from "@/lib/activity";
 
-// ─── Resolve org plan → AI tier ───────────────────────────────────────────────
+// ─── Resolve org plan → AI tier + monthly limit ───────────────────────────────
 
-async function getOrgTier(orgId: string): Promise<AiTier> {
-  if (orgId === "org_demo") return "free";
+async function getOrgAiConfig(orgId: string): Promise<{ tier: AiTier; monthlyLimit: number | null }> {
+  if (orgId === "org_demo") return { tier: "free", monthlyLimit: null };
   const db = getServerDb();
   const { data } = await db
     .from("organizations")
@@ -16,7 +17,9 @@ async function getOrgTier(orgId: string): Promise<AiTier> {
     .eq("id", orgId)
     .single();
   const plan = data?.plan ?? "free";
-  return plan === "free" ? "free" : "pro";
+  const limits = getPlanLimits(plan);
+  const tier: AiTier = plan === "free" ? "free" : "pro";
+  return { tier, monthlyLimit: limits.aiRequestsPerMonth };
 }
 
 // ─── POST /api/ai/explain ─────────────────────────────────────────────────────
@@ -54,7 +57,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "workflowId and errorMessage are required" }, { status: 400 });
   }
 
-  const tier = await getOrgTier(session.orgId);
+  const { tier, monthlyLimit } = await getOrgAiConfig(session.orgId);
 
   logger.info("AI explain requested", { category: "ai", orgId: session.orgId, userId: session.userId, tier, workflowId });
 
@@ -70,6 +73,8 @@ export async function POST(req: NextRequest) {
         inputItems: inputItems ?? [],
       },
       tier,
+      session.orgId,
+      monthlyLimit,
     );
 
     logger.info("AI explain complete", {
@@ -89,6 +94,14 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ result });
   } catch (err) {
+    // Monthly limit reached — return a user-friendly 429
+    if (err instanceof Error && err.message.startsWith("LIMIT_REACHED:")) {
+      const limit = err.message.split(":")[1];
+      return NextResponse.json(
+        { error: `You've used all ${limit} AI analyses for this month. Resets on the 1st.` },
+        { status: 429 },
+      );
+    }
     logger.error("AI explain failed", { category: "ai", orgId: session.orgId, userId: session.userId, tier, workflowId, err });
     return NextResponse.json(
       { error: "AI analysis failed. Please try again." },

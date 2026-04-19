@@ -36,7 +36,7 @@ async function getCached(
   tier: AiTier,
 ): Promise<AiDebugResult | null> {
   const db = getServerDb();
-  const { data } = await db
+  const { data, error } = await db
     .from("ai_analyses")
     .select("*")
     .eq("error_signature", signature)
@@ -44,6 +44,11 @@ async function getCached(
     .order("created_at", { ascending: false })
     .limit(1)
     .single();
+
+  if (error && error.code !== "PGRST116") {
+    // PGRST116 = no rows found — expected, not an error
+    logger.warn("AI cache lookup failed", { category: "ai", signature, tier, err: error });
+  }
 
   if (!data) return null;
 
@@ -63,7 +68,7 @@ async function storeResult(
   result: Omit<AiDebugResult, "cached">,
 ) {
   const db = getServerDb();
-  await db.from("ai_analyses").insert({
+  const { error } = await db.from("ai_analyses").insert({
     error_signature: signature,
     tier: result.tier,
     model: result.model,
@@ -72,6 +77,9 @@ async function storeResult(
     fix_steps: result.fix_steps ?? null,
     prevention: result.prevention ?? null,
   });
+  if (error) {
+    logger.warn("AI cache store failed", { category: "ai", signature, tier: result.tier, err: error });
+  }
 }
 
 // ─── Free path — OpenRouter ───────────────────────────────────────────────────
@@ -163,11 +171,49 @@ async function callClaude(
   };
 }
 
+// ─── Monthly usage helpers ────────────────────────────────────────────────────
+
+function currentMonthStart(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
+}
+
+async function getMonthlyUsage(orgId: string): Promise<number> {
+  const db = getServerDb();
+  const { data, error } = await db
+    .from("ai_usage")
+    .select("count")
+    .eq("org_id", orgId)
+    .eq("month", currentMonthStart())
+    .single();
+  if (error && error.code !== "PGRST116") {
+    // PGRST116 = no rows yet for this org/month — expected for new months
+    logger.error("AI usage check failed — could not enforce monthly limit", {
+      category: "ai",
+      orgId,
+      err: error,
+    });
+    // Throw so the request is blocked rather than silently bypassing the limit
+    throw new Error("Failed to check AI usage limit. Please try again.");
+  }
+  return data?.count ?? 0;
+}
+
+async function incrementMonthlyUsage(orgId: string): Promise<void> {
+  const db = getServerDb();
+  await db.rpc("increment_ai_usage", {
+    p_org_id: orgId,
+    p_month: currentMonthStart(),
+  });
+}
+
 // ─── Main export ──────────────────────────────────────────────────────────────
 
 export async function getAiDebug(
   input: AiDebugInput,
   tier: AiTier,
+  orgId?: string,
+  monthlyLimit?: number | null,
 ): Promise<AiDebugResult> {
   const signature = generateErrorSignature(
     input.workflowId,
@@ -175,7 +221,7 @@ export async function getAiDebug(
     input.errorMessage,
   );
 
-  // Cache hit
+  // Cache hit — cached responses are free and never count against quota
   const cached = await getCached(signature, tier);
   if (cached) {
     logger.debug("AI cache hit", { category: "ai", tier, workflowId: input.workflowId, model: cached.model });
@@ -196,7 +242,15 @@ export async function getAiDebug(
     return { ...result, cached: false };
   }
 
-  // Pro
+  // Pro — enforce monthly limit before calling Anthropic
+  if (orgId && monthlyLimit != null) {
+    const used = await getMonthlyUsage(orgId);
+    if (used >= monthlyLimit) {
+      logger.warn("AI monthly limit reached", { category: "ai", orgId, used, monthlyLimit });
+      throw new Error(`LIMIT_REACHED:${monthlyLimit}`);
+    }
+  }
+
   const t0 = Date.now();
   const { cause, fix_steps, prevention } = await callClaude(input);
   const latencyMs = Date.now() - t0;
@@ -211,5 +265,13 @@ export async function getAiDebug(
     prevention,
   };
   await storeResult(signature, result);
+
+  // Increment usage counter after successful call
+  if (orgId) {
+    incrementMonthlyUsage(orgId).catch((err) =>
+      logger.error("Failed to increment AI usage", { category: "ai", orgId, err })
+    );
+  }
+
   return { ...result, cached: false };
 }

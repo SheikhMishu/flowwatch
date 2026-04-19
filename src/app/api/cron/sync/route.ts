@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { syncAllInstances } from "@/lib/sync";
 import { logger } from "@/lib/logger";
 
-// GET /api/cron/sync — Vercel Cron, runs every 5 minutes
-// Vercel sets Authorization: Bearer <CRON_SECRET> automatically
+// GET /api/cron/sync — called by cron-job.org every 5 minutes
+// Requires: Authorization: Bearer <CRON_SECRET>
 export async function GET(req: NextRequest) {
-  // In production, Vercel injects CRON_SECRET automatically.
-  // In development, skip the check so a local worker script can call freely.
+  // In production, cron-job.org sends the CRON_SECRET in the Authorization header.
+  // In development, skip the check so the local sync-worker script can call freely.
   if (process.env.NODE_ENV === "production") {
     const authHeader = req.headers.get("authorization");
     if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {

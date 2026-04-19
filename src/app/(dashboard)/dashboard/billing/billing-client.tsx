@@ -269,7 +269,7 @@ export function BillingClient({ initial }: { initial: BillingStatus }) {
           ))}
         </div>
         <p className="text-xs text-muted-foreground mt-3 text-center">
-          Payments powered by Stripe. Cancel anytime. All prices in USD.
+          Payments powered by Stripe. Cancel anytime. All prices in AUD.
         </p>
       </div>
 

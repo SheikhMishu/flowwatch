@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
 import { sendInviteEmail } from "@/lib/email";
+import { getPlanLimits } from "@/lib/plans";
 import type { OrgRole } from "@/types";
 import { logger } from "@/lib/logger";
 import { logActivity } from "@/lib/activity";
@@ -28,6 +29,29 @@ export async function POST(req: NextRequest) {
     }
 
     const db = getServerDb();
+
+    // Enforce plan member limit
+    const [{ data: orgData }, { count: memberCount }, { count: pendingCount }] = await Promise.all([
+      db.from("organizations").select("plan").eq("id", session.orgId).single(),
+      db.from("organization_members").select("id", { count: "exact", head: true }).eq("org_id", session.orgId),
+      db.from("organization_invites")
+        .select("id", { count: "exact", head: true })
+        .eq("org_id", session.orgId)
+        .is("accepted_at", null)
+        .gt("expires_at", new Date().toISOString()),
+    ]);
+    const plan = orgData?.plan ?? "free";
+    const limits = getPlanLimits(plan);
+    if (limits.members !== null && (memberCount ?? 0) + (pendingCount ?? 0) >= limits.members) {
+      return NextResponse.json(
+        {
+          error: `Your ${plan} plan allows up to ${limits.members} team member${limits.members !== 1 ? "s" : ""}. Upgrade to invite more.`,
+          limitReached: true,
+          currentPlan: plan,
+        },
+        { status: 403 }
+      );
+    }
 
     // Check if already a member
     const { data: existingMember } = await db
