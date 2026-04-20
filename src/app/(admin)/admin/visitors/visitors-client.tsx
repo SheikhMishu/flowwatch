@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
-import { Monitor, Smartphone, Tablet, Bot, Globe, Search } from "lucide-react";
+import { Monitor, Smartphone, Tablet, Bot, Globe, Search, WifiOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Visit } from "./page";
 
@@ -26,6 +26,8 @@ interface Props {
   topReferrers: Array<{ referrer: string; count: number }>;
   topBrowsers: Array<{ browser: string; count: number }>;
   dailyVisits: Array<{ date: string; count: number }>;
+  myIp: string;
+  excludedIps: string[];
 }
 
 function DeviceIcon({ device }: { device: string | null }) {
@@ -73,6 +75,8 @@ export function VisitorsClient({
   topReferrers,
   topBrowsers,
   dailyVisits,
+  myIp,
+  excludedIps,
 }: Props) {
   const [search, setSearch] = useState("");
 
@@ -102,6 +106,31 @@ export function VisitorsClient({
       <div>
         <h1 className="text-xl font-bold text-gray-100">Visitor Analytics</h1>
         <p className="text-sm text-gray-500 mt-0.5">Real-time page visit tracking across all FlowMonix pages</p>
+      </div>
+
+      {/* IP info banner */}
+      <div className="flex flex-wrap items-center gap-3 bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-xs">
+        <div className="flex items-center gap-2">
+          <span className="text-gray-500">Your current IP:</span>
+          <code className="font-mono text-amber-400 bg-gray-800 px-1.5 py-0.5 rounded">{myIp}</code>
+          {excludedIps.includes(myIp) ? (
+            <span className="flex items-center gap-1 text-green-500">
+              <WifiOff className="w-3 h-3" />
+              excluded
+            </span>
+          ) : (
+            <span className="text-gray-600">not excluded</span>
+          )}
+        </div>
+        <div className="h-3 w-px bg-gray-800 hidden sm:block" />
+        <div className="flex items-center gap-2">
+          <span className="text-gray-500">TRACKING_EXCLUDED_IPS:</span>
+          {excludedIps.length > 0 ? (
+            <span className="font-mono text-gray-400">{excludedIps.join(", ")}</span>
+          ) : (
+            <span className="text-gray-700 italic">not set</span>
+          )}
+        </div>
       </div>
 
       {/* Stat cards */}

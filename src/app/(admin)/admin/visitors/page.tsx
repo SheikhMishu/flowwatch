@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
 import { VisitorsClient } from "./visitors-client";
@@ -8,6 +9,18 @@ export const dynamic = "force-dynamic";
 export default async function AdminVisitorsPage() {
   const session = await getSession();
   if (!session) redirect("/login");
+
+  const reqHeaders = await headers();
+  const myIp =
+    reqHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    reqHeaders.get("x-real-ip") ??
+    reqHeaders.get("cf-connecting-ip") ??
+    "unknown";
+
+  const excludedIps = (process.env.TRACKING_EXCLUDED_IPS ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 
   const db = getServerDb();
   const { data: adminUser } = await db
@@ -166,6 +179,8 @@ export default async function AdminVisitorsPage() {
       topReferrers={topReferrers}
       topBrowsers={topBrowsers}
       dailyVisits={dailyVisits}
+      myIp={myIp}
+      excludedIps={excludedIps}
     />
   );
 }
