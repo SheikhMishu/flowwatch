@@ -1,4 +1,5 @@
 import { ArrowRight, Check } from 'lucide-react'
+import { AnimateOnScroll } from './animate-on-scroll'
 
 const plans = [
   {
@@ -15,8 +16,8 @@ const plans = [
     ],
     cta: 'Get Started',
     popular: false,
-    cardStyle: 'glass-card hover:border-white/10',
-    ctaStyle: 'border border-white/10 text-zinc-300 hover:border-white/20 hover:text-white hover:bg-white/5',
+    cardStyle: 'glass-card hover:border-zinc-300 hover:shadow-md',
+    ctaStyle: 'border border-zinc-200 text-zinc-600 hover:border-zinc-300 hover:text-zinc-900 hover:bg-zinc-50',
   },
   {
     name: 'Pro',
@@ -33,7 +34,7 @@ const plans = [
     ],
     cta: 'Get Started',
     popular: true,
-    cardStyle: 'gradient-border bg-[#09090b] shadow-xl shadow-indigo-900/20',
+    cardStyle: 'gradient-border shadow-xl shadow-indigo-200/60',
     ctaStyle: 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:opacity-90',
   },
   {
@@ -51,34 +52,36 @@ const plans = [
     ],
     cta: 'Get Started',
     popular: false,
-    cardStyle: 'glass-card hover:border-white/10',
-    ctaStyle: 'border border-white/10 text-zinc-300 hover:border-white/20 hover:text-white hover:bg-white/5',
+    cardStyle: 'glass-card hover:border-zinc-300 hover:shadow-md',
+    ctaStyle: 'border border-zinc-200 text-zinc-600 hover:border-zinc-300 hover:text-zinc-900 hover:bg-zinc-50',
   },
 ]
 
 export default function Pricing() {
   return (
-    <section className="py-28 bg-[#09090b]">
+    <section className="py-28 bg-[#f8fafc]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
-          <p className="text-xs font-bold uppercase tracking-widest text-indigo-400 mb-5">Pricing</p>
-          <h2 className="font-display font-bold text-4xl sm:text-5xl text-white">
+        <AnimateOnScroll className="text-center mb-16">
+          <p className="text-xs font-bold uppercase tracking-widest text-indigo-600 mb-5">Pricing</p>
+          <h2 className="font-display font-bold text-4xl sm:text-5xl text-zinc-900">
             Simple pricing.{' '}
-            <span className="text-zinc-600">No surprises.</span>
+            <span className="text-zinc-400">No surprises.</span>
           </h2>
           <p className="mt-4 text-zinc-500 text-lg">
             Start free — no credit card required.
           </p>
-        </div>
+        </AnimateOnScroll>
 
         {/* Anchor nudge */}
-        <p className="text-center text-xs font-semibold text-indigo-400 uppercase tracking-widest mb-6">
-          Most agencies choose Team
-        </p>
+        <AnimateOnScroll animation="fade-in" delay={100} className="text-center mb-6">
+          <p className="text-xs font-semibold text-indigo-600 uppercase tracking-widest">
+            Most agencies choose Team
+          </p>
+        </AnimateOnScroll>
 
         {/* Plan cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
+        <AnimateOnScroll animation="stagger-children" className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
           {plans.map((plan) => (
             <div key={plan.name} className={`relative rounded-2xl p-7 transition-all duration-300 ${plan.cardStyle}`}>
               {/* Popular badge */}
@@ -92,19 +95,19 @@ export default function Pricing() {
 
               {/* Plan header */}
               <div className="mb-6">
-                <p className="text-zinc-400 font-semibold text-sm mb-1">{plan.name}</p>
+                <p className="text-zinc-500 font-semibold text-sm mb-1">{plan.name}</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="font-display font-extrabold text-4xl text-white">{plan.price}</span>
-                  {plan.per && <span className="text-zinc-600 text-sm">{plan.per}</span>}
+                  <span className="font-display font-extrabold text-4xl text-zinc-900">{plan.price}</span>
+                  {plan.per && <span className="text-zinc-400 text-sm">{plan.per}</span>}
                 </div>
-                <p className="text-zinc-600 text-xs mt-2 leading-relaxed">{plan.description}</p>
+                <p className="text-zinc-400 text-xs mt-2 leading-relaxed">{plan.description}</p>
               </div>
 
               {/* Features */}
               <ul className="space-y-3 mb-7">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2.5 text-sm text-zinc-400">
-                    <Check className="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5" />
+                  <li key={f} className="flex items-start gap-2.5 text-sm text-zinc-600">
+                    <Check className="w-4 h-4 text-indigo-500 flex-shrink-0 mt-0.5" />
                     {f}
                   </li>
                 ))}
@@ -120,10 +123,10 @@ export default function Pricing() {
               </a>
             </div>
           ))}
-        </div>
+        </AnimateOnScroll>
 
         {/* Footnote */}
-        <p className="text-center text-zinc-700 text-xs mt-8">
+        <p className="text-center text-zinc-400 text-xs mt-8">
           All plans include public status page, in-app help center, and branded email notifications.
         </p>
       </div>

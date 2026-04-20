@@ -1,4 +1,5 @@
 import { EyeOff, FileSearch, Timer, MessageCircleWarning } from 'lucide-react'
+import { AnimateOnScroll } from './animate-on-scroll'
 
 const problems = [
   {
@@ -41,36 +42,36 @@ const problems = [
 
 export default function Problem() {
   return (
-    <section className="py-28 bg-[#0d0d14]">
+    <section className="py-28 bg-[#f1f5f9]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
-          <p className="text-xs font-bold uppercase tracking-widest text-red-400 mb-5">The Problem</p>
-          <h2 className="font-display font-bold text-4xl sm:text-5xl text-white leading-tight">
+        <AnimateOnScroll className="text-center mb-16">
+          <p className="text-xs font-bold uppercase tracking-widest text-red-500 mb-5">The Problem</p>
+          <h2 className="font-display font-bold text-4xl sm:text-5xl text-zinc-900 leading-tight">
             n8n is powerful — but when something
             <br className="hidden sm:block" /> breaks,{' '}
-            <span className="text-red-400">you&apos;re blind.</span>
+            <span className="text-red-500">you&apos;re blind.</span>
           </h2>
-        </div>
+        </AnimateOnScroll>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <AnimateOnScroll animation="stagger-children" className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {problems.map((p) => {
             const Icon = p.icon
             return (
               <div
                 key={p.title}
-                className={`glass-card rounded-2xl p-7 group transition-all duration-300 ${p.borderAccent} hover:bg-white/[0.03]`}
+                className={`glass-card rounded-2xl p-7 group transition-all duration-300 ${p.borderAccent} hover:shadow-md`}
               >
                 <div className={`w-11 h-11 rounded-xl ${p.iconBg} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}>
                   <Icon className={`w-5 h-5 ${p.iconColor}`} />
                 </div>
-                <h3 className="font-display font-bold text-white text-lg mb-2">{p.title}</h3>
+                <h3 className="font-display font-bold text-zinc-900 text-lg mb-2">{p.title}</h3>
                 <p className="text-zinc-500 text-sm leading-relaxed">{p.description}</p>
               </div>
             )
           })}
-        </div>
+        </AnimateOnScroll>
       </div>
     </section>
   )

@@ -1,10 +1,11 @@
 import { ArrowRight, Sparkles } from 'lucide-react'
+import { AnimateOnScroll } from './animate-on-scroll'
 
 export default function CtaFinal() {
   return (
-    <section className="py-24 bg-[#0d0d14] overflow-hidden">
+    <section className="py-24 bg-[#f1f5f9] overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative rounded-3xl overflow-hidden">
+        <AnimateOnScroll animation="scale-up" className="relative rounded-3xl overflow-hidden">
           {/* Gradient background */}
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-700" />
 
@@ -48,7 +49,7 @@ export default function CtaFinal() {
               <ArrowRight className="w-5 h-5" />
             </a>
           </div>
-        </div>
+        </AnimateOnScroll>
       </div>
     </section>
   )

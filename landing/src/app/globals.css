@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 :root {
-  --bg-base: #09090b;
-  --bg-raised: #0d0d14;
-  --bg-surface: #111118;
+  --bg-base: #f8fafc;
+  --bg-raised: #f1f5f9;
+  --bg-surface: #ffffff;
 }
 
 html {
@@ -14,7 +14,7 @@ html {
 
 body {
   background-color: var(--bg-base);
-  color: #f4f4f5;
+  color: #18181b;
   font-family: var(--font-body), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -22,7 +22,7 @@ body {
 
 /* Dot grid background */
 .dot-grid {
-  background-image: radial-gradient(circle, rgba(99, 102, 241, 0.12) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(99, 102, 241, 0.18) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
@@ -36,8 +36,8 @@ body {
 
 /* Glass card */
 .glass-card {
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
 }
 
 /* Gradient border pill/card */
@@ -76,8 +76,94 @@ body {
 .delay-500 { animation-delay: 500ms; }
 .delay-600 { animation-delay: 600ms; }
 
+/* ─────────────────────────────────────── */
+/* Scroll-triggered entrance animations    */
+/* ─────────────────────────────────────── */
+
+/* fade-up */
+.anim-fade-up {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.anim-fade-up[data-visible="true"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* fade-in */
+.anim-fade-in {
+  opacity: 0;
+  transition: opacity 0.75s ease;
+}
+.anim-fade-in[data-visible="true"] {
+  opacity: 1;
+}
+
+/* scale-up (nice for CTA cards) */
+.anim-scale-up {
+  opacity: 0;
+  transform: scale(0.94) translateY(18px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.anim-scale-up[data-visible="true"] {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* stagger-children — direct children fade-up in sequence */
+.anim-stagger-children > * {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.anim-stagger-children[data-visible="true"] > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+.anim-stagger-children[data-visible="true"] > *:nth-child(1)  { transition-delay:   0ms; }
+.anim-stagger-children[data-visible="true"] > *:nth-child(2)  { transition-delay:  85ms; }
+.anim-stagger-children[data-visible="true"] > *:nth-child(3)  { transition-delay: 170ms; }
+.anim-stagger-children[data-visible="true"] > *:nth-child(4)  { transition-delay: 255ms; }
+.anim-stagger-children[data-visible="true"] > *:nth-child(5)  { transition-delay: 340ms; }
+.anim-stagger-children[data-visible="true"] > *:nth-child(6)  { transition-delay: 425ms; }
+
+/* ─────────────────────────────────── */
+/* Hero mockup floating animation      */
+/* ─────────────────────────────────── */
+.float-anim {
+  animation: floatBob 6s ease-in-out 1.5s infinite;
+}
+
+@keyframes floatBob {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+
+/* ─────────────────────────────────── */
+/* Reduced-motion overrides            */
+/* ─────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .anim-fade-up,
+  .anim-fade-in,
+  .anim-scale-up {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .anim-stagger-children > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .float-anim {
+    animation: none;
+  }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar       { width: 5px; }
-::-webkit-scrollbar-track { background: #09090b; }
-::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+::-webkit-scrollbar-track { background: #f8fafc; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }

@@ -1,4 +1,5 @@
 import { Building2, User, Users } from 'lucide-react'
+import { AnimateOnScroll } from './animate-on-scroll'
 
 const audiences = [
   {
@@ -38,31 +39,31 @@ const audiences = [
 
 export default function WhoItsFor() {
   return (
-    <section className="py-28 bg-[#0d0d14]">
+    <section className="py-28 bg-[#f1f5f9]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="font-display font-bold text-4xl sm:text-5xl text-white leading-tight">
+        <AnimateOnScroll className="text-center mb-16">
+          <h2 className="font-display font-bold text-4xl sm:text-5xl text-zinc-900 leading-tight">
             Built for people who{' '}
             <span className="gradient-text">can&apos;t afford</span>
             <br className="hidden sm:block" /> silent failures.
           </h2>
-        </div>
+        </AnimateOnScroll>
 
         {/* Audience cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <AnimateOnScroll animation="stagger-children" className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {audiences.map((a) => {
             const Icon = a.icon
             return (
               <div
                 key={a.title}
-                className="group glass-card rounded-2xl p-7 hover:border-white/10 transition-all duration-300"
+                className="group glass-card rounded-2xl p-7 hover:border-indigo-200 hover:shadow-md transition-all duration-300"
               >
                 <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${a.gradient} ${a.hoverGradient} flex items-center justify-center mb-5 group-hover:scale-110 transition-all duration-300`}>
                   <Icon className={`w-6 h-6 ${a.iconColor}`} />
                 </div>
 
-                <h3 className="font-display font-bold text-white text-xl mb-3">{a.title}</h3>
+                <h3 className="font-display font-bold text-zinc-900 text-xl mb-3">{a.title}</h3>
                 <p className="text-zinc-500 text-sm leading-relaxed mb-5">{a.description}</p>
 
                 <div className="flex flex-wrap gap-2">
@@ -75,7 +76,7 @@ export default function WhoItsFor() {
               </div>
             )
           })}
-        </div>
+        </AnimateOnScroll>
       </div>
     </section>
   )
