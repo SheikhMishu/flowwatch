@@ -35,6 +35,15 @@ export default async function AdminVisitorsPage() {
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
+  // Helper: applies excluded-IP filter to any query when list is non-empty
+  const ipFilter = excludedIps.length > 0
+    ? `(${excludedIps.join(",")})`
+    : null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function withIpFilter<T extends { not: (...args: any[]) => T }>(q: T): T {
+    return ipFilter ? q.not("ip", "in", ipFilter) : q;
+  }
+
   const [
     { count: totalVisits },
     { count: visitsToday },
@@ -48,48 +57,62 @@ export default async function AdminVisitorsPage() {
     { data: dailyData },
   ] = await Promise.all([
     // Totals
-    db.from("page_visits").select("id", { count: "exact", head: true }),
-    db.from("page_visits").select("id", { count: "exact", head: true }).gte("created_at", todayStart),
-    db.from("page_visits").select("id", { count: "exact", head: true }).gte("created_at", weekAgo),
+    withIpFilter(db.from("page_visits").select("id", { count: "exact", head: true })),
+    withIpFilter(db.from("page_visits").select("id", { count: "exact", head: true }).gte("created_at", todayStart)),
+    withIpFilter(db.from("page_visits").select("id", { count: "exact", head: true }).gte("created_at", weekAgo)),
 
     // Recent 200 visits for the table
-    db.from("page_visits")
-      .select("id, page, ip, country, country_code, city, region, browser, os, device, referrer, created_at")
-      .order("created_at", { ascending: false })
-      .limit(200),
+    withIpFilter(
+      db.from("page_visits")
+        .select("id, page, ip, country, country_code, city, region, browser, os, device, referrer, created_at")
+        .order("created_at", { ascending: false })
+        .limit(200)
+    ),
 
     // Top pages (last 30 days)
-    db.from("page_visits")
-      .select("page")
-      .gte("created_at", thirtyDaysAgo),
+    withIpFilter(
+      db.from("page_visits")
+        .select("page")
+        .gte("created_at", thirtyDaysAgo)
+    ),
 
     // Country breakdown (last 30 days)
-    db.from("page_visits")
-      .select("country, country_code")
-      .gte("created_at", thirtyDaysAgo)
-      .not("country_code", "is", null),
+    withIpFilter(
+      db.from("page_visits")
+        .select("country, country_code")
+        .gte("created_at", thirtyDaysAgo)
+        .not("country_code", "is", null)
+    ),
 
     // Device breakdown (last 30 days)
-    db.from("page_visits")
-      .select("device")
-      .gte("created_at", thirtyDaysAgo),
+    withIpFilter(
+      db.from("page_visits")
+        .select("device")
+        .gte("created_at", thirtyDaysAgo)
+    ),
 
     // Referrer breakdown (last 30 days)
-    db.from("page_visits")
-      .select("referrer")
-      .gte("created_at", thirtyDaysAgo)
-      .not("referrer", "is", null),
+    withIpFilter(
+      db.from("page_visits")
+        .select("referrer")
+        .gte("created_at", thirtyDaysAgo)
+        .not("referrer", "is", null)
+    ),
 
     // Browser breakdown (last 30 days)
-    db.from("page_visits")
-      .select("browser")
-      .gte("created_at", thirtyDaysAgo),
+    withIpFilter(
+      db.from("page_visits")
+        .select("browser")
+        .gte("created_at", thirtyDaysAgo)
+    ),
 
     // Daily visits for last 30 days
-    db.from("page_visits")
-      .select("created_at")
-      .gte("created_at", thirtyDaysAgo)
-      .order("created_at", { ascending: true }),
+    withIpFilter(
+      db.from("page_visits")
+        .select("created_at")
+        .gte("created_at", thirtyDaysAgo)
+        .order("created_at", { ascending: true })
+    ),
   ]);
 
   // Aggregate top pages

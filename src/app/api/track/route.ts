@@ -21,6 +21,15 @@ export async function POST(req: NextRequest) {
     // Skip bots from storage (still counted in request but not stored)
     if (device === "bot") return NextResponse.json({ ok: true });
 
+    // Skip excluded IPs (e.g. owner's IP set via TRACKING_EXCLUDED_IPS env var)
+    const excludedIps = (process.env.TRACKING_EXCLUDED_IPS ?? "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (excludedIps.length > 0 && excludedIps.includes(ip)) {
+      return NextResponse.json({ ok: true });
+    }
+
     // Geo lookup via ip-api.com (free, no key, 45 req/min limit)
     let country: string | null = null;
     let countryCode: string | null = null;
