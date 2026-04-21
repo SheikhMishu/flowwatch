@@ -23,7 +23,7 @@ export default function Hero() {
         </div>
         <a
           href="#signup"
-          className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 transition-colors duration-200"
+          className="flex items-center gap-1.5 text-sm text-zinc-300 hover:text-zinc-900 transition-colors duration-200"
         >
           Get Started <ArrowRight className="w-3.5 h-3.5" />
         </a>
@@ -88,7 +88,7 @@ export default function Hero() {
                   <div className="w-3 h-3 rounded-full bg-zinc-800" />
                   <div className="w-3 h-3 rounded-full bg-zinc-800" />
                 </div>
-                <div className="text-[11px] text-zinc-700 font-mono">app.flowmonix.com/dashboard</div>
+                <div className="text-[11px] text-zinc-400 font-mono">app.flowmonix.com/dashboard</div>
                 <div className="w-16" />
               </div>
 

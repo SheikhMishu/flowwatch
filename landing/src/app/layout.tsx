@@ -3,6 +3,22 @@ import { Bricolage_Grotesque, DM_Sans } from 'next/font/google'
 import Script from 'next/script'
 import './globals.css'
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'FlowMonix',
+  applicationCategory: 'DeveloperApplication',
+  operatingSystem: 'Web-based',
+  url: 'https://flowmonix.com',
+  description:
+    'FlowMonix monitors your n8n workflows in real time, groups failures into incidents, and explains errors with AI.',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+}
+
 const bricolage = Bricolage_Grotesque({
   subsets: ['latin'],
   variable: '--font-display',
@@ -20,8 +36,11 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: 'FlowMonix — n8n Workflow Monitoring & Incident Detection',
   description:
-    'FlowMonix monitors your n8n workflows in real time, groups failures into incidents, and explains errors with AI — so you can find and fix issues in seconds, not hours. Built for agencies and freelancers.',
+    'FlowMonix monitors your n8n workflows in real time, groups failures into incidents, and explains errors with AI. Fix issues in seconds, not hours.',
   metadataBase: new URL('https://flowmonix.com'),
+  alternates: {
+    canonical: 'https://flowmonix.com',
+  },
   openGraph: {
     title: 'FlowMonix — n8n Workflow Monitoring & Incident Detection',
     description:
@@ -41,6 +60,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${bricolage.variable} ${dmSans.variable}`}>
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         {children}
         <Script
           defer
