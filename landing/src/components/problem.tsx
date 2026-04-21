@@ -67,7 +67,7 @@ export default function Problem() {
                   <Icon className={`w-5 h-5 ${p.iconColor}`} />
                 </div>
                 <h3 className="font-display font-bold text-zinc-900 text-lg mb-2">{p.title}</h3>
-                <p className="text-zinc-500 text-sm leading-relaxed">{p.description}</p>
+                <p className="text-zinc-600 text-sm leading-relaxed">{p.description}</p>
               </div>
             )
           })}

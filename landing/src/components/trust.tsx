@@ -73,7 +73,7 @@ export default function Trust() {
                   <Icon className="w-4.5 h-4.5 text-indigo-500" />
                 </div>
                 <p className="text-zinc-800 text-sm font-semibold mb-2">{item.title}</p>
-                <p className="text-zinc-500 text-sm leading-relaxed">{item.body}</p>
+                <p className="text-zinc-600 text-sm leading-relaxed">{item.body}</p>
               </div>
             )
           })}

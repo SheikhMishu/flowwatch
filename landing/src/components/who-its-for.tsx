@@ -64,7 +64,7 @@ export default function WhoItsFor() {
                 </div>
 
                 <h3 className="font-display font-bold text-zinc-900 text-xl mb-3">{a.title}</h3>
-                <p className="text-zinc-500 text-sm leading-relaxed mb-5">{a.description}</p>
+                <p className="text-zinc-600 text-sm leading-relaxed mb-5">{a.description}</p>
 
                 <div className="flex flex-wrap gap-2">
                   {a.tags.map((tag) => (

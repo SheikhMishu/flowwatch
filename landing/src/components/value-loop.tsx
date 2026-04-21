@@ -54,7 +54,7 @@ export default function ValueLoop() {
             From failure to fixed —{' '}
             <span className="gradient-text">in seconds.</span>
           </h2>
-          <p className="mt-4 text-zinc-500 text-lg max-w-lg mx-auto">
+          <p className="mt-4 text-zinc-600 text-lg max-w-lg mx-auto">
             The entire resolution loop happens inside FlowMonix. No context switching, no tab diving.
           </p>
         </AnimateOnScroll>
@@ -82,7 +82,7 @@ export default function ValueLoop() {
                       0{i + 1}
                     </div>
                     <p className="text-sm font-semibold text-zinc-800 leading-snug">{step.label}</p>
-                    <p className="text-xs text-zinc-500 mt-1 leading-snug">{step.sub}</p>
+                    <p className="text-xs text-zinc-600 mt-1 leading-snug">{step.sub}</p>
                   </div>
                 </div>
               )
@@ -111,7 +111,7 @@ export default function ValueLoop() {
                     0{i + 1}
                   </div>
                   <p className="text-sm font-semibold text-zinc-800">{step.label}</p>
-                  <p className="text-xs text-zinc-500 mt-0.5">{step.sub}</p>
+                  <p className="text-xs text-zinc-600 mt-0.5">{step.sub}</p>
                 </div>
               </div>
             )

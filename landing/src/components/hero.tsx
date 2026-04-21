@@ -23,7 +23,7 @@ export default function Hero() {
         </div>
         <a
           href="#signup"
-          className="flex items-center gap-1.5 text-sm text-zinc-300 hover:text-zinc-900 transition-colors duration-200"
+          className="flex items-center gap-1.5 text-sm text-zinc-800 hover:text-zinc-900 transition-colors duration-200"
         >
           Get Started <ArrowRight className="w-3.5 h-3.5" />
         </a>
