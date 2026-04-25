@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;800&amp;display=swap');</style>
+  <defs>
+    <linearGradient id="mark-bg" x1="63" y1="208" x2="159" y2="304" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5B4FE8"/>
+      <stop offset="1" stop-color="#7B5FED"/>
+    </linearGradient>
+    <!-- "monix" wordmark gradient -->
+    <linearGradient id="wm" x1="299" y1="0" x2="434" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#818CF8"/>
+      <stop offset="1" stop-color="#A78BFA"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer background -->
+  <rect width="512" height="512" fill="#0F1117"/>
+  <!-- Card -->
+  <rect x="32" y="32" width="448" height="448" rx="32" fill="#16192A" stroke="#1E2235" stroke-width="1.5"/>
+
+  <!-- Mark: 96×96 at (63, 208), center y=256 — icon left of wordmark (guideline) -->
+  <rect x="63" y="208" width="96" height="96" rx="27" fill="url(#mark-bg)"/>
+  <!-- Mark paths scaled ×3 from 32×32, offset (63, 208) -->
+  <line x1="90" y1="256" x2="97.5" y2="256" stroke="white" stroke-width="6.6" opacity="0.75" stroke-linecap="round"/>
+  <line x1="124.5" y1="256" x2="132" y2="256" stroke="white" stroke-width="6.6" opacity="0.75" stroke-linecap="round"/>
+  <circle cx="79.5" cy="256" r="10.5" fill="white"/>
+  <circle cx="111" cy="256" r="14.4" fill="none" stroke="white" stroke-width="7.2"/>
+  <circle cx="111" cy="256" r="6.3" fill="white"/>
+  <circle cx="142.5" cy="256" r="10.5" fill="white"/>
+
+  <!-- Wordmark: 64px, baseline y=279 (cap-height centered at y=256) -->
+  <text y="279" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="64" letter-spacing="-0.03em">
+    <tspan x="179" font-weight="800" fill="white">Flow</tspan><tspan font-weight="400" fill="url(#wm)">monix</tspan>
+  </text>
+</svg>

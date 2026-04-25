@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 96" width="420" height="96" fill="none">
+  <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;800&amp;display=swap');</style>
+  <defs>
+    <!-- Mark gradient -->
+    <linearGradient id="mark-bg" x1="16" y1="16" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5B4FE8"/>
+      <stop offset="1" stop-color="#7B5FED"/>
+    </linearGradient>
+    <!-- Wordmark "monix" gradient -->
+    <linearGradient id="wm" x1="185" y1="0" x2="295" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#818CF8"/>
+      <stop offset="1" stop-color="#A78BFA"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Mark: 64×64 centered in 96px height, x=16 -->
+  <rect x="16" y="16" width="64" height="64" rx="18" fill="url(#mark-bg)"/>
+  <!-- Paths scaled ×2 from 32×32, offset x=16 y=16 -->
+  <line x1="34" y1="48" x2="39" y2="48" stroke="white" stroke-width="4.4" opacity="0.75" stroke-linecap="round"/>
+  <line x1="57" y1="48" x2="62" y2="48" stroke="white" stroke-width="4.4" opacity="0.75" stroke-linecap="round"/>
+  <circle cx="27" cy="48" r="7" fill="white"/>
+  <circle cx="48" cy="48" r="9.6" fill="none" stroke="white" stroke-width="4.8"/>
+  <circle cx="48" cy="48" r="4.2" fill="white"/>
+  <circle cx="69" cy="48" r="7" fill="white"/>
+
+  <!-- Wordmark: baseline y=62 (cap-height centered in 96px) -->
+  <text y="62" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="40" letter-spacing="-0.02em">
+    <tspan x="96" font-weight="800" fill="white">Flow</tspan><tspan font-weight="400" fill="url(#wm)">monix</tspan>
+  </text>
+</svg>

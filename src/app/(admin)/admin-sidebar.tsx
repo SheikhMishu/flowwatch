@@ -10,44 +10,26 @@ import {
   ArrowLeft,
   Shield,
   Eye,
+  X,
 } from "lucide-react";
 import { FlowMonixMark } from "@/components/brand/mark";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  {
-    label: "Overview",
-    href: "/admin",
-    icon: LayoutDashboard,
-  },
-  {
-    label: "Organizations",
-    href: "/admin/orgs",
-    icon: Building2,
-  },
-  {
-    label: "Users",
-    href: "/admin/users",
-    icon: Users,
-  },
-  {
-    label: "Usage",
-    href: "/admin/usage",
-    icon: Activity,
-  },
-  {
-    label: "Visitors",
-    href: "/admin/visitors",
-    icon: Eye,
-  },
+  { label: "Overview",      href: "/admin",         icon: LayoutDashboard },
+  { label: "Organizations", href: "/admin/orgs",    icon: Building2 },
+  { label: "Users",         href: "/admin/users",   icon: Users },
+  { label: "Usage",         href: "/admin/usage",   icon: Activity },
+  { label: "Visitors",      href: "/admin/visitors",icon: Eye },
 ];
 
 interface AdminSidebarProps {
   userEmail: string;
   userName: string;
+  onClose?: () => void;
 }
 
-export function AdminSidebar({ userEmail, userName }: AdminSidebarProps) {
+export function AdminSidebar({ userEmail, userName, onClose }: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -57,7 +39,7 @@ export function AdminSidebar({ userEmail, userName }: AdminSidebarProps) {
         <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center flex-shrink-0">
           <FlowMonixMark className="w-4 h-4" />
         </div>
-        <div className="flex flex-col min-w-0">
+        <div className="flex flex-col min-w-0 flex-1">
           <span className="text-gray-100 font-semibold text-sm leading-none">
             FlowMonix
           </span>
@@ -66,13 +48,22 @@ export function AdminSidebar({ userEmail, userName }: AdminSidebarProps) {
             Super Admin
           </span>
         </div>
+        {/* Close button — mobile only */}
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-md text-gray-500 hover:text-gray-300 hover:bg-gray-800 transition-colors md:hidden flex-shrink-0"
+            aria-label="Close navigation"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Nav */}
       <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
-          // Exact match for overview, prefix match for the rest
           const isActive =
             item.href === "/admin"
               ? pathname === "/admin"
@@ -82,8 +73,9 @@ export function AdminSidebar({ userEmail, userName }: AdminSidebarProps) {
             <Link
               key={item.href}
               href={item.href}
+              onClick={onClose}
               className={cn(
-                "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                 isActive
                   ? "bg-indigo-600/20 text-indigo-400 border border-indigo-600/30"
                   : "text-gray-400 hover:text-gray-100 hover:bg-gray-800/60 border border-transparent"
@@ -105,7 +97,8 @@ export function AdminSidebar({ userEmail, userName }: AdminSidebarProps) {
 
         <Link
           href="/dashboard"
-          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-300 hover:bg-gray-800/40 border border-transparent transition-colors"
+          onClick={onClose}
+          className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-300 hover:bg-gray-800/40 border border-transparent transition-colors"
         >
           <ArrowLeft className="w-4 h-4 flex-shrink-0" />
           Back to App

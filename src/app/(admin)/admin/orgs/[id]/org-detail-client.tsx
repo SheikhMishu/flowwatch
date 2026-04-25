@@ -204,7 +204,7 @@ export function OrgDetailClient({
   }));
 
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-6">
+    <div className="p-4 sm:p-6 max-w-6xl mx-auto space-y-6">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 text-xs text-muted-foreground">
         <Link href="/admin" className="hover:text-foreground transition-colors">
@@ -284,7 +284,7 @@ export function OrgDetailClient({
       </div>
 
       {/* ── Stats Row ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatCard
           icon={GitBranch}
           label="Workflows"
@@ -315,20 +315,20 @@ export function OrgDetailClient({
 
       {/* ── AI Usage ── */}
       <div className="rounded-xl border border-border bg-card p-5 space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <Cpu className="w-4 h-4 text-indigo-500" />
             <h2 className="text-sm font-semibold text-foreground">AI Usage</h2>
           </div>
           <div className="flex items-center gap-5 text-xs">
-            <div className="text-right">
+            <div>
               <p className="text-muted-foreground">This month</p>
               <p className="font-semibold text-foreground tabular-nums">
                 {aiThisMonth.toLocaleString()}
               </p>
             </div>
             <Separator orientation="vertical" className="h-6" />
-            <div className="text-right">
+            <div>
               <p className="text-muted-foreground">All time</p>
               <p className="font-semibold text-foreground tabular-nums">
                 {aiTotal.toLocaleString()}

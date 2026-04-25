@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 312" width="820" height="312" fill="none">
+  <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;800&amp;display=swap');</style>
+  <defs>
+    <pattern id="dots" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="14" cy="14" r="1.2" fill="white" opacity="0.06"/>
+    </pattern>
+    <radialGradient id="glow" cx="50%" cy="50%" r="60%" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#5B4FE8" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#0F1117" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="820" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5B4FE8" stop-opacity="0"/>
+      <stop offset="0.25" stop-color="#5B4FE8"/>
+      <stop offset="0.75" stop-color="#7B5FED"/>
+      <stop offset="1" stop-color="#7B5FED" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Mark background -->
+    <linearGradient id="mark-bg" x1="225" y1="96" x2="321" y2="192" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5B4FE8"/>
+      <stop offset="1" stop-color="#7B5FED"/>
+    </linearGradient>
+    <!-- "monix" wordmark gradient — positioned after "Flow" at 60px starting x=341 -->
+    <linearGradient id="wm" x1="462" y1="0" x2="600" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#818CF8"/>
+      <stop offset="1" stop-color="#A78BFA"/>
+    </linearGradient>
+    <!-- Tagline separator -->
+    <linearGradient id="sep" x1="310" y1="0" x2="510" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5B4FE8" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#818CF8" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#7B5FED" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background layers -->
+  <rect width="820" height="312" fill="#0F1117"/>
+  <rect width="820" height="312" fill="url(#dots)"/>
+  <rect width="820" height="312" fill="url(#glow)"/>
+  <rect x="0" y="0" width="820" height="3" fill="url(#accent)"/>
+
+  <!-- ─── Logo group — total width ≈370px, centered at x=410 → starts x=225 ─── -->
+  <!-- Mark: 96×96 at (225, 96), center y=144 -->
+  <rect x="225" y="96" width="96" height="96" rx="27" fill="url(#mark-bg)"/>
+  <!-- Mark paths scaled ×3 from 32×32, offset (225, 96) -->
+  <line x1="252" y1="144" x2="259.5" y2="144" stroke="white" stroke-width="6.6" opacity="0.75" stroke-linecap="round"/>
+  <line x1="286.5" y1="144" x2="294" y2="144" stroke="white" stroke-width="6.6" opacity="0.75" stroke-linecap="round"/>
+  <circle cx="241.5" cy="144" r="10.5" fill="white"/>
+  <circle cx="273" cy="144" r="14.4" fill="none" stroke="white" stroke-width="7.2"/>
+  <circle cx="273" cy="144" r="6.3" fill="white"/>
+  <circle cx="304.5" cy="144" r="10.5" fill="white"/>
+
+  <!-- Wordmark: 60px, baseline y=162 (cap-height centered at y=144) -->
+  <!-- "Flow" starts at x=341 (mark ends at 225+96=321, gap 20px) -->
+  <text y="162" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="60" letter-spacing="-0.03em">
+    <tspan x="341" font-weight="800" fill="white">Flow</tspan><tspan font-weight="400" fill="url(#wm)">monix</tspan>
+  </text>
+
+  <!-- Thin gradient separator -->
+  <rect x="310" y="210" width="200" height="1" fill="url(#sep)"/>
+
+  <!-- Tagline -->
+  <text x="410" y="236" text-anchor="middle"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="15" font-weight="400" letter-spacing="0.02em"
+    fill="white" opacity="0.5">
+    The missing observability layer for n8n.
+  </text>
+
+  <!-- URL — bottom right -->
+  <text x="796" y="286" text-anchor="end"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="11" font-weight="500" letter-spacing="0.06em"
+    fill="white" opacity="0.25">
+    flowmonix.com
+  </text>
+</svg>

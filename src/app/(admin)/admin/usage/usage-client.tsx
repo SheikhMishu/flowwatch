@@ -99,7 +99,7 @@ export function UsageClient({
   totalAi,
 }: UsagePageProps) {
   return (
-    <div className="flex flex-col gap-6 p-6 min-h-full">
+    <div className="flex flex-col gap-6 p-4 sm:p-6 min-h-full">
       {/* Page header */}
       <div>
         <h1 className="text-xl font-semibold text-foreground">Usage</h1>
@@ -109,7 +109,7 @@ export function UsageClient({
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatCard
           label="Alert Firings"
           value={totalAlerts}
@@ -141,7 +141,7 @@ export function UsageClient({
       </div>
 
       {/* Charts grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Alert Firings by Day */}
         <ChartCard title="Alert Firings — last 30 days">
           <ResponsiveContainer width="100%" height={180}>

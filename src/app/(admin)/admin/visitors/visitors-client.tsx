@@ -101,7 +101,7 @@ export function VisitorsClient({
   const maxBrowser = topBrowsers[0]?.count ?? 1;
 
   return (
-    <div className="min-h-full bg-gray-950 text-gray-100 p-6 space-y-6">
+    <div className="min-h-full bg-gray-950 text-gray-100 p-4 sm:p-6 space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-xl font-bold text-gray-100">Visitor Analytics</h1>
@@ -109,7 +109,7 @@ export function VisitorsClient({
       </div>
 
       {/* IP info banner */}
-      <div className="flex flex-wrap items-center gap-3 bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-xs">
+      <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 sm:gap-3 bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-xs">
         <div className="flex items-center gap-2">
           <span className="text-gray-500">Your current IP:</span>
           <code className="font-mono text-amber-400 bg-gray-800 px-1.5 py-0.5 rounded">{myIp}</code>
@@ -134,7 +134,7 @@ export function VisitorsClient({
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {[
           { label: "Total Visits", value: totalVisits.toLocaleString(), sub: "all time", color: "text-indigo-400" },
           { label: "Today", value: visitsToday.toLocaleString(), sub: "page views", color: "text-green-400" },
@@ -193,7 +193,7 @@ export function VisitorsClient({
       </div>
 
       {/* Breakdown grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {/* Top pages */}
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-2.5">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Top Pages</p>

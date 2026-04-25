@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 312" width="820" height="312" fill="none">
+  <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;800&amp;display=swap');</style>
+  <defs>
+    <!-- Dot grid pattern -->
+    <pattern id="dots" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="12" cy="12" r="1" fill="white" opacity="0.07"/>
+    </pattern>
+    <!-- Central glow -->
+    <radialGradient id="glow" cx="50%" cy="45%" r="55%" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#5B4FE8" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#0F1117" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Top accent line -->
+    <linearGradient id="accent" x1="0" y1="0" x2="820" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5B4FE8" stop-opacity="0"/>
+      <stop offset="0.3" stop-color="#5B4FE8"/>
+      <stop offset="0.7" stop-color="#7B5FED"/>
+      <stop offset="1" stop-color="#7B5FED" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Mark background gradient -->
+    <linearGradient id="mark-bg" x1="265" y1="94" x2="337" y2="166" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5B4FE8"/>
+      <stop offset="1" stop-color="#7B5FED"/>
+    </linearGradient>
+    <!-- Wordmark "monix" gradient -->
+    <linearGradient id="wm" x1="450" y1="0" x2="560" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#818CF8"/>
+      <stop offset="1" stop-color="#A78BFA"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="820" height="312" fill="#0F1117"/>
+  <!-- Dot grid -->
+  <rect width="820" height="312" fill="url(#dots)"/>
+  <!-- Central glow -->
+  <rect width="820" height="312" fill="url(#glow)"/>
+  <!-- Top accent bar -->
+  <rect x="0" y="0" width="820" height="3" fill="url(#accent)"/>
+
+  <!-- ─── Logo group — centered at x=410, logo center y=130 ─── -->
+
+  <!-- Mark: 72×72 at (265, 94) -->
+  <rect x="265" y="94" width="72" height="72" rx="16" fill="url(#mark-bg)"/>
+  <!-- Mark paths scaled ×2.25 from 32×32, offset (265,94) -->
+  <line x1="285.25" y1="130" x2="290.88" y2="130" stroke="white" stroke-width="5" opacity="0.75" stroke-linecap="round"/>
+  <line x1="311.13" y1="130" x2="316.75" y2="130" stroke="white" stroke-width="5" opacity="0.75" stroke-linecap="round"/>
+  <circle cx="277.4" cy="130" r="7.9" fill="white"/>
+  <circle cx="301" cy="130" r="10.8" fill="none" stroke="white" stroke-width="5.4"/>
+  <circle cx="301" cy="130" r="4.7" fill="white"/>
+  <circle cx="324.6" cy="130" r="7.9" fill="white"/>
+
+  <!-- Wordmark: 44px, baseline y=142 -->
+  <text y="142" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="44" letter-spacing="-0.02em">
+    <tspan x="355" font-weight="800" fill="white">Flow</tspan><tspan font-weight="400" fill="url(#wm)">monix</tspan>
+  </text>
+
+  <!-- Tagline -->
+  <text x="410" y="192" text-anchor="middle"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="16" font-weight="400" letter-spacing="0.01em"
+    fill="white" opacity="0.55">
+    The missing observability layer for n8n.
+  </text>
+
+  <!-- URL — bottom right -->
+  <text x="796" y="290" text-anchor="end"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-size="12" font-weight="500" letter-spacing="0.04em"
+    fill="white" opacity="0.3">
+    flowmonix.com
+  </text>
+</svg>

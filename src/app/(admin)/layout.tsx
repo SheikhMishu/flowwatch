@@ -2,7 +2,7 @@ import React from "react";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
-import { AdminSidebar } from "./admin-sidebar";
+import { AdminLayoutClient } from "./admin-layout-client";
 
 export const dynamic = "force-dynamic";
 
@@ -24,11 +24,8 @@ export default async function AdminLayout({
   if (!adminUser?.is_super_admin) redirect("/dashboard");
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-950">
-      <AdminSidebar userEmail={session.email} userName={session.name} />
-      <main className="flex-1 overflow-y-auto bg-background">
-        {children}
-      </main>
-    </div>
+    <AdminLayoutClient userEmail={session.email} userName={session.name}>
+      {children}
+    </AdminLayoutClient>
   );
 }

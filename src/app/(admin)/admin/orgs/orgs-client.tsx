@@ -75,11 +75,11 @@ export function OrgsClient({ orgs }: OrgsClientProps) {
   }, [orgs, query]);
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-5">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-indigo-600/15 border border-indigo-600/30 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-lg bg-indigo-600/15 border border-indigo-600/30 flex items-center justify-center flex-shrink-0">
             <Building2 className="w-4.5 h-4.5 text-indigo-500" />
           </div>
           <div>
@@ -90,20 +90,21 @@ export function OrgsClient({ orgs }: OrgsClientProps) {
           </div>
         </div>
 
-        <div className="relative w-64">
+        <div className="relative w-full sm:w-64">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
           <Input
             placeholder="Search name, slug, plan…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="pl-8 h-8 text-sm"
+            className="pl-8 h-8 text-sm w-full"
           />
         </div>
       </div>
 
       {/* Table */}
       <div className="rounded-xl border border-border overflow-hidden">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm min-w-[640px]">
           <thead>
             <tr className="border-b border-border bg-secondary/40">
               <th className="px-4 py-2.5 text-left text-xs font-medium text-muted-foreground">
@@ -228,6 +229,7 @@ export function OrgsClient({ orgs }: OrgsClientProps) {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

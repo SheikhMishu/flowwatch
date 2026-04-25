@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" fill="none">
+  <style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;800&amp;display=swap');</style>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="400" y2="400" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F1117"/>
+      <stop offset="1" stop-color="#16192A"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="55%">
+      <stop offset="0" stop-color="#5B4FE8" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#0F1117" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="mark-bg" x1="85" y1="167" x2="151" y2="233" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5B4FE8"/>
+      <stop offset="1" stop-color="#7B5FED"/>
+    </linearGradient>
+    <!-- "monix" gradient — estimated position after "Flow" at 34px centered in 400px -->
+    <linearGradient id="wm" x1="235" y1="0" x2="316" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#818CF8"/>
+      <stop offset="1" stop-color="#A78BFA"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background (full square, Facebook crops to circle) -->
+  <rect width="400" height="400" fill="url(#bg)"/>
+  <rect width="400" height="400" fill="url(#glow)"/>
+
+  <!-- Horizontal lockup centered in 400×400, icon always left of wordmark -->
+  <!-- Mark: 66×66 at (85, 167), center at (118, 200) -->
+  <rect x="85" y="167" width="66" height="66" rx="19" fill="url(#mark-bg)"/>
+  <!-- Mark paths scaled ×2.0625 from 32×32, offset (85, 167) -->
+  <line x1="103.6" y1="200" x2="108.7" y2="200" stroke="white" stroke-width="4.5" opacity="0.75" stroke-linecap="round"/>
+  <line x1="127.3" y1="200" x2="132.4" y2="200" stroke="white" stroke-width="4.5" opacity="0.75" stroke-linecap="round"/>
+  <circle cx="96.3" cy="200" r="7.2" fill="white"/>
+  <circle cx="118" cy="200" r="10" fill="none" stroke="white" stroke-width="5"/>
+  <circle cx="118" cy="200" r="4.3" fill="white"/>
+  <circle cx="139.7" cy="200" r="7.2" fill="white"/>
+
+  <!-- Wordmark: 34px, baseline y=212 (cap-height centered at y=200) -->
+  <!-- "Flow" starts at x=165 (mark ends at 85+66=151, gap 14px) -->
+  <text y="212" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="34" letter-spacing="-0.02em">
+    <tspan x="165" font-weight="800" fill="white">Flow</tspan><tspan font-weight="400" fill="url(#wm)">monix</tspan>
+  </text>
+</svg>

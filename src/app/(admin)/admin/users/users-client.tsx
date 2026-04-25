@@ -56,16 +56,16 @@ export function UsersClient({ users }: UsersClientProps) {
   }, [users, query]);
 
   return (
-    <div className="flex flex-col gap-6 p-6 min-h-full">
+    <div className="flex flex-col gap-6 p-4 sm:p-6 min-h-full">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-xl font-semibold text-foreground">Users</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             All registered accounts across FlowMonix
           </p>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary border border-border text-sm text-muted-foreground">
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary border border-border text-sm text-muted-foreground w-fit">
           <Users className="w-3.5 h-3.5" />
           <span className="font-medium text-foreground">{users.length}</span>
           <span>total</span>
@@ -85,7 +85,8 @@ export function UsersClient({ users }: UsersClientProps) {
 
       {/* Table */}
       <div className="bg-card border border-border rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm min-w-[560px]">
           <thead>
             <tr className="border-b border-border bg-secondary/40">
               <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wide w-8" />
@@ -215,6 +216,7 @@ export function UsersClient({ users }: UsersClientProps) {
             })}
           </tbody>
         </table>
+        </div>
       </div>
 
       {query && (

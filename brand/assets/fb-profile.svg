@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="400" y2="400" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5B4FE8"/>
+      <stop offset="1" stop-color="#7B5FED"/>
+    </linearGradient>
+    <!-- Subtle inner glow -->
+    <radialGradient id="glow" cx="50%" cy="50%" r="60%">
+      <stop offset="0" stop-color="#818CF8" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#5B4FE8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background (full square — Facebook crops to circle) -->
+  <rect width="400" height="400" fill="url(#bg)"/>
+  <rect width="400" height="400" fill="url(#glow)"/>
+
+  <!-- Mark centered, scaled to ~220×220 (scale ×6.875 from 32×32, with 90px padding each side) -->
+  <!-- scale = 220/32 = 6.875, offset x=90, y=90 -->
+  <!-- Left node -->
+  <circle cx="128" cy="200" r="37.8" fill="white"/>
+  <!-- Connectors -->
+  <line x1="165.8" y1="200" x2="183.6" y2="200" stroke="white" stroke-width="15.1" opacity="0.75" stroke-linecap="round"/>
+  <line x1="216.4" y1="200" x2="234.2" y2="200" stroke="white" stroke-width="15.1" opacity="0.75" stroke-linecap="round"/>
+  <!-- Center hub ring + dot -->
+  <circle cx="200" cy="200" r="33" fill="none" stroke="white" stroke-width="16.5"/>
+  <circle cx="200" cy="200" r="14.4" fill="white"/>
+  <!-- Right node -->
+  <circle cx="272" cy="200" r="37.8" fill="white"/>
+</svg>
