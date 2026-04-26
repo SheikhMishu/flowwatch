@@ -1,0 +1,302 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080">
+  <defs>
+    <!-- Background gradient: light slate to faint indigo tint -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1080" y2="1080" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#eef2ff"/>
+    </linearGradient>
+
+    <!-- Brand gradient (indigo → violet) for logo -->
+    <linearGradient id="logoGrad" x1="52" y1="44" x2="94" y2="86" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#818CF8"/>
+      <stop offset="100%" stop-color="#A78BFA"/>
+    </linearGradient>
+
+    <!-- CTA button gradient (horizontal across button) -->
+    <linearGradient id="ctaGrad" x1="340" y1="0" x2="740" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#818CF8"/>
+      <stop offset="100%" stop-color="#A78BFA"/>
+    </linearGradient>
+
+    <!-- Card drop shadow -->
+    <filter id="fCard" x="-15%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="32" flood-color="#94a3b8" flood-opacity="0.14"/>
+    </filter>
+
+    <!-- Alert card red-tinted shadow -->
+    <filter id="fAlert" x="-8%" y="-8%" width="116%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="16" flood-color="#ef4444" flood-opacity="0.09"/>
+    </filter>
+
+    <!-- CTA button glow -->
+    <filter id="fBtn" x="-25%" y="-60%" width="150%" height="220%">
+      <feDropShadow dx="0" dy="10" stdDeviation="22" flood-color="#818CF8" flood-opacity="0.52"/>
+    </filter>
+
+    <!-- Logo icon subtle glow -->
+    <filter id="fLogo" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="3" stdDeviation="8" flood-color="#818CF8" flood-opacity="0.28"/>
+    </filter>
+
+    <!-- Metric card shadow -->
+    <filter id="fMetric" x="-8%" y="-8%" width="116%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="8" flood-color="#94a3b8" flood-opacity="0.07"/>
+    </filter>
+  </defs>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- BACKGROUND                                       -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <rect width="1080" height="1080" fill="url(#bg)"/>
+
+  <!-- Ambient orbs — very subtle, low-opacity -->
+  <circle cx="1050" cy="85"  r="300" fill="#818CF8" opacity="0.045"/>
+  <circle cx="30"   cy="995" r="260" fill="#A78BFA" opacity="0.045"/>
+  <circle cx="540"  cy="540" r="480" fill="#818CF8" opacity="0.018"/>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- LOGO — top-left                                  -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <g filter="url(#fLogo)">
+    <!-- Logo mark pill -->
+    <rect x="52" y="44" width="42" height="42" rx="11" fill="url(#logoGrad)"/>
+    <!-- Lightning / flow bolt icon -->
+    <path d="M76 51 L65 67 L72 67 L68 81 L79 65 L72 65 Z" fill="white"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="105" y="65"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="20" font-weight="700" fill="#0f172a"
+    dominant-baseline="middle">FlowMonix</text>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- HEADLINE AREA                                    -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- Primary headline -->
+  <text x="540" y="188"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="76" font-weight="800"
+    fill="#0f172a" text-anchor="middle"
+    letter-spacing="-2">Workflow Failed.</text>
+
+  <!-- Subtext -->
+  <text x="540" y="252"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="30" font-weight="400"
+    fill="#64748b" text-anchor="middle">Know instantly. Fix in seconds.</text>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- DASHBOARD MOCK CARD                              -->
+  <!-- x=90, y=286, w=900, h=524  →  bottom=810        -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <rect x="90" y="286" width="900" height="524" rx="22" fill="white" filter="url(#fCard)"/>
+
+  <!-- Window chrome bar -->
+  <rect x="90" y="286" width="900" height="52" rx="22" fill="#f8fafc"/>
+  <!-- Square off lower corners of chrome fill -->
+  <rect x="90" y="316" width="900" height="22" fill="#f8fafc"/>
+  <!-- Chrome separator -->
+  <line x1="90" y1="338" x2="990" y2="338" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Traffic-light dots -->
+  <circle cx="124" cy="312" r="6" fill="#fca5a5"/>
+  <circle cx="147" cy="312" r="6" fill="#fde68a"/>
+  <circle cx="170" cy="312" r="6" fill="#86efac"/>
+
+  <!-- Chrome URL bar (centered) -->
+  <rect x="310" y="300" width="460" height="24" rx="6" fill="#f1f5f9"/>
+  <text x="540" y="312"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="12" fill="#94a3b8"
+    text-anchor="middle" dominant-baseline="middle">flowmonix.com — Monitoring Dashboard</text>
+
+  <!-- Live indicator (top-right of chrome) -->
+  <circle cx="953" cy="312" r="4.5" fill="#22c55e"/>
+  <circle cx="953" cy="312" r="9"   fill="#22c55e" opacity="0.18"/>
+  <text x="941" y="312"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="11" fill="#22c55e" font-weight="600"
+    text-anchor="end" dominant-baseline="middle">LIVE</text>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- CARD 1 · INCIDENT ALERT                         -->
+  <!-- x=118, y=354, w=844, h=218  →  bottom=572       -->
+  <!-- ─────────────────────────────────────────────── -->
+  <rect x="118" y="354" width="844" height="218" rx="14" fill="#fff8f8" filter="url(#fAlert)"/>
+  <!-- Left red accent stripe -->
+  <rect x="118" y="354" width="5" height="218" rx="2" fill="#ef4444"/>
+
+  <!-- CRITICAL badge -->
+  <rect x="866" y="364" width="86" height="22" rx="11" fill="#fef2f2" stroke="#fca5a5" stroke-width="1"/>
+  <circle cx="879" cy="375" r="3.5" fill="#ef4444"/>
+  <text x="928" y="375"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="10.5" font-weight="700" fill="#ef4444"
+    text-anchor="middle" dominant-baseline="middle">CRITICAL</text>
+
+  <!-- Error icon with pulse rings -->
+  <circle cx="162" cy="456" r="36" fill="#ef4444" opacity="0.10"/>
+  <circle cx="162" cy="456" r="29" fill="#ef4444" opacity="0.18"/>
+  <circle cx="162" cy="456" r="22" fill="#fef2f2"/>
+  <circle cx="162" cy="456" r="18" fill="#ef4444"/>
+  <!-- X mark -->
+  <path d="M155 449 L169 463 M169 449 L155 463"
+    stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Incident metadata label -->
+  <text x="208" y="390"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="10" font-weight="600" fill="#94a3b8" letter-spacing="1.3">INCIDENT · WORKFLOW ERROR</text>
+
+  <!-- Incident service name -->
+  <text x="208" y="424"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="24" font-weight="700" fill="#0f172a">Stripe Webhook</text>
+
+  <!-- Failure count — high-contrast red -->
+  <text x="208" y="458"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="17" font-weight="600" fill="#ef4444">7 failures in the last 5 minutes</text>
+
+  <!-- Meta row -->
+  <text x="208" y="484"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="12.5" fill="#94a3b8">Last triggered: 2 min ago  ·  Node: payment.process  ·  Env: Production</text>
+
+  <!-- Secondary detail -->
+  <text x="208" y="506"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="12" fill="#cbd5e1">Started failing at 14:32 UTC — incident still active</text>
+
+  <!-- View Logs action button -->
+  <rect x="836" y="438" width="114" height="36" rx="9" fill="#0f172a"/>
+  <text x="893" y="456"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="13" font-weight="600" fill="white"
+    text-anchor="middle" dominant-baseline="middle">View Logs →</text>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- CARD 2 · METRICS ROW (3 inline stat cards)      -->
+  <!-- y=590, h=108  →  bottom=698                     -->
+  <!-- widths=272 each, gap=14, starts x=118           -->
+  <!-- ─────────────────────────────────────────────── -->
+
+  <!-- Stat 1: Success Rate -->
+  <rect x="118" y="590" width="272" height="108" rx="12" fill="white"
+    stroke="#e2e8f0" stroke-width="1" filter="url(#fMetric)"/>
+  <!-- Red top accent — degraded state -->
+  <rect x="118" y="590" width="272" height="3" rx="1.5" fill="#ef4444"/>
+  <text x="142" y="622"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="12" fill="#94a3b8" font-weight="500">Success Rate</text>
+  <text x="142" y="662"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="33" font-weight="700" fill="#0f172a">73.2%</text>
+  <text x="260" y="656"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="12" font-weight="600" fill="#ef4444">▼ 21%</text>
+  <text x="142" y="686"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="11" fill="#e2e8f0">Normal: 94.1%</text>
+
+  <!-- Stat 2: Active Incidents -->
+  <rect x="404" y="590" width="272" height="108" rx="12" fill="white"
+    stroke="#e2e8f0" stroke-width="1" filter="url(#fMetric)"/>
+  <rect x="404" y="590" width="272" height="3" rx="1.5" fill="#ef4444"/>
+  <text x="428" y="622"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="12" fill="#94a3b8" font-weight="500">Active Incidents</text>
+  <text x="428" y="662"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="33" font-weight="700" fill="#ef4444">3</text>
+  <text x="428" y="686"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="11" fill="#e2e8f0">↑ 2 new in last 60 min</text>
+
+  <!-- Stat 3: Workflows Monitored -->
+  <rect x="690" y="590" width="272" height="108" rx="12" fill="white"
+    stroke="#e2e8f0" stroke-width="1" filter="url(#fMetric)"/>
+  <!-- Green top accent — healthy -->
+  <rect x="690" y="590" width="272" height="3" rx="1.5" fill="#22c55e"/>
+  <text x="714" y="622"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="12" fill="#94a3b8" font-weight="500">Workflows Monitored</text>
+  <text x="714" y="662"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="33" font-weight="700" fill="#0f172a">24</text>
+  <!-- Live dot -->
+  <circle cx="858" cy="655" r="5"  fill="#22c55e"/>
+  <circle cx="858" cy="655" r="9"  fill="#22c55e" opacity="0.15"/>
+  <text x="870" y="655"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="11" fill="#22c55e" font-weight="600"
+    dominant-baseline="middle">Live</text>
+  <text x="714" y="686"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="11" fill="#e2e8f0">21 healthy · 3 degraded</text>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- CARD 3 · MINI EVENT LOG                         -->
+  <!-- y=720 to y=806                                   -->
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- Section label -->
+  <text x="138" y="736"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="10.5" fill="#cbd5e1" font-weight="600" letter-spacing="1">RECENT EVENTS</text>
+  <line x1="138" y1="744" x2="952" y2="744" stroke="#f1f5f9" stroke-width="1"/>
+
+  <!-- Event row 1 — error -->
+  <circle cx="148" cy="762" r="4" fill="#ef4444"/>
+  <text x="162" y="762"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="12" fill="#64748b" dominant-baseline="middle">Stripe Webhook — Error 502: Bad Gateway</text>
+  <text x="944" y="762"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="11" fill="#cbd5e1" text-anchor="end" dominant-baseline="middle">2m ago</text>
+
+  <!-- Event row 2 — success -->
+  <circle cx="148" cy="782" r="4" fill="#22c55e"/>
+  <text x="162" y="782"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="12" fill="#64748b" dominant-baseline="middle">Slack Notification — Alert dispatched to #incidents</text>
+  <text x="944" y="782"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="11" fill="#cbd5e1" text-anchor="end" dominant-baseline="middle">2m ago</text>
+
+  <!-- Event row 3 — warning -->
+  <circle cx="148" cy="802" r="4" fill="#f59e0b"/>
+  <text x="162" y="802"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="12" fill="#64748b" dominant-baseline="middle">GitHub Actions — Retry workflow queued</text>
+  <text x="944" y="802"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="11" fill="#cbd5e1" text-anchor="end" dominant-baseline="middle">5m ago</text>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- CTA BUTTON                                       -->
+  <!-- x=340, y=852, w=400, h=68, rx=34                -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <rect x="340" y="852" width="400" height="68" rx="34" fill="url(#ctaGrad)" filter="url(#fBtn)"/>
+  <text x="540" y="886"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="24" font-weight="700" fill="white"
+    text-anchor="middle" dominant-baseline="middle">Try FlowMonix →</text>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- FOOTER                                           -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <text x="540" y="960"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="15" fill="#94a3b8" text-anchor="middle">Free plan available · No credit card required</text>
+
+  <!-- FlowMonix URL brand-mark footer -->
+  <g transform="translate(490, 1018)">
+    <rect width="32" height="32" rx="8" fill="url(#logoGrad)" opacity="0.9"/>
+    <path d="M20 5 L12 18 L17 18 L13 27 L21 14 L16 14 Z" fill="white"/>
+  </g>
+  <text x="540" y="1034"
+    font-family="'Inter','Segoe UI',system-ui,sans-serif"
+    font-size="13" fill="#cbd5e1" text-anchor="middle"
+    dominant-baseline="middle">flowmonix.com</text>
+
+</svg>

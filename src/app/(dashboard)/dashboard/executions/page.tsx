@@ -13,10 +13,11 @@ export default async function ExecutionsPage({
   const { instance: instanceId } = await searchParams;
   const session = await getSession();
 
-  let executions = mockExecutions;
-  if (session && session.orgId !== "org_demo") {
-    const real = await fetchOrgExecutions(session.orgId, instanceId).catch(() => null);
-    if (real && real.length > 0) executions = real;
+  const isDemo = !session || session.orgId === "org_demo";
+  let executions = isDemo ? mockExecutions : [];
+  if (!isDemo) {
+    const real = await fetchOrgExecutions(session!.orgId, instanceId).catch(() => null);
+    if (real !== null) executions = real;
   }
 
   const total = executions.length;

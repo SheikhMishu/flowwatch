@@ -62,7 +62,7 @@ export default async function DashboardPage({
         .limit(5),
     ]);
     if (realStats) stats = realStats;
-    if (realExecutions && realExecutions.length > 0) executions = realExecutions;
+    if (realExecutions !== null) executions = realExecutions;
     if (realWorkflows && realWorkflows.length > 0) workflows = realWorkflows;
     if (incidentRows.data) incidents = incidentRows.data as unknown as Incident[];
   }
