@@ -130,7 +130,9 @@ export async function POST(req: NextRequest) {
     }
   } catch (err) {
     logger.error("Webhook handler error", { category: "billing", eventType: event.type, err });
-    // Return 200 so Stripe doesn't retry — we log it instead
+    // Return 500 so Stripe retries on transient failures (DB down, etc.).
+    // All DB writes are idempotent so duplicate delivery is safe.
+    return NextResponse.json({ error: "Handler failed" }, { status: 500 });
   }
 
   return NextResponse.json({ received: true });

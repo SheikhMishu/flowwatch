@@ -2,12 +2,14 @@ import type { NextConfig } from "next";
 
 const ContentSecurityPolicy = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  "script-src 'self' 'unsafe-inline' https://js.stripe.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https: blob:",
   "font-src 'self' https://fonts.gstatic.com",
-  // Allow Supabase and any other HTTPS API connections
+  // Allow Supabase, Stripe, and any other HTTPS API connections
   "connect-src 'self' https:",
+  // Stripe renders card inputs inside iframes served from these origins
+  "frame-src https://js.stripe.com https://hooks.stripe.com",
   "frame-ancestors 'none'",
 ].join("; ");
 
@@ -43,7 +45,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=(), payment=()",
+            value: "camera=(), microphone=(), geolocation=()",
           },
           {
             key: "Cross-Origin-Opener-Policy",

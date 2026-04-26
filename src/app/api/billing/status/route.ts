@@ -39,6 +39,7 @@ export async function GET() {
         .eq("org_id", session.orgId),
     ]);
 
+    if (orgResult.error) throw orgResult.error;
     const org = orgResult.data;
     const plan = org?.plan ?? "free";
 

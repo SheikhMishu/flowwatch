@@ -2,8 +2,12 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import type { OrgRole } from "@/types";
 
+const jwtSecretValue = process.env.JWT_SECRET;
+if (!jwtSecretValue && process.env.NODE_ENV === "production") {
+  throw new Error("JWT_SECRET env var is required in production");
+}
 const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "dev-secret-change-in-production-min-32-chars"
+  jwtSecretValue || "dev-secret-change-in-production-min-32-chars"
 );
 
 const COOKIE_NAME = "fw_session";
