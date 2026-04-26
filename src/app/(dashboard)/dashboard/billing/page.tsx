@@ -22,6 +22,7 @@ async function getBillingStatus(orgId: string) {
       .eq("org_id", orgId),
   ]);
 
+  if (orgResult.error) throw orgResult.error;
   const org = orgResult.data;
   const plan = (org?.plan ?? "free") as PlanId;
 

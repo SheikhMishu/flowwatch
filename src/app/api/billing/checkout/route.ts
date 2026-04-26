@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const checkoutSession = await getStripe().checkout.sessions.create({
-      ui_mode: "embedded_page" as const,
+      ui_mode: "embedded",
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
       metadata: { org_id: session.orgId, plan },
