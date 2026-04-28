@@ -51,7 +51,7 @@ export default function ValueLoop() {
         {/* Header */}
         <AnimateOnScroll className="text-center mb-20">
           <h2 className="font-display font-bold text-4xl sm:text-5xl text-zinc-900 leading-tight">
-            From failure to fixed —{' '}
+            From failure to fix —{' '}
             <span className="gradient-text">in seconds.</span>
           </h2>
           <p className="mt-4 text-zinc-600 text-lg max-w-lg mx-auto">

@@ -14,9 +14,9 @@ export default function Home() {
   return (
     <main>
       <Hero />
+      <ValueLoop />
       <Problem />
       <Solution />
-      <ValueLoop />
       <Features />
       <WhoItsFor />
       <Pricing />

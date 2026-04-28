@@ -1,6 +1,14 @@
 import Image from 'next/image'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, CheckCircle2 } from 'lucide-react'
 import { FlowMonixMark } from './brand-mark'
+
+const frictionBullets = [
+  'Connect your n8n in 60 seconds',
+  'No setup, no code',
+  'Works with cloud & self-hosted',
+]
+
+const flowSteps = ['Sign up', 'Connect n8n', 'See failures instantly']
 
 export default function Hero() {
   return (
@@ -26,7 +34,7 @@ export default function Hero() {
           href="#signup"
           className="flex items-center gap-1.5 text-sm text-zinc-800 hover:text-zinc-900 transition-colors duration-200"
         >
-          Get Started <ArrowRight className="w-3.5 h-3.5" />
+          Get Started Free <ArrowRight className="w-3.5 h-3.5" />
         </a>
       </nav>
 
@@ -40,46 +48,57 @@ export default function Hero() {
 
         {/* Headline */}
         <h1 className="animate-in delay-100 font-display font-extrabold text-4xl sm:text-5xl lg:text-7xl text-zinc-900 leading-[1.08] tracking-tight mb-6">
-          Know exactly what broke
-          <br className="hidden sm:block" />
-          {' '}<span className="gradient-text">in your automations</span>
-          <br className="hidden sm:block" />
-          {' '}— before it costs you.
+          Your n8n workflow just failed.
+          <br />
+          <span className="gradient-text">Would you even know?</span>
         </h1>
 
         {/* Subheadline */}
         <p className="animate-in delay-200 text-zinc-600 text-lg sm:text-xl max-w-2xl leading-relaxed mb-10">
-          FlowMonix monitors your n8n workflows, groups failures into incidents,
-          and explains errors with AI — so you can fix issues in seconds, not hours.
+          FlowMonix detects failures instantly, groups them into incidents, and tells you exactly how to fix them — so you can resolve issues in seconds, not hours.
         </p>
 
-        {/* CTAs */}
-        <div className="animate-in delay-300 flex flex-col sm:flex-row gap-3 justify-center">
+        {/* CTA + friction */}
+        <div className="animate-in delay-300 flex flex-col items-center gap-3">
           <a
             href="#signup"
-            className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-sm hover:opacity-90 hover:scale-[1.02] active:scale-100 transition-all duration-200 shadow-lg shadow-indigo-900/40"
+            className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-sm hover:opacity-90 hover:scale-[1.02] active:scale-100 transition-all duration-200 shadow-lg shadow-indigo-900/40 text-center"
           >
-            Start Free
-            <ArrowRight className="w-4 h-4" />
+            Start Free — See Your First Failure in 2 Minutes
+            <ArrowRight className="w-4 h-4 flex-shrink-0" />
           </a>
-          {/* View Demo button hidden until demo video is recorded */}
+
+          {/* Friction bullets */}
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 mt-1">
+            {frictionBullets.map((item, i, arr) => (
+              <span key={item} className="flex items-center gap-4">
+                <span className="flex items-center gap-1.5 text-xs text-zinc-600 font-medium">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" />
+                  {item}
+                </span>
+                {i < arr.length - 1 && <span className="w-px h-3 bg-zinc-300 inline-block" />}
+              </span>
+            ))}
+          </div>
+
+          {/* Urgency */}
+          <p className="text-sm font-semibold text-indigo-600">
+            🚀 First 200 users get Pro free for 3 months
+          </p>
         </div>
 
-        {/* Trust pills */}
-        <div className="animate-in delay-400 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-4 text-xs">
-          {['Free to start', 'No credit card', 'Works with any n8n'].map((item, i, arr) => (
-            <span key={item} className="flex items-center gap-6">
-              <span className="text-zinc-600 font-medium">{item}</span>
-              {i < arr.length - 1 && <span className="w-px h-3 bg-zinc-300 inline-block" />}
+        {/* User flow */}
+        <div className="animate-in delay-400 flex items-center gap-2 mt-7 text-xs">
+          {flowSteps.map((step, i) => (
+            <span key={step} className="flex items-center gap-2">
+              <span className="font-medium text-zinc-500">{step}</span>
+              {i < flowSteps.length - 1 && <ArrowRight className="w-3 h-3 text-zinc-400" />}
             </span>
           ))}
         </div>
 
-        {/* Dashboard mockup
-            float-anim: continuous gentle bob (starts after 1.5s)
-            animate-in: one-time entrance fade-up (0.65s)
-        */}
-        <div className="float-anim mt-10 sm:mt-20 w-full max-w-5xl mx-auto">
+        {/* Dashboard mockup */}
+        <div className="float-anim mt-8 sm:mt-14 w-full max-w-5xl mx-auto">
           <div className="animate-in delay-500 relative">
             <div className="rounded-2xl border border-zinc-200 overflow-hidden shadow-2xl shadow-zinc-300/40">
               <Image
@@ -91,6 +110,19 @@ export default function Hero() {
                 priority
               />
             </div>
+
+            {/* Overlay: failed workflow indicator */}
+            <div className="absolute top-3 left-3 sm:top-5 sm:left-5 flex items-center gap-2 bg-white rounded-xl px-2.5 py-1.5 shadow-lg border border-red-100 pointer-events-none">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
+              <span className="text-[11px] font-semibold text-red-600 whitespace-nowrap">7 failures in 5 min</span>
+            </div>
+
+            {/* Overlay: AI root cause snippet */}
+            <div className="absolute top-3 right-3 sm:top-5 sm:right-5 bg-white rounded-xl px-3 py-2 shadow-lg border border-indigo-100 max-w-[160px] sm:max-w-[210px] pointer-events-none">
+              <p className="text-[9px] font-bold text-indigo-600 uppercase tracking-wide mb-1">AI Root Cause</p>
+              <p className="text-[11px] text-zinc-700 leading-snug">API timeout on payment step — increase timeout to 30s</p>
+            </div>
+
             {/* Fade gradient at bottom blends into light page bg */}
             <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#f8fafc] to-transparent pointer-events-none" />
           </div>
