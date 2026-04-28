@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { ArrowRight } from 'lucide-react'
 import { FlowMonixMark } from './brand-mark'
 
@@ -77,66 +78,20 @@ export default function Hero() {
             float-anim: continuous gentle bob (starts after 1.5s)
             animate-in: one-time entrance fade-up (0.65s)
         */}
-        <div className="float-anim mt-20 w-full max-w-4xl mx-auto">
+        <div className="float-anim mt-20 w-full max-w-5xl mx-auto">
           <div className="animate-in delay-500 relative">
-            {/* Mockup card — intentionally dark to represent the actual app UI */}
-            <div className="rounded-2xl border border-zinc-300 bg-[#0d0d14] overflow-hidden shadow-2xl shadow-zinc-400/30">
-              {/* Window chrome */}
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-[#111118]">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-zinc-800" />
-                  <div className="w-3 h-3 rounded-full bg-zinc-800" />
-                  <div className="w-3 h-3 rounded-full bg-zinc-800" />
-                </div>
-                <div className="text-[11px] text-zinc-400 font-mono">app.flowmonix.com/dashboard</div>
-                <div className="w-16" />
-              </div>
-
-              {/* Dashboard UI */}
-              <div className="p-5 space-y-4">
-                {/* Stat cards */}
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { label: 'Total Workflows', value: '24', color: 'text-zinc-200' },
-                    { label: 'Open Incidents', value: '3', color: 'text-red-400' },
-                    { label: 'Success Rate', value: '96.4%', color: 'text-emerald-400' },
-                  ].map((s) => (
-                    <div key={s.label} className="bg-[#111118] rounded-xl p-4 border border-white/5">
-                      <p className="text-[10px] text-zinc-600 mb-1.5 font-medium">{s.label}</p>
-                      <p className={`text-2xl font-bold font-display ${s.color}`}>{s.value}</p>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Incidents list */}
-                <div className="space-y-2">
-                  {[
-                    { name: 'Stripe Webhook Handler', meta: '7 failures · 5 min', status: 'open', color: 'text-red-400 bg-red-400/10' },
-                    { name: 'Slack Notification Flow', meta: '3 failures · 10 min', status: 'investigating', color: 'text-amber-400 bg-amber-400/10' },
-                    { name: 'CRM Sync Pipeline', meta: '1 failure · 2 min ago', status: 'open', color: 'text-red-400 bg-red-400/10' },
-                  ].map((inc) => (
-                    <div
-                      key={inc.name}
-                      className="flex items-center justify-between bg-[#111118] rounded-xl px-4 py-3 border border-white/5"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-2 h-2 rounded-full ${inc.status === 'open' ? 'bg-red-400' : 'bg-amber-400'} animate-pulse flex-shrink-0`} />
-                        <div className="text-left">
-                          <p className="text-xs font-semibold text-zinc-200">{inc.name}</p>
-                          <p className="text-[10px] text-zinc-600">{inc.meta}</p>
-                        </div>
-                      </div>
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${inc.color}`}>
-                        {inc.status}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <div className="rounded-2xl border border-zinc-200 overflow-hidden shadow-2xl shadow-zinc-300/40">
+              <Image
+                src="/images/hero.png"
+                alt="FlowMonix dashboard showing live workflow monitoring and incident detection"
+                width={1440}
+                height={900}
+                className="w-full h-auto"
+                priority
+              />
             </div>
-
-            {/* Fade gradient at bottom blends mockup into light page bg */}
-            <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#f8fafc] to-transparent pointer-events-none" />
+            {/* Fade gradient at bottom blends into light page bg */}
+            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#f8fafc] to-transparent pointer-events-none" />
           </div>
         </div>
       </div>
