@@ -28,8 +28,8 @@ const features = [
       'No need to context-switch to n8n',
       'Available to viewers — read + retry only',
     ],
-    image: '/images/analytics.png',
-    imageAlt: 'FlowMonix analytics showing top failing workflows with retry actions',
+    image: '/images/retry.png',
+    imageAlt: 'FlowMonix one-click retry showing successful execution after incident resolution',
   },
   {
     icon: Brain,
@@ -130,7 +130,7 @@ export default function Features() {
                     alt={f.imageAlt}
                     width={800}
                     height={500}
-                    className="w-full h-auto"
+                    className="w-full h-auto max-h-[240px] sm:max-h-none object-cover object-top"
                   />
                 </div>
               </div>
@@ -179,7 +179,7 @@ export default function Features() {
                         alt={f.imageAlt}
                         width={900}
                         height={560}
-                        className="w-full h-auto"
+                        className="w-full h-auto max-h-[260px] sm:max-h-none object-cover object-top"
                       />
                     </div>
                   </div>

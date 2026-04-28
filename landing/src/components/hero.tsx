@@ -39,10 +39,11 @@ export default function Hero() {
         </div>
 
         {/* Headline */}
-        <h1 className="animate-in delay-100 font-display font-extrabold text-5xl sm:text-6xl lg:text-7xl text-zinc-900 leading-[1.06] tracking-tight mb-6">
+        <h1 className="animate-in delay-100 font-display font-extrabold text-4xl sm:text-5xl lg:text-7xl text-zinc-900 leading-[1.08] tracking-tight mb-6">
           Know exactly what broke
-          <br />
-          <span className="gradient-text">in your automations</span>
+          <br className="hidden sm:block" />
+          {' '}<span className="gradient-text">in your automations</span>
+          <br className="hidden sm:block" />
           {' '}— before it costs you.
         </h1>
 
@@ -78,7 +79,7 @@ export default function Hero() {
             float-anim: continuous gentle bob (starts after 1.5s)
             animate-in: one-time entrance fade-up (0.65s)
         */}
-        <div className="float-anim mt-20 w-full max-w-5xl mx-auto">
+        <div className="float-anim mt-10 sm:mt-20 w-full max-w-5xl mx-auto">
           <div className="animate-in delay-500 relative">
             <div className="rounded-2xl border border-zinc-200 overflow-hidden shadow-2xl shadow-zinc-300/40">
               <Image

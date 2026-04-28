@@ -23,7 +23,7 @@ export default function CtaFinal() {
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/20 rounded-full blur-3xl pointer-events-none" />
 
           {/* Content */}
-          <div className="relative z-10 text-center py-20 sm:py-24 px-8">
+          <div className="relative z-10 text-center py-16 sm:py-24 px-5 sm:px-8">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 mb-8">
               <Sparkles className="w-3.5 h-3.5 text-white/80" />
               <span className="text-xs font-semibold text-white/80 tracking-wide">
@@ -31,13 +31,14 @@ export default function CtaFinal() {
               </span>
             </div>
 
-            <h2 className="font-display font-extrabold text-5xl sm:text-6xl lg:text-7xl text-white mb-4 leading-[1.05]">
+            <h2 className="font-display font-extrabold text-3xl sm:text-5xl lg:text-7xl text-white mb-4 leading-[1.08]">
               Stop guessing.
               <br />
-              Start knowing what broke — instantly.
+              <span className="block sm:inline">Start knowing</span>{' '}
+              <span className="block sm:inline">what broke — instantly.</span>
             </h2>
 
-            <p className="text-white/60 text-lg mb-10 max-w-sm mx-auto leading-relaxed">
+            <p className="text-white/60 text-base sm:text-lg mb-10 max-w-sm mx-auto leading-relaxed">
               Create your free account and start monitoring in minutes.
             </p>
 
