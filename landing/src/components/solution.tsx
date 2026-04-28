@@ -8,14 +8,14 @@ const solutions = [
     title: 'See failures instantly',
     description:
       'Real-time feed of every failed execution across all connected n8n instances — in one place, the moment it happens.',
-    image: null,
+    image: '/images/incidents.png',
   },
   {
     icon: Brain,
     title: 'Understand root cause with AI',
     description:
       'One-click AI analysis explains what broke, why it broke, and exactly how to fix it. No log archaeology required.',
-    image: null,
+    image: '/images/debugging.png',
   },
   {
     icon: RotateCcw,
