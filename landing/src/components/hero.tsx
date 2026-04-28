@@ -62,7 +62,7 @@ export default function Hero() {
         <div className="animate-in delay-300 flex flex-col items-center gap-3">
           <a
             href="#signup"
-            className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-sm hover:opacity-90 hover:scale-[1.02] active:scale-100 transition-all duration-200 shadow-lg shadow-indigo-900/40 text-center"
+            className="cta-primary inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-sm hover:opacity-95 hover:scale-[1.02] active:scale-100 transition-transform duration-200 text-center"
           >
             Start Free — See Your First Failure in 2 Minutes
             <ArrowRight className="w-4 h-4 flex-shrink-0" />

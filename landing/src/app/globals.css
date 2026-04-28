@@ -162,6 +162,46 @@ body {
   }
 }
 
+/* ─────────────────────────────────── */
+/* Primary CTA — shimmer + glow pulse  */
+/* ─────────────────────────────────── */
+.cta-primary {
+  position: relative;
+  overflow: hidden;
+  animation: ctaGlow 2.8s ease-in-out infinite;
+}
+
+.cta-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 55%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.22),
+    transparent
+  );
+  transform: translateX(-120%);
+  animation: shimmerSweep 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes shimmerSweep {
+  0%        { transform: translateX(-120%); }
+  45%, 100% { transform: translateX(280%); }
+}
+
+@keyframes ctaGlow {
+  0%, 100% { box-shadow: 0 8px 28px rgba(99, 102, 241, 0.45); }
+  50%       { box-shadow: 0 8px 40px rgba(99, 102, 241, 0.75), 0 0 0 4px rgba(139, 92, 246, 0.14); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-primary { animation: none; }
+  .cta-primary::before { animation: none; }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar       { width: 5px; }
 ::-webkit-scrollbar-track { background: #f8fafc; }
