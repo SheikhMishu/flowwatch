@@ -27,7 +27,20 @@ export async function POST(req: NextRequest) {
       "Content-Type": "application/json",
       Prefer: "return=minimal",
     },
-    body: JSON.stringify({ email, instances, agency, sequence_step: 1 }),
+    body: JSON.stringify({
+      email,
+      instances,
+      agency,
+      sequence_step: 1,
+      utm_source: body.utm_source || null,
+      utm_medium: body.utm_medium || null,
+      utm_campaign: body.utm_campaign || null,
+      utm_content: body.utm_content || null,
+      utm_term: body.utm_term || null,
+      fbclid: body.fbclid || null,
+      referrer: body.referrer || null,
+      landing_page: body.landing_page || null,
+    }),
   });
 
   // 409 = duplicate email — treat as success so we don't leak whether an email exists

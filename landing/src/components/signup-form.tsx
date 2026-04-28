@@ -1,8 +1,33 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ArrowRight, CheckCircle2, Loader2 } from 'lucide-react'
 import { AnimateOnScroll } from './animate-on-scroll'
+
+interface Attribution {
+  utm_source: string
+  utm_medium: string
+  utm_campaign: string
+  utm_content: string
+  utm_term: string
+  fbclid: string
+  referrer: string
+  landing_page: string
+}
+
+function getAttribution(): Attribution {
+  const p = new URLSearchParams(window.location.search)
+  return {
+    utm_source: p.get('utm_source') ?? '',
+    utm_medium: p.get('utm_medium') ?? '',
+    utm_campaign: p.get('utm_campaign') ?? '',
+    utm_content: p.get('utm_content') ?? '',
+    utm_term: p.get('utm_term') ?? '',
+    fbclid: p.get('fbclid') ?? '',
+    referrer: document.referrer ?? '',
+    landing_page: window.location.pathname + window.location.search,
+  }
+}
 
 export default function SignupForm() {
   const [email, setEmail] = useState('')
@@ -10,6 +35,11 @@ export default function SignupForm() {
   const [agency, setAgency] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [error, setError] = useState('')
+  const [attribution, setAttribution] = useState<Attribution | null>(null)
+
+  useEffect(() => {
+    setAttribution(getAttribution())
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -24,7 +54,7 @@ export default function SignupForm() {
       const res = await fetch('/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, instances, agency }),
+        body: JSON.stringify({ email, instances, agency, ...attribution }),
       })
       const data = await res.json()
       if (!res.ok) {
