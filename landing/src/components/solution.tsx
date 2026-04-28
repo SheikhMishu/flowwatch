@@ -22,7 +22,7 @@ const solutions = [
     title: 'Retry executions in one click',
     description:
       'Identify the issue, understand the fix, re-run the workflow — without ever leaving FlowMonix or opening n8n.',
-    image: null,
+    image: '/images/retry.png',
   },
   {
     icon: LayoutDashboard,
