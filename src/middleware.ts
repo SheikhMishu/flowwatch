@@ -4,7 +4,7 @@ import { verifySession } from "@/lib/auth";
 const PUBLIC_ROUTES = ["/login", "/"];
 const AUTH_ROUTES = ["/login"];
 
-const SKIP_TRACK = ["/icon", "/apple-icon", "/manifest", "/robots", "/sitemap"];
+const NOTRACK_COOKIE = "fm_notrack";
 
 // Pages we track visits for (not API routes, not admin, not static)
 function shouldTrack(pathname: string): boolean {
@@ -12,8 +12,7 @@ function shouldTrack(pathname: string): boolean {
     !pathname.startsWith("/api/") &&
     !pathname.startsWith("/admin") &&
     !pathname.startsWith("/_next/") &&
-    !pathname.includes(".") &&
-    !SKIP_TRACK.some((p) => pathname === p || pathname.startsWith(p + "."))
+    !pathname.includes(".")
   );
 }
 
@@ -36,8 +35,13 @@ export async function middleware(req: NextRequest) {
   const token = req.cookies.get("fw_session")?.value;
   const session = token ? await verifySession(token) : null;
 
+  // ?notrack in URL → set opt-out cookie (1 year)
+  const hasNotrackParam = req.nextUrl.searchParams.has("notrack");
+  const hasNotrackCookie = req.cookies.has(NOTRACK_COOKIE);
+  const optedOut = hasNotrackParam || hasNotrackCookie;
+
   // Fire-and-forget page visit tracking (non-blocking)
-  if (shouldTrack(pathname)) {
+  if (shouldTrack(pathname) && !optedOut) {
     const ip =
       req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
       req.headers.get("x-real-ip") ??
@@ -68,9 +72,20 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  return NextResponse.next();
+  const res = NextResponse.next();
+
+  // Persist the notrack opt-out as a cookie so future visits are also excluded
+  if (hasNotrackParam && !hasNotrackCookie) {
+    res.cookies.set(NOTRACK_COOKIE, "1", {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: "lax",
+    });
+  }
+
+  return res;
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|icon|apple-icon|manifest|robots|sitemap|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|xml|txt)$).*)"],
 };
