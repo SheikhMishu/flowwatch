@@ -4,13 +4,16 @@ import { verifySession } from "@/lib/auth";
 const PUBLIC_ROUTES = ["/login", "/"];
 const AUTH_ROUTES = ["/login"];
 
+const SKIP_TRACK = ["/icon", "/apple-icon", "/manifest", "/robots", "/sitemap"];
+
 // Pages we track visits for (not API routes, not admin, not static)
 function shouldTrack(pathname: string): boolean {
   return (
     !pathname.startsWith("/api/") &&
     !pathname.startsWith("/admin") &&
     !pathname.startsWith("/_next/") &&
-    !pathname.includes(".")
+    !pathname.includes(".") &&
+    !SKIP_TRACK.some((p) => pathname === p || pathname.startsWith(p + "."))
   );
 }
 
