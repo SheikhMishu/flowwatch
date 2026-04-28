@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { formatDistanceToNow, format } from "date-fns";
+import { distanceMelb, fmtMelb } from "@/lib/dates";
 import {
   AreaChart,
   Area,
@@ -162,7 +162,7 @@ export function VisitorsClient({
             </defs>
             <XAxis
               dataKey="date"
-              tickFormatter={(d) => format(new Date(d + "T00:00:00"), "MM/dd")}
+              tickFormatter={(d) => fmtMelb(d + "T00:00:00", "MM/dd")}
               tick={{ fontSize: 10, fill: "#6b7280" }}
               interval="preserveStartEnd"
               axisLine={false}
@@ -176,7 +176,7 @@ export function VisitorsClient({
             />
             <Tooltip
               contentStyle={{ background: "#111827", border: "1px solid #374151", borderRadius: 8, fontSize: 12 }}
-              labelFormatter={(d) => format(new Date(d + "T00:00:00"), "MMM d, yyyy")}
+              labelFormatter={(d) => fmtMelb(d + "T00:00:00", "MMM d, yyyy")}
               itemStyle={{ color: "#a5b4fc" }}
             />
             <Area
@@ -309,7 +309,7 @@ export function VisitorsClient({
                 <tr key={v.id} className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors">
                   <td className="px-4 py-2.5 text-gray-500 whitespace-nowrap font-mono">
                     <span title={v.created_at}>
-                      {formatDistanceToNow(new Date(v.created_at), { addSuffix: true })}
+                      {distanceMelb(v.created_at)}
                     </span>
                   </td>
                   <td className="px-4 py-2.5">

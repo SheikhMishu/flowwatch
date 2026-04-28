@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { Shield, Search, Users } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { distanceMelb } from "@/lib/dates";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -207,9 +207,7 @@ export function UsersClient({ users }: UsersClientProps) {
 
                   {/* Joined */}
                   <td className="px-4 py-3 text-muted-foreground text-xs whitespace-nowrap">
-                    {formatDistanceToNow(new Date(user.created_at), {
-                      addSuffix: true,
-                    })}
+                    {distanceMelb(user.created_at)}
                   </td>
                 </tr>
               );

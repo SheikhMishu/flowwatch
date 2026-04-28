@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { formatDistanceToNow } from "date-fns";
+import { distanceMelb } from "@/lib/dates";
 import {
   Search,
   Building2,
@@ -208,7 +208,7 @@ export function OrgsClient({ orgs }: OrgsClientProps) {
                 {/* Created */}
                 <td className="px-4 py-3">
                   <span className="text-muted-foreground text-xs">
-                    {formatDistanceToNow(new Date(org.created_at), { addSuffix: true })}
+                    {distanceMelb(org.created_at)}
                   </span>
                 </td>
 

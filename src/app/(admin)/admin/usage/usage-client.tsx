@@ -11,7 +11,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { format } from "date-fns";
+import { fmtMelb } from "@/lib/dates";
 import { Bell, Zap, Sparkles, UserPlus } from "lucide-react";
 import type { UsagePageProps } from "./page";
 
@@ -34,7 +34,7 @@ const tooltipStyle = {
 // ── Tick formatter for day charts (MM/dd) ───────────────────────────────────
 function fmtDay(dateStr: string) {
   try {
-    return format(new Date(dateStr + "T00:00:00"), "MM/dd");
+    return fmtMelb(dateStr + "T00:00:00", "MM/dd");
   } catch {
     return dateStr;
   }

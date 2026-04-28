@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { formatDistanceToNow, format } from "date-fns";
+import { distanceMelb, fmtMelb } from "@/lib/dates";
 import {
   ArrowLeft,
   Building2,
@@ -199,7 +199,7 @@ export function OrgDetailClient({
   alertFirings,
 }: OrgDetailClientProps) {
   const chartData = aiUsage.map((r) => ({
-    month: format(new Date(r.month), "MMM"),
+    month: fmtMelb(r.month, "MMM"),
     calls: r.count,
   }));
 
@@ -256,14 +256,14 @@ export function OrgDetailClient({
               <span>
                 Created{" "}
                 <span className="text-foreground">
-                  {formatDistanceToNow(new Date(org.created_at), { addSuffix: true })}
+                  {distanceMelb(org.created_at)}
                 </span>
               </span>
               {org.current_period_end && (
                 <span>
                   Renews{" "}
                   <span className="text-foreground">
-                    {format(new Date(org.current_period_end), "MMM d, yyyy")}
+                    {fmtMelb(org.current_period_end, "MMM d, yyyy")}
                   </span>
                 </span>
               )}
@@ -414,7 +414,7 @@ export function OrgDetailClient({
                       {m.role}
                     </span>
                     <span className="text-[10px] text-muted-foreground">
-                      {formatDistanceToNow(new Date(m.created_at), { addSuffix: true })}
+                      {distanceMelb(m.created_at)}
                     </span>
                   </div>
                 </div>
@@ -480,7 +480,7 @@ export function OrgDetailClient({
                     </span>
                   </div>
                   <span className="text-[10px] text-muted-foreground">
-                    {formatDistanceToNow(new Date(inst.created_at), { addSuffix: true })}
+                    {distanceMelb(inst.created_at)}
                   </span>
                 </div>
               </div>
