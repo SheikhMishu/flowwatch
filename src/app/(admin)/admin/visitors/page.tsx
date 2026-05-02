@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
+import { TZDate } from "@date-fns/tz";
 import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
 import { VisitorsClient } from "./visitors-client";
@@ -31,7 +32,9 @@ export default async function AdminVisitorsPage() {
   if (!adminUser?.is_super_admin) redirect("/dashboard");
 
   const now = new Date();
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+  const MELB = "Australia/Melbourne";
+  const nowMelb = new TZDate(now, MELB);
+  const todayStart = new TZDate(nowMelb.getFullYear(), nowMelb.getMonth(), nowMelb.getDate(), 0, 0, 0, 0, MELB).toISOString();
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -74,6 +77,7 @@ export default async function AdminVisitorsPage() {
       db.from("page_visits")
         .select("page")
         .gte("created_at", thirtyDaysAgo)
+        .limit(10000)
     ),
 
     // Country breakdown (last 30 days)
@@ -82,6 +86,7 @@ export default async function AdminVisitorsPage() {
         .select("country, country_code")
         .gte("created_at", thirtyDaysAgo)
         .not("country_code", "is", null)
+        .limit(10000)
     ),
 
     // Device breakdown (last 30 days)
@@ -89,6 +94,7 @@ export default async function AdminVisitorsPage() {
       db.from("page_visits")
         .select("device")
         .gte("created_at", thirtyDaysAgo)
+        .limit(10000)
     ),
 
     // Referrer breakdown (last 30 days)
@@ -97,6 +103,7 @@ export default async function AdminVisitorsPage() {
         .select("referrer")
         .gte("created_at", thirtyDaysAgo)
         .not("referrer", "is", null)
+        .limit(10000)
     ),
 
     // Browser breakdown (last 30 days)
@@ -104,14 +111,16 @@ export default async function AdminVisitorsPage() {
       db.from("page_visits")
         .select("browser")
         .gte("created_at", thirtyDaysAgo)
+        .limit(10000)
     ),
 
-    // Daily visits for last 30 days
+    // Daily visits for last 30 days — descending so recent days are always captured first
     withIpFilter(
       db.from("page_visits")
         .select("created_at")
         .gte("created_at", thirtyDaysAgo)
-        .order("created_at", { ascending: true })
+        .order("created_at", { ascending: false })
+        .limit(10000)
     ),
   ]);
 

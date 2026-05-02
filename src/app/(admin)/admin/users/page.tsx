@@ -40,12 +40,14 @@ export default async function AdminUsersPage() {
   const { data: users } = await db
     .from("users")
     .select("id, email, name, created_at, is_super_admin")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(10000);
 
   const { data: memberships } = await db
     .from("organization_members")
     .select("user_id, role, org_id, organizations(id, name, plan)")
-    .in("user_id", (users ?? []).map((u) => u.id));
+    .in("user_id", (users ?? []).map((u) => u.id))
+    .limit(10000);
 
   const enriched: EnrichedUser[] = (users ?? []).map((user) => ({
     ...user,

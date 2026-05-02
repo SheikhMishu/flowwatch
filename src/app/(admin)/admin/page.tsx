@@ -1,3 +1,4 @@
+import { TZDate } from "@date-fns/tz";
 import { getServerDb } from "@/lib/db";
 import { OverviewClient } from "./overview-client";
 
@@ -7,8 +8,10 @@ export default async function AdminOverviewPage() {
   const db = getServerDb();
 
   const now = new Date();
+  const MELB = "Australia/Melbourne";
+  const nowMelb = new TZDate(now, MELB);
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const todayStart = new TZDate(nowMelb.getFullYear(), nowMelb.getMonth(), nowMelb.getDate(), 0, 0, 0, 0, MELB);
 
   const [
     { count: totalUsers },
@@ -33,8 +36,8 @@ export default async function AdminOverviewPage() {
       .from("users")
       .select("id", { count: "exact", head: true })
       .gte("created_at", weekAgo.toISOString()),
-    db.from("organizations").select("plan"),
-    db.from("ai_usage").select("count"),
+    db.from("organizations").select("plan").limit(10000),
+    db.from("ai_usage").select("count").limit(10000),
     db
       .from("alert_firings")
       .select("id", { count: "exact", head: true })

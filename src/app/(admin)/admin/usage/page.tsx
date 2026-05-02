@@ -58,13 +58,14 @@ export default async function AdminUsagePage() {
     { data: signups },
     { data: aiUsage },
   ] = await Promise.all([
-    db.from("alert_firings").select("fired_at").gte("fired_at", thirtyDaysAgo),
+    db.from("alert_firings").select("fired_at").gte("fired_at", thirtyDaysAgo).limit(10000),
     db
       .from("synced_executions")
       .select("started_at, status")
-      .gte("started_at", thirtyDaysAgo),
-    db.from("signups").select("created_at").gte("created_at", thirtyDaysAgo),
-    db.from("ai_usage").select("org_id, month, count"),
+      .gte("started_at", thirtyDaysAgo)
+      .limit(10000),
+    db.from("signups").select("created_at").gte("created_at", thirtyDaysAgo).limit(10000),
+    db.from("ai_usage").select("org_id, month, count").limit(10000),
   ]);
 
   const alertsByDay = groupByDay(

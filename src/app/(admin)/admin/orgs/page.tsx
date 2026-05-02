@@ -21,14 +21,15 @@ export default async function AdminOrgsPage() {
   const { data: orgs } = await db
     .from("organizations")
     .select("id, name, slug, plan, plan_status, created_at, stripe_subscription_id")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(10000);
 
   const orgIds = (orgs ?? []).map((o) => o.id);
 
   const [{ data: memberCounts }, { data: instanceCounts }, { data: aiThisMonth }] =
     await Promise.all([
-      db.from("organization_members").select("org_id").in("org_id", orgIds),
-      db.from("n8n_instances").select("org_id, is_active").in("org_id", orgIds),
+      db.from("organization_members").select("org_id").in("org_id", orgIds).limit(10000),
+      db.from("n8n_instances").select("org_id, is_active").in("org_id", orgIds).limit(10000),
       db
         .from("ai_usage")
         .select("org_id, count")
