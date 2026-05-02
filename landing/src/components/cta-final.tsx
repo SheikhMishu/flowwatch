@@ -9,18 +9,17 @@ export default function CtaFinal() {
           {/* Gradient background */}
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-700" />
 
-          {/* Dot pattern overlay */}
+          {/* Sharp grid-line overlay */}
           <div
-            className="absolute inset-0 opacity-[0.08]"
+            className="absolute inset-0 opacity-[0.07]"
             style={{
-              backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
-              backgroundSize: '28px 28px',
+              backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(to right, rgba(255,255,255,1) 1px, transparent 1px)',
+              backgroundSize: '48px 48px',
             }}
           />
 
-          {/* Glow orbs inside the card */}
-          <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/20 rounded-full blur-3xl pointer-events-none" />
+          {/* Sharp top accent line */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-white/0 via-white/50 to-white/0" />
 
           {/* Content */}
           <div className="relative z-10 text-center py-16 sm:py-24 px-5 sm:px-8">

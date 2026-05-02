@@ -46,6 +46,7 @@ export default function Problem() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <AnimateOnScroll className="text-center mb-16">
+          <div className="w-8 h-[2px] bg-red-500 mx-auto mb-3" />
           <p className="text-xs font-bold uppercase tracking-widest text-red-500 mb-5">The Problem</p>
           <h2 className="font-display font-bold text-4xl sm:text-5xl text-zinc-900 leading-tight">
             n8n is powerful — but when something

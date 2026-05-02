@@ -20,10 +20,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Dot grid background */
+/* Dot grid background (legacy) */
 .dot-grid {
   background-image: radial-gradient(circle, rgba(99, 102, 241, 0.18) 1px, transparent 1px);
   background-size: 28px 28px;
+}
+
+/* Sharp grid-line background — replaces dot-grid in hero */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(99, 102, 241, 0.06) 1px, transparent 1px),
+    linear-gradient(to right, rgba(99, 102, 241, 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
 
 /* Gradient text */

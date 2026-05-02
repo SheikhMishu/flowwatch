@@ -47,6 +47,7 @@ export default function Trust() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Headline */}
         <AnimateOnScroll className="text-center mb-14">
+          <div className="w-8 h-[2px] bg-indigo-500 mx-auto mb-3" />
           <p className="text-xs font-bold uppercase tracking-widest text-indigo-600 mb-5">Built for real n8n users</p>
           <h2 className="font-display font-bold text-4xl sm:text-5xl text-zinc-900 mb-6">
             What you can expect.
