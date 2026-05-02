@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { FlowMonixMark } from './brand-mark'
 
 export default function Footer() {
@@ -19,13 +20,21 @@ export default function Footer() {
             <span className="hidden sm:block text-zinc-400 text-xs font-medium">· n8n observability</span>
           </div>
 
-          {/* Support email */}
-          <a
-            href="mailto:support@flowmonix.com"
-            className="text-zinc-400 hover:text-zinc-700 text-xs transition-colors duration-200"
-          >
-            support@flowmonix.com
-          </a>
+          {/* Links */}
+          <div className="flex items-center gap-5">
+            <Link
+              href="/contact"
+              className="text-zinc-400 hover:text-zinc-700 text-xs transition-colors duration-200"
+            >
+              Contact
+            </Link>
+            <a
+              href="mailto:support@flowmonix.com"
+              className="text-zinc-400 hover:text-zinc-700 text-xs transition-colors duration-200"
+            >
+              support@flowmonix.com
+            </a>
+          </div>
 
           {/* Copyright */}
           <p className="text-zinc-400 text-xs">

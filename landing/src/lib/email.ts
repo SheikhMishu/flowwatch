@@ -167,6 +167,46 @@ export async function sendSequenceEmail3(email: string): Promise<void> {
   await sendEmail(email, 'How we fix failures in seconds', html)
 }
 
+// Contact form notification — sent to support@flowmonix.com
+export async function sendContactNotification(opts: {
+  senderName: string
+  senderEmail: string
+  subject: string
+  message: string
+}): Promise<void> {
+  const { senderName, senderEmail, subject, message } = opts
+  const from = process.env.REG_MAIL_FROM
+  const ses = getSesClient()
+  const to = 'support@flowmonix.com'
+
+  if (!ses || !from) {
+    console.log(`[CONTACT] From: ${senderName} <${senderEmail}>\nSubject: ${subject}\n${message}`)
+    return
+  }
+
+  const html = layout(`
+    <h2 style="margin:0 0 16px;font-size:18px;font-weight:700;color:#111827;">New contact form submission</h2>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:20px;">
+      <tr><td style="padding:16px 20px;">
+        <p style="margin:0 0 8px;font-size:13px;color:#6b7280;"><strong style="color:#374151;">From:</strong> ${senderName} &lt;${senderEmail}&gt;</p>
+        <p style="margin:0;font-size:13px;color:#6b7280;"><strong style="color:#374151;">Subject:</strong> ${subject}</p>
+      </td></tr>
+    </table>
+    <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#374151;">Message:</p>
+    <p style="margin:0;font-size:14px;color:#374151;line-height:1.7;white-space:pre-wrap;">${message.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+  `)
+
+  await ses.send(new SendEmailCommand({
+    Source: from,
+    ReplyToAddresses: [senderEmail],
+    Destination: { ToAddresses: [to] },
+    Message: {
+      Subject: { Data: `[Contact] ${subject}`, Charset: 'UTF-8' },
+      Body: { Html: { Data: html, Charset: 'UTF-8' } },
+    },
+  }))
+}
+
 // Email 4 — Day 7: nudge
 export async function sendSequenceEmail4(email: string): Promise<void> {
   const html = layout(`

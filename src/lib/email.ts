@@ -221,5 +221,61 @@ export async function sendAlertEmail(
   await sendEmail({ to: email, subject, fromEnvKey: "NOTIFY_MAIL_FROM", html });
 }
 
+// Contact form — sends to support@flowmonix.com with reply-to set to sender
+export async function sendContactEmail(opts: {
+  senderName: string;
+  senderEmail: string;
+  orgName: string;
+  subject: string;
+  message: string;
+}): Promise<void> {
+  const { senderName, senderEmail, orgName, subject, message } = opts;
+  const from = process.env.NOTIFY_MAIL_FROM;
+  const ses = getSesClient();
+  const to = "support@flowmonix.com";
+
+  const content = `
+    <h2 style="margin:0 0 16px;font-size:18px;font-weight:700;color:#111827;">New support request</h2>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"
+           style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:20px;">
+      <tr><td style="padding:16px 20px;">
+        <p style="margin:0 0 8px;font-size:13px;color:#6b7280;">
+          <strong style="color:#374151;">From:</strong> ${senderName} &lt;${senderEmail}&gt;
+        </p>
+        <p style="margin:0 0 8px;font-size:13px;color:#6b7280;">
+          <strong style="color:#374151;">Workspace:</strong> ${orgName}
+        </p>
+        <p style="margin:0;font-size:13px;color:#6b7280;">
+          <strong style="color:#374151;">Subject:</strong> ${subject}
+        </p>
+      </td></tr>
+    </table>
+    <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#374151;">Message:</p>
+    <p style="margin:0;font-size:14px;color:#374151;line-height:1.7;white-space:pre-wrap;">${message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>
+  `;
+
+  if (!ses || !from) {
+    console.log(`\n[CONTACT] From: ${senderName} (${orgName}) <${senderEmail}>\nSubject: ${subject}\n${message}\n`);
+    return;
+  }
+
+  try {
+    await ses.send(
+      new SendEmailCommand({
+        Source: from,
+        ReplyToAddresses: [senderEmail],
+        Destination: { ToAddresses: [to] },
+        Message: {
+          Subject: { Data: `[Support] ${subject}`, Charset: "UTF-8" },
+          Body: { Html: { Data: emailLayout(content, "Internal support notification."), Charset: "UTF-8" } },
+        },
+      })
+    );
+  } catch (err) {
+    logger.error("SES contact send failed", { category: "email", senderEmail, subject, err });
+    throw err;
+  }
+}
+
 // Export layout helpers for use in alert-engine.ts
 export { emailLayout, ctaButton };

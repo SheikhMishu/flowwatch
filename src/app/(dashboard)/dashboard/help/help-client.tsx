@@ -19,6 +19,9 @@ import {
   ScrollText,
   Zap,
   HelpCircle,
+  Loader2,
+  CheckCircle2,
+  MessageSquare,
 } from "lucide-react";
 
 // --- Types ---
@@ -468,9 +471,114 @@ function SectionView({
   );
 }
 
+// --- Contact form ---
+
+const CONTACT_SUBJECTS = [
+  "General inquiry",
+  "Technical support",
+  "Billing / subscription",
+  "Feature request",
+  "Bug report",
+  "Other",
+];
+
+function ContactForm({ userEmail }: { userEmail: string }) {
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!subject || !message) {
+      setError("Please fill in all fields.");
+      return;
+    }
+    setError("");
+    setStatus("loading");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subject, message }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Something went wrong. Please try again.");
+        setStatus("error");
+        return;
+      }
+      setStatus("success");
+    } catch {
+      setError("Network error — please try again.");
+      setStatus("error");
+    }
+  }
+
+  if (status === "success") {
+    return (
+      <div className="text-center py-4">
+        <div className="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center mx-auto mb-3">
+          <CheckCircle2 className="w-5 h-5 text-success" />
+        </div>
+        <p className="text-sm font-medium text-foreground">Message sent!</p>
+        <p className="text-xs text-muted-foreground mt-1">
+          We&apos;ll reply to <span className="font-medium">{userEmail}</span> within one business day.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-3 mt-4">
+      <div>
+        <label className="block text-xs font-medium text-muted-foreground mb-1.5">Subject</label>
+        <select
+          required
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+          className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-shadow appearance-none cursor-pointer"
+        >
+          <option value="" disabled>Select a topic...</option>
+          {CONTACT_SUBJECTS.map((s) => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-muted-foreground mb-1.5">Message</label>
+        <textarea
+          required
+          rows={4}
+          placeholder="Describe your question or issue..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-shadow resize-none"
+        />
+      </div>
+      {error && <p className="text-xs text-destructive">{error}</p>}
+      <button
+        type="submit"
+        disabled={status === "loading"}
+        className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium px-4 py-2.5 hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+      >
+        {status === "loading" ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Sending...
+          </>
+        ) : (
+          "Send message"
+        )}
+      </button>
+    </form>
+  );
+}
+
 // --- Main export ---
 
-export function HelpClient() {
+export function HelpClient({ userEmail }: { userEmail: string }) {
   const [query, setQuery] = useState("");
 
   const totalArticles = SECTIONS.reduce((n, s) => n + s.articles.length, 0);
@@ -536,20 +644,22 @@ export function HelpClient() {
         </div>
       )}
 
-      <div className="rounded-xl border border-border bg-card shadow-card p-5 flex items-start gap-4">
-        <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center shrink-0 mt-0.5">
-          <Sparkles className="w-4 h-4 text-primary" />
+      <div className="rounded-xl border border-border bg-card shadow-card p-5">
+        <div className="flex items-start gap-3 mb-1">
+          <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center shrink-0 mt-0.5">
+            <MessageSquare className="w-4 h-4 text-primary" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-foreground">Contact support</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              We reply within one business day.
+              {userEmail && (
+                <> Reply goes to <span className="font-medium">{userEmail}</span>.</>
+              )}
+            </p>
+          </div>
         </div>
-        <div>
-          <p className="text-sm font-medium text-foreground">Still need help?</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Email us at{" "}
-            <a href="mailto:support@flowmonix.com" className="text-primary hover:underline">
-              support@flowmonix.com
-            </a>
-            {" "}and we will get back to you within one business day.
-          </p>
-        </div>
+        <ContactForm userEmail={userEmail} />
       </div>
 
     </div>
