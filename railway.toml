@@ -1,0 +1,5 @@
+[build]
+buildCommand = "npm run build"
+
+[deploy]
+startCommand = "node --max-old-space-size=400 node_modules/.bin/next start -H 0.0.0.0 -p ${PORT:-3000}"

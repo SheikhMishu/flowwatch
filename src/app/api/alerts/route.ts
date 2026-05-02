@@ -16,7 +16,8 @@ export async function GET() {
     .from("alerts")
     .select("*")
     .eq("org_id", session.orgId)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(500);
 
   if (error) return NextResponse.json({ error: "Failed to fetch alerts" }, { status: 500 });
   return NextResponse.json({ alerts: data ?? [] });

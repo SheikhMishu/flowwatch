@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { distanceMelb, fmtMelb } from "@/lib/dates";
 import {
@@ -15,6 +16,8 @@ import {
   XCircle,
   ExternalLink,
   CreditCard,
+  ScrollText,
+  Loader2,
 } from "lucide-react";
 import {
   BarChart,
@@ -59,6 +62,25 @@ interface InstanceRow {
 interface AiUsageRow {
   month: string;
   count: number;
+}
+
+interface ActivityLogEntry {
+  id: string;
+  user_email: string | null;
+  user_name: string | null;
+  action: string;
+  resource_type: string | null;
+  resource_id: string | null;
+  ip: string | null;
+  created_at: string;
+}
+
+interface SystemLogEntry {
+  id: string;
+  level: "warn" | "error" | "fatal";
+  category: string | null;
+  message: string;
+  created_at: string;
 }
 
 interface OrgDetailClientProps {
@@ -178,6 +200,192 @@ function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: 
     <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-lg text-xs">
       <p className="text-muted-foreground mb-1">{label}</p>
       <p className="font-semibold text-foreground">{payload[0].value.toLocaleString()} calls</p>
+    </div>
+  );
+}
+
+// ── Org Logs Section ─────────────────────────────────────────────────────────
+
+function levelClass(level: string) {
+  switch (level) {
+    case "warn":  return "bg-amber-500/10 text-amber-600 border-amber-500/20";
+    case "error": return "bg-rose-500/10 text-rose-600 border-rose-500/20";
+    case "fatal": return "bg-red-600/10 text-red-700 border-red-600/20";
+    default:      return "bg-secondary text-muted-foreground border-border";
+  }
+}
+
+function OrgLogsSection({ orgId }: { orgId: string }) {
+  const [tab, setTab] = React.useState<"activity" | "system">("activity");
+  const [logs, setLogs] = React.useState<(ActivityLogEntry | SystemLogEntry)[]>([]);
+  const [total, setTotal] = React.useState(0);
+  const [offset, setOffset] = React.useState(0);
+  const [loading, setLoading] = React.useState(false);
+
+  const LIMIT = 25;
+
+  React.useEffect(() => {
+    load(tab, 0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab]);
+
+  async function load(type: string, off: number) {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `/api/admin/orgs/${orgId}/logs?type=${type}&limit=${LIMIT}&offset=${off}`
+      );
+      const data = await res.json();
+      const next: (ActivityLogEntry | SystemLogEntry)[] = data.logs ?? [];
+      setLogs((prev) => (off === 0 ? next : [...prev, ...next]));
+      setTotal(data.total ?? 0);
+      setOffset(off + next.length);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const hasMore = logs.length < total;
+
+  return (
+    <div className="rounded-xl border border-border bg-card overflow-hidden">
+      {/* Header */}
+      <div className="px-5 py-3.5 border-b border-border flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <ScrollText className="w-4 h-4 text-muted-foreground" />
+          <h2 className="text-sm font-semibold text-foreground">Logs</h2>
+        </div>
+        <div className="flex items-center gap-1 rounded-lg border border-border p-0.5 bg-muted">
+          {(["activity", "system"] as const).map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={cn(
+                "px-3 py-1 text-xs rounded-md font-medium transition-colors",
+                tab === t
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {t === "activity" ? "Activity" : "System"}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Body */}
+      {loading && logs.length === 0 ? (
+        <div className="flex items-center justify-center gap-2 py-12 text-sm text-muted-foreground">
+          <Loader2 className="w-4 h-4 animate-spin" />
+          Loading…
+        </div>
+      ) : logs.length === 0 ? (
+        <p className="py-12 text-center text-sm text-muted-foreground">No logs found</p>
+      ) : (
+        <div className="overflow-x-auto">
+          {tab === "activity" ? (
+            <table className="w-full text-xs min-w-[600px]">
+              <thead>
+                <tr className="border-b border-border bg-muted/30">
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground w-32">Time</th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground w-40">User</th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Action</th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground w-36">Resource</th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground w-28">IP</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {(logs as ActivityLogEntry[]).map((log) => (
+                  <tr key={log.id} className="hover:bg-muted/20 transition-colors">
+                    <td className="px-4 py-2.5 text-muted-foreground whitespace-nowrap">
+                      {distanceMelb(log.created_at)}
+                    </td>
+                    <td className="px-4 py-2.5">
+                      <p className="text-foreground font-medium truncate max-w-[156px]">
+                        {log.user_name || log.user_email || "—"}
+                      </p>
+                      {log.user_name && log.user_email && (
+                        <p className="text-muted-foreground truncate max-w-[156px]">{log.user_email}</p>
+                      )}
+                    </td>
+                    <td className="px-4 py-2.5">
+                      <code className="text-foreground">{log.action}</code>
+                    </td>
+                    <td className="px-4 py-2.5 text-muted-foreground">
+                      {log.resource_type ? (
+                        <>
+                          {log.resource_type}
+                          {log.resource_id && (
+                            <span className="ml-1 font-mono text-muted-foreground/60">
+                              {log.resource_id.slice(0, 8)}…
+                            </span>
+                          )}
+                        </>
+                      ) : "—"}
+                    </td>
+                    <td className="px-4 py-2.5 font-mono text-muted-foreground">
+                      {log.ip || "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <table className="w-full text-xs min-w-[600px]">
+              <thead>
+                <tr className="border-b border-border bg-muted/30">
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground w-32">Time</th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground w-20">Level</th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground w-28">Category</th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Message</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {(logs as SystemLogEntry[]).map((log) => (
+                  <tr key={log.id} className="hover:bg-muted/20 transition-colors">
+                    <td className="px-4 py-2.5 text-muted-foreground whitespace-nowrap">
+                      {distanceMelb(log.created_at)}
+                    </td>
+                    <td className="px-4 py-2.5">
+                      <span
+                        className={cn(
+                          "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium",
+                          levelClass(log.level)
+                        )}
+                      >
+                        {log.level}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2.5 text-muted-foreground">{log.category || "—"}</td>
+                    <td className="px-4 py-2.5 text-foreground">
+                      <span className="line-clamp-2 break-all">{log.message}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
+
+      {/* Footer */}
+      {logs.length > 0 && (
+        <div className="px-5 py-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
+          <span>
+            Showing {logs.length.toLocaleString()} of {total.toLocaleString()}
+          </span>
+          {hasMore && (
+            <button
+              onClick={() => load(tab, offset)}
+              disabled={loading}
+              className="flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors disabled:opacity-50"
+            >
+              {loading && <Loader2 className="w-3 h-3 animate-spin" />}
+              Load more
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -488,6 +696,9 @@ export function OrgDetailClient({
           </div>
         </div>
       </div>
+
+      {/* ── Logs ── */}
+      <OrgLogsSection orgId={org.id} />
     </div>
   );
 }

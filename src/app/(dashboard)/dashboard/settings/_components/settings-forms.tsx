@@ -695,6 +695,8 @@ function StatusPageSection() {
   const [saving, setSaving] = React.useState(false);
   const [status, setStatus] = React.useState<"idle" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = React.useState("");
+  const savedSlug = React.useRef("");
+  const savedEnabled = React.useRef(false);
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://flowmonix.com";
 
@@ -708,8 +710,12 @@ function StatusPageSection() {
 
     setLoading(true);
     fetch("/api/org/status-page").then((r) => r.json()).then((d) => {
-      setSlug(d.slug ?? "");
-      setEnabled(d.status_page_enabled ?? false);
+      const s = d.slug ?? "";
+      const e = d.status_page_enabled ?? false;
+      setSlug(s);
+      setEnabled(e);
+      savedSlug.current = s;
+      savedEnabled.current = e;
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
@@ -730,8 +736,12 @@ function StatusPageSection() {
         setStatus("error");
         return;
       }
-      setSlug(data.slug ?? "");
-      setEnabled(data.status_page_enabled);
+      const s = data.slug ?? "";
+      const e = data.status_page_enabled;
+      setSlug(s);
+      setEnabled(e);
+      savedSlug.current = s;
+      savedEnabled.current = e;
       setStatus("success");
       setTimeout(() => setStatus("idle"), 3000);
     } catch {
@@ -744,6 +754,7 @@ function StatusPageSection() {
 
   const publicUrl = slug ? `${appUrl}/status/${slug}` : null;
   const canEdit = isOwner && !isDemo;
+  const isDirty = slug !== savedSlug.current || enabled !== savedEnabled.current;
 
   return (
     <Card>
@@ -823,6 +834,12 @@ function StatusPageSection() {
               <span className="flex items-center gap-1 text-xs text-success">
                 <Check className="w-3.5 h-3.5" />
                 Saved
+              </span>
+            )}
+            {isDirty && status !== "success" && (
+              <span className="flex items-center gap-1.5 text-xs text-amber-500">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                Unsaved changes
               </span>
             )}
             <Button

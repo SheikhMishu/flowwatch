@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
   if (status && status !== "all") query = query.eq("status", status);
   if (instanceId) query = query.eq("instance_id", instanceId);
 
-  const { data, error } = await query;
+  const { data, error } = await query.limit(500);
   if (error) {
     console.error("[GET /api/incidents]", error.message);
     return NextResponse.json({ error: "Failed to fetch incidents" }, { status: 500 });
