@@ -1,5 +1,5 @@
 [build]
-buildCommand = "npm run build"
+buildCommand = "NODE_OPTIONS=--max-old-space-size=1024 npm run build"
 
 [deploy]
-startCommand = "NODE_OPTIONS=--max-old-space-size=400 npm start"
+startCommand = "npm start"
