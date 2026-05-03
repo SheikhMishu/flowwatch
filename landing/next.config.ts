@@ -8,7 +8,7 @@ const ContentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https:",
   "font-src 'self' https://fonts.gstatic.com",
-  `connect-src 'self' https://plausible.io https://www.facebook.com https://connect.facebook.net https://www.googletagmanager.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://region1.analytics.google.com https://www.clarity.ms${isDev ? ' ws://localhost:*' : ''}`,
+  `connect-src 'self' https://plausible.io https://www.facebook.com https://connect.facebook.net https://www.googletagmanager.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://region1.analytics.google.com https://www.clarity.ms https://h.clarity.ms${isDev ? ' ws://localhost:*' : ''}`,
   "frame-ancestors 'none'",
 ].join('; ')
 
