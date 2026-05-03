@@ -4,11 +4,11 @@ const isDev = process.env.NODE_ENV === 'development'
 
 const ContentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://plausible.io https://connect.facebook.net https://static.cloudflareinsights.com`,
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://plausible.io https://connect.facebook.net https://static.cloudflareinsights.com https://www.googletagmanager.com https://www.clarity.ms`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https:",
   "font-src 'self' https://fonts.gstatic.com",
-  `connect-src 'self' https://plausible.io https://www.facebook.com https://connect.facebook.net${isDev ? ' ws://localhost:*' : ''}`,
+  `connect-src 'self' https://plausible.io https://www.facebook.com https://connect.facebook.net https://www.googletagmanager.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://region1.analytics.google.com https://www.clarity.ms${isDev ? ' ws://localhost:*' : ''}`,
   "frame-ancestors 'none'",
 ].join('; ')
 
