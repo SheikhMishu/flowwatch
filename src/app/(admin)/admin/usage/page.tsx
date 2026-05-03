@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { TZDate } from "@date-fns/tz";
 import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
 import { UsageClient } from "./usage-client";
@@ -19,18 +20,26 @@ export type UsagePageProps = {
   totalAi: number;
 };
 
+const MELB = "Australia/Melbourne";
+
+function melbDateKey(ts: string | number): string {
+  const d = new TZDate(new Date(ts), MELB);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 function groupByDay(
   items: Array<Record<string, unknown>>,
   dateField: string
 ): DayBucket[] {
   const counts: Record<string, number> = {};
   for (let i = 29; i >= 0; i--) {
-    const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
-    counts[d.toISOString().split("T")[0]] = 0;
+    counts[melbDateKey(Date.now() - i * 24 * 60 * 60 * 1000)] = 0;
   }
   for (const item of items) {
-    const day = (item[dateField] as string)?.split("T")[0];
-    if (day && day in counts) counts[day]++;
+    const ts = item[dateField] as string;
+    if (!ts) continue;
+    const day = melbDateKey(ts);
+    if (day in counts) counts[day]++;
   }
   return Object.entries(counts).map(([date, count]) => ({ date, count }));
 }

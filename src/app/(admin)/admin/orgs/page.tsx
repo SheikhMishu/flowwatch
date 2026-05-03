@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { TZDate } from "@date-fns/tz";
 import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
 import { OrgsClient } from "./orgs-client";
@@ -26,6 +27,10 @@ export default async function AdminOrgsPage() {
 
   const orgIds = (orgs ?? []).map((o) => o.id);
 
+  const MELB = "Australia/Melbourne";
+  const nowMelb = new TZDate(new Date(), MELB);
+  const currentMonth = `${nowMelb.getFullYear()}-${String(nowMelb.getMonth() + 1).padStart(2, "0")}-01`;
+
   const [{ data: memberCounts }, { data: instanceCounts }, { data: aiThisMonth }] =
     await Promise.all([
       db.from("organization_members").select("org_id").in("org_id", orgIds).limit(10000),
@@ -34,12 +39,7 @@ export default async function AdminOrgsPage() {
         .from("ai_usage")
         .select("org_id, count")
         .in("org_id", orgIds)
-        .eq(
-          "month",
-          new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-            .toISOString()
-            .split("T")[0]
-        ),
+        .eq("month", currentMonth),
     ]);
 
   const enriched = (orgs ?? []).map((org) => ({

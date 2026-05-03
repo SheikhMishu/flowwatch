@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { TZDate } from "@date-fns/tz";
 import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
 
@@ -11,10 +12,12 @@ export async function GET() {
   if (!adminUser?.is_super_admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const now = new Date();
+  const MELB = "Australia/Melbourne";
+  const nowMelb = new TZDate(now, MELB);
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
-  const monthAgo = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-  const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
+  const monthStart = new TZDate(nowMelb.getFullYear(), nowMelb.getMonth(), 1, 0, 0, 0, 0, MELB).toISOString();
+  const todayStart = new TZDate(nowMelb.getFullYear(), nowMelb.getMonth(), nowMelb.getDate(), 0, 0, 0, 0, MELB).toISOString();
+  const currentMonth = `${nowMelb.getFullYear()}-${String(nowMelb.getMonth() + 1).padStart(2, "0")}-01`;
 
   const [
     totalUsersRes,
@@ -34,7 +37,7 @@ export async function GET() {
     db.from("users").select("id", { count: "exact", head: true }),
     db.from("organizations").select("id", { count: "exact", head: true }),
     db.from("organizations").select("id", { count: "exact", head: true }).gte("created_at", weekAgo),
-    db.from("organizations").select("id", { count: "exact", head: true }).gte("created_at", monthAgo),
+    db.from("organizations").select("id", { count: "exact", head: true }).gte("created_at", monthStart),
     db.from("users").select("id", { count: "exact", head: true }).gte("created_at", weekAgo),
     db.from("organizations").select("plan"),
     db.from("ai_usage").select("count"),

@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { TZDate } from "@date-fns/tz";
 import { getSession } from "@/lib/auth";
 import { getServerDb } from "@/lib/db";
 import { OrgDetailClient } from "./org-detail-client";
@@ -31,6 +32,10 @@ export default async function AdminOrgDetailPage({
     .single();
 
   if (!org) redirect("/admin/orgs");
+
+  const MELB = "Australia/Melbourne";
+  const nowMelb = new TZDate(new Date(), MELB);
+  const monthStart = new TZDate(nowMelb.getFullYear(), nowMelb.getMonth(), 1, 0, 0, 0, 0, MELB).toISOString();
 
   const [
     { data: members },
@@ -84,10 +89,7 @@ export default async function AdminOrgDetailPage({
       .from("alert_firings")
       .select("id", { count: "exact", head: true })
       .eq("org_id", id)
-      .gte(
-        "fired_at",
-        new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
-      ),
+      .gte("fired_at", monthStart),
   ]);
 
   const aiTotal = (aiUsage ?? []).reduce((s, r) => s + r.count, 0);

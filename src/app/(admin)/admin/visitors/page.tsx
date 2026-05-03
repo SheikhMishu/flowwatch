@@ -77,7 +77,7 @@ export default async function AdminVisitorsPage() {
       db.from("page_visits")
         .select("page")
         .gte("created_at", thirtyDaysAgo)
-        .limit(10000)
+        .limit(20000)
     ),
 
     // Country breakdown (last 30 days)
@@ -86,7 +86,7 @@ export default async function AdminVisitorsPage() {
         .select("country, country_code")
         .gte("created_at", thirtyDaysAgo)
         .not("country_code", "is", null)
-        .limit(10000)
+        .limit(20000)
     ),
 
     // Device breakdown (last 30 days)
@@ -94,7 +94,7 @@ export default async function AdminVisitorsPage() {
       db.from("page_visits")
         .select("device")
         .gte("created_at", thirtyDaysAgo)
-        .limit(10000)
+        .limit(20000)
     ),
 
     // Referrer breakdown (last 30 days)
@@ -103,7 +103,7 @@ export default async function AdminVisitorsPage() {
         .select("referrer")
         .gte("created_at", thirtyDaysAgo)
         .not("referrer", "is", null)
-        .limit(10000)
+        .limit(20000)
     ),
 
     // Browser breakdown (last 30 days)
@@ -111,7 +111,7 @@ export default async function AdminVisitorsPage() {
       db.from("page_visits")
         .select("browser")
         .gte("created_at", thirtyDaysAgo)
-        .limit(10000)
+        .limit(20000)
     ),
 
     // Daily visits for last 30 days — descending so recent days are always captured first
@@ -120,7 +120,7 @@ export default async function AdminVisitorsPage() {
         .select("created_at")
         .gte("created_at", thirtyDaysAgo)
         .order("created_at", { ascending: false })
-        .limit(10000)
+        .limit(20000)
     ),
   ]);
 
@@ -183,14 +183,17 @@ export default async function AdminVisitorsPage() {
     .slice(0, 6)
     .map(([browser, count]) => ({ browser, count }));
 
-  // Daily visit buckets
+  // Daily visit buckets — keyed by Melbourne date so they match the visitsToday boundary
+  const melbDate = (ts: string | number | Date) => {
+    const d = new TZDate(ts instanceof Date ? ts : new Date(ts), MELB);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  };
   const dailyBuckets: Record<string, number> = {};
   for (let i = 29; i >= 0; i--) {
-    const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-    dailyBuckets[d.toISOString().split("T")[0]] = 0;
+    dailyBuckets[melbDate(now.getTime() - i * 24 * 60 * 60 * 1000)] = 0;
   }
   for (const r of dailyData ?? []) {
-    const day = r.created_at.split("T")[0];
+    const day = melbDate(r.created_at);
     if (day in dailyBuckets) dailyBuckets[day]++;
   }
   const dailyVisits = Object.entries(dailyBuckets).map(([date, count]) => ({ date, count }));
