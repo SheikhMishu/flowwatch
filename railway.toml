@@ -1,5 +1,5 @@
 [build]
-buildCommand = "NODE_OPTIONS=--max-old-space-size=1024 npm run build"
+buildCommand = "NEXT_WEBPACK_WORKERS=1 NODE_OPTIONS=--max-old-space-size=768 npm run build"
 
 [deploy]
-startCommand = "npm start"
+startCommand = "NODE_OPTIONS=--max-old-space-size=512 npm start"
