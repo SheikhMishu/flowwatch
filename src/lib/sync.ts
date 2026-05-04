@@ -71,8 +71,10 @@ async function runInstanceSync(
       return valid.includes(m) ? m : "trigger";
     }
 
-    // Fetch error details for failed executions (list endpoint doesn't include them)
-    const errorExecs = rawExecutions.filter((e) => e.status === "error" || e.status === "crashed");
+    // Fetch error details for the most recent failed executions (cap at 25 to avoid timeout)
+    const errorExecs = rawExecutions
+      .filter((e) => e.status === "error" || e.status === "crashed")
+      .slice(0, 25);
     const errorDetailMap = new Map<string, { failed_node: string | null; error_message: string | null; error_type: string | null }>();
     await Promise.all(
       errorExecs.map(async (e) => {
