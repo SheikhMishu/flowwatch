@@ -264,25 +264,32 @@ export function toExecutionGraph(raw: N8nExecutionRawWithData): ExecutionGraph {
   const wfNodes = raw.data?.workflowData?.nodes ?? [];
   const connections = raw.data?.workflowData?.connections ?? {};
 
-  const nodes: GraphNode[] = wfNodes.map((wfNode) => {
+  // Build node map so edges can back-fill input_items on target nodes
+  const nodeMap = new Map<string, GraphNode>();
+  for (const wfNode of wfNodes) {
     const runs = runData[wfNode.name];
     if (!runs || runs.length === 0) {
-      return { name: wfNode.name, type: wfNode.type, position: wfNode.position, status: "skipped" };
+      nodeMap.set(wfNode.name, {
+        name: wfNode.name,
+        type: wfNode.type,
+        position: wfNode.position,
+        status: "skipped",
+      });
+      continue;
     }
     const run = runs[0];
-    const hasError = !!run.error;
     const outputItems = (run.data?.main?.flat() ?? []).map((item) => (item as { json: unknown }).json);
-    return {
+    nodeMap.set(wfNode.name, {
       name: wfNode.name,
       type: wfNode.type,
       position: wfNode.position,
-      status: hasError ? "error" : "ran",
+      status: run.error ? "error" : "ran",
       duration_ms: run.executionTime ?? 0,
       output_items: outputItems.length > 0 ? outputItems : undefined,
       error: run.error?.message,
       error_description: run.error?.description,
-    };
-  });
+    });
+  }
 
   const edges: GraphEdge[] = [];
   for (const [fromName, connData] of Object.entries(connections)) {
@@ -290,7 +297,16 @@ export function toExecutionGraph(raw: N8nExecutionRawWithData): ExecutionGraph {
     outputBranches.forEach((branch, outputIndex) => {
       for (const conn of branch) {
         const fromRun = runData[fromName]?.[0];
-        const taken = (fromRun?.data?.main?.[outputIndex]?.length ?? 0) > 0;
+        const takenItems = fromRun?.data?.main?.[outputIndex] ?? [];
+        const taken = takenItems.length > 0;
+
+        // Back-fill input_items on the target node from this taken edge
+        if (taken) {
+          const target = nodeMap.get(conn.node);
+          if (target && !target.input_items) {
+            target.input_items = takenItems.map((item) => (item as { json: unknown }).json);
+          }
+        }
 
         const fromNode = wfNodes.find((n) => n.name === fromName);
         const lowerType = (fromNode?.type ?? "").toLowerCase();
@@ -306,7 +322,7 @@ export function toExecutionGraph(raw: N8nExecutionRawWithData): ExecutionGraph {
     });
   }
 
-  return { nodes, edges };
+  return { nodes: Array.from(nodeMap.values()), edges };
 }
 
 export function toExecutionFull(
