@@ -13,6 +13,7 @@ export interface PlanLimits {
   aiDebug: boolean;
   slackAlerts: boolean;
   aiRequestsPerMonth: number | null; // null = no Anthropic usage (free uses OpenRouter)
+  executionIntelligence: boolean;
 }
 
 export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
@@ -24,6 +25,7 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     aiDebug: false,
     slackAlerts: false,
     aiRequestsPerMonth: null,
+    executionIntelligence: false,
   },
   pro: {
     instances: 5,
@@ -33,6 +35,7 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     aiDebug: true,
     slackAlerts: true,
     aiRequestsPerMonth: 100,
+    executionIntelligence: true,
   },
   team: {
     instances: 10,
@@ -42,6 +45,7 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     aiDebug: true,
     slackAlerts: true,
     aiRequestsPerMonth: 500,
+    executionIntelligence: true,
   },
 };
 

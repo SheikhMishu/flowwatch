@@ -5,12 +5,17 @@ import type { Workflow, Execution, ExecutionNode, DashboardStats, TrendPoint } f
 
 // ─── Raw n8n API types ────────────────────────────────────────────────────────
 
+export type N8nConnections = Record<string, {
+  main: Array<Array<{ node: string; type: string; index: number }>>;
+}>;
+
 export interface N8nWorkflowRaw {
   id: string;
   name: string;
   active: boolean;
   tags: { id: string; name: string }[];
   nodes: { id: string; name: string; type: string }[];
+  connections: N8nConnections;
   createdAt: string;
   updatedAt: string;
 }
