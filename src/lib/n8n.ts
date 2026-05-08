@@ -104,7 +104,7 @@ export class N8nClient {
     return data.data ?? [];
   }
 
-  // Paginate executions from newest downward.
+  // Paginate executions from newest downward using n8n cursor pagination.
   // sinceId: stop when we hit this ID (incremental mode). null = sweep back cutoffDays (initial mode).
   // maxPages caps total pages fetched to prevent runaway API calls (100 executions per page).
   async getExecutionsSince(
@@ -115,13 +115,15 @@ export class N8nClient {
     const cutoffDate = Date.now() - (opts.cutoffDays ?? 90) * 24 * 60 * 60 * 1000;
 
     const all: N8nExecutionRaw[] = [];
-    let pageLastId: number | undefined;
+    let cursor: string | undefined;
 
     for (let page = 0; page < maxPages; page++) {
       const params = new URLSearchParams({ limit: "100", includeData: "false" });
-      if (pageLastId !== undefined) params.set("lastId", String(pageLastId));
+      if (cursor !== undefined) params.set("cursor", cursor);
 
-      const data = await this.get<{ data: N8nExecutionRaw[] }>(`/executions?${params}`);
+      const data = await this.get<{ data: N8nExecutionRaw[]; nextCursor?: string }>(
+        `/executions?${params}`
+      );
       const results = data.data ?? [];
       if (results.length === 0) break;
 
@@ -134,8 +136,8 @@ export class N8nClient {
         all.push(e);
       }
 
-      pageLastId = results[results.length - 1].id;
-      if (results.length < 100) break;
+      if (!data.nextCursor) break;
+      cursor = data.nextCursor;
     }
 
     return all;
