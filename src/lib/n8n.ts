@@ -26,7 +26,7 @@ export interface N8nExecutionRaw {
   workflowName?: string;
   finished: boolean;
   mode: "manual" | "trigger" | "webhook" | "retry" | "integrated" | "internal" | "error";
-  startedAt: string;
+  startedAt: string | null;
   stoppedAt: string | null;
   status: "success" | "error" | "running" | "waiting" | "canceled" | "crashed" | "new";
 }
@@ -162,7 +162,7 @@ export function toExecution(e: N8nExecutionRaw, instanceId: string, workflowName
   const startedAt = e.startedAt;
   const finishedAt = e.stoppedAt;
   const durationMs =
-    finishedAt ? new Date(finishedAt).getTime() - new Date(startedAt).getTime() : null;
+    finishedAt && startedAt ? new Date(finishedAt).getTime() - new Date(startedAt).getTime() : null;
 
   return {
     id: `${instanceId}:${e.id}`,
@@ -245,7 +245,7 @@ export function computeStats(
   const now = Date.now();
   const since24h = now - 24 * 60 * 60 * 1000;
 
-  const recent = executions.filter((e) => new Date(e.startedAt).getTime() > since24h);
+  const recent = executions.filter((e) => e.startedAt && new Date(e.startedAt).getTime() > since24h);
   const failures = recent.filter((e) => e.status === "error" || e.status === "crashed");
 
   const durations = recent
@@ -312,8 +312,8 @@ export function enrichWorkflowsWithStats(
         : 100;
 
     const durations = wfExecs
-      .filter((e) => e.stoppedAt)
-      .map((e) => new Date(e.stoppedAt!).getTime() - new Date(e.startedAt).getTime())
+      .filter((e) => e.stoppedAt && e.startedAt)
+      .map((e) => new Date(e.stoppedAt!).getTime() - new Date(e.startedAt!).getTime())
       .filter((d) => d >= 0);
 
     const avgDuration =

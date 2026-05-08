@@ -2,7 +2,8 @@ import { createHash } from "crypto";
 
 // Strip dynamic tokens from an error message so the same logical error
 // produces the same signature even with varying IDs, timestamps, etc.
-function normalizeError(msg: string): string {
+function normalizeError(msg: string | null | undefined): string {
+  if (!msg) return "unknown error";
   return msg
     .toLowerCase()
     // UUIDs

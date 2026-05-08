@@ -47,7 +47,7 @@ async function runInstanceSync(
       name: w.name,
       is_active: w.active,
       node_count: (w.nodes ?? []).length,
-      tags: (w.tags ?? []).map((t) => t.name),
+      tags: (w.tags ?? []).map((t) => t.name).filter(Boolean),
       updated_at: new Date().toISOString(),
     }));
 
