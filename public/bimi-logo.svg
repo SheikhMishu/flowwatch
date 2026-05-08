@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG Tiny PS//EN" "http://www.w3.org/Graphics/SVG/tiny-ps/dtd/svg-tiny-ps.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny-ps" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <title>FlowMonix</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5B4FE8"/>
+      <stop offset="1" stop-color="#7B5FED"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="144" fill="url(#bg)"/>
+  <line x1="144" y1="256" x2="184" y2="256" stroke="white" stroke-width="35" opacity="0.75" stroke-linecap="round"/>
+  <line x1="328" y1="256" x2="368" y2="256" stroke="white" stroke-width="35" opacity="0.75" stroke-linecap="round"/>
+  <circle cx="88" cy="256" r="56" fill="white"/>
+  <circle cx="256" cy="256" r="76.8" fill="none" stroke="white" stroke-width="38.4"/>
+  <circle cx="256" cy="256" r="33.6" fill="white"/>
+  <circle cx="424" cy="256" r="56" fill="white"/>
+</svg>
