@@ -18,9 +18,12 @@ import {
 import { getSession } from "@/lib/auth";
 import { fetchExecutionWithData } from "@/lib/n8n-data";
 import { mockExecutions } from "@/lib/mock-data";
+import { getServerDb } from "@/lib/db";
+import { getPlanLimits } from "@/lib/plans";
 import { Header } from "@/components/layout/header";
 import { RetryButton } from "@/components/dashboard/retry-button";
 import { AiExplainPanel } from "@/components/dashboard/ai-explain-panel";
+import { ExecutionFlowSection } from "@/components/execution/execution-flow-section";
 import { formatDuration } from "@/lib/utils";
 import type { Execution, ExecutionStatus } from "@/types";
 
@@ -112,12 +115,22 @@ export default async function ExecutionDetailPage({
   const session = await getSession();
 
   let execution: Execution | null = null;
+  let isPro = false;
 
   // Try real data first (non-demo orgs)
   if (session && session.orgId !== "org_demo") {
     execution = await fetchExecutionWithData(session.orgId, compositeId).catch(
       () => null
     );
+
+    const db = getServerDb();
+    const { data: org } = await db
+      .from("organizations")
+      .select("plan")
+      .eq("id", session.orgId)
+      .single();
+    const plan = (org?.plan ?? "free") as "free" | "pro" | "team";
+    isPro = getPlanLimits(plan).executionIntelligence;
   }
 
   // Fall back to mock data for demo or on fetch failure
@@ -326,6 +339,9 @@ export default async function ExecutionDetailPage({
             />
           </div>
         )}
+
+        {/* ── Execution Flow (Execution Intelligence) ── */}
+        <ExecutionFlowSection graph={execution.graph} isPro={isPro} />
 
         {/* ── Node Timeline ── */}
         {nodes.length > 0 && (

@@ -1,7 +1,7 @@
 // n8n REST API v1 client + data transformers
 // Docs: https://docs.n8n.io/api/
 
-import type { Workflow, Execution, ExecutionNode, DashboardStats, TrendPoint } from "@/types";
+import type { Workflow, Execution, ExecutionNode, ExecutionGraph, GraphNode, GraphEdge, DashboardStats, TrendPoint } from "@/types";
 
 // ─── Raw n8n API types ────────────────────────────────────────────────────────
 
@@ -41,6 +41,7 @@ interface N8nNodeRun {
 interface N8nWorkflowNode {
   name: string;
   type: string;
+  position: [number, number];
 }
 
 export interface N8nExecutionRawWithData extends N8nExecutionRaw {
@@ -51,7 +52,7 @@ export interface N8nExecutionRawWithData extends N8nExecutionRaw {
     };
     workflowData?: {
       nodes?: N8nWorkflowNode[];
-      connections?: Record<string, unknown>;
+      connections?: N8nConnections;
     };
   };
 }
@@ -104,7 +105,7 @@ export class N8nClient {
     return data.data ?? [];
   }
 
-  // Paginate executions from newest downward.
+  // Paginate executions from newest downward using n8n cursor pagination.
   // sinceId: stop when we hit this ID (incremental mode). null = sweep back cutoffDays (initial mode).
   // maxPages caps total pages fetched to prevent runaway API calls (100 executions per page).
   async getExecutionsSince(
@@ -115,13 +116,15 @@ export class N8nClient {
     const cutoffDate = Date.now() - (opts.cutoffDays ?? 90) * 24 * 60 * 60 * 1000;
 
     const all: N8nExecutionRaw[] = [];
-    let pageLastId: number | undefined;
+    let cursor: string | undefined;
 
     for (let page = 0; page < maxPages; page++) {
       const params = new URLSearchParams({ limit: "100", includeData: "false" });
-      if (pageLastId !== undefined) params.set("lastId", String(pageLastId));
+      if (cursor !== undefined) params.set("cursor", cursor);
 
-      const data = await this.get<{ data: N8nExecutionRaw[] }>(`/executions?${params}`);
+      const data = await this.get<{ data: N8nExecutionRaw[]; nextCursor?: string }>(
+        `/executions?${params}`
+      );
       const results = data.data ?? [];
       if (results.length === 0) break;
 
@@ -134,8 +137,8 @@ export class N8nClient {
         all.push(e);
       }
 
-      pageLastId = results[results.length - 1].id;
-      if (results.length < 100) break;
+      if (!data.nextCursor) break;
+      cursor = data.nextCursor;
     }
 
     return all;
@@ -256,6 +259,56 @@ export function toExecutionNodes(raw: N8nExecutionRawWithData): ExecutionNode[] 
   });
 }
 
+export function toExecutionGraph(raw: N8nExecutionRawWithData): ExecutionGraph {
+  const runData = raw.data?.resultData?.runData ?? {};
+  const wfNodes = raw.data?.workflowData?.nodes ?? [];
+  const connections = raw.data?.workflowData?.connections ?? {};
+
+  const nodes: GraphNode[] = wfNodes.map((wfNode) => {
+    const runs = runData[wfNode.name];
+    if (!runs || runs.length === 0) {
+      return { name: wfNode.name, type: wfNode.type, position: wfNode.position, status: "skipped" };
+    }
+    const run = runs[0];
+    const hasError = !!run.error;
+    const outputItems = (run.data?.main?.flat() ?? []).map((item) => (item as { json: unknown }).json);
+    return {
+      name: wfNode.name,
+      type: wfNode.type,
+      position: wfNode.position,
+      status: hasError ? "error" : "ran",
+      duration_ms: run.executionTime ?? 0,
+      output_items: outputItems.length > 0 ? outputItems : undefined,
+      error: run.error?.message,
+      error_description: run.error?.description,
+    };
+  });
+
+  const edges: GraphEdge[] = [];
+  for (const [fromName, connData] of Object.entries(connections)) {
+    const outputBranches = connData.main ?? [];
+    outputBranches.forEach((branch, outputIndex) => {
+      for (const conn of branch) {
+        const fromRun = runData[fromName]?.[0];
+        const taken = (fromRun?.data?.main?.[outputIndex]?.length ?? 0) > 0;
+
+        const fromNode = wfNodes.find((n) => n.name === fromName);
+        const lowerType = (fromNode?.type ?? "").toLowerCase();
+        let label: string | undefined;
+        if (lowerType.endsWith(".if")) {
+          label = outputIndex === 0 ? "true" : "false";
+        } else if (lowerType.endsWith(".switch")) {
+          label = `case ${outputIndex + 1}`;
+        }
+
+        edges.push({ from: fromName, to: conn.node, output_index: outputIndex, taken, label });
+      }
+    });
+  }
+
+  return { nodes, edges };
+}
+
 export function toExecutionFull(
   e: N8nExecutionRawWithData,
   instanceId: string,
@@ -264,12 +317,15 @@ export function toExecutionFull(
   const base = toExecution(e, instanceId, workflowName);
   const nodes = toExecutionNodes(e);
   const topError = e.data?.resultData?.error;
+  const graph =
+    (e.data?.workflowData?.nodes?.length ?? 0) > 0 ? toExecutionGraph(e) : undefined;
   return {
     ...base,
     failed_node: topError?.node?.name ?? (nodes.find((n) => n.status === "error")?.name ?? null),
     error_message: topError?.message ?? null,
     error_type: topError?.name ?? null,
     data: nodes.length > 0 ? { nodes } : undefined,
+    graph,
   };
 }
 

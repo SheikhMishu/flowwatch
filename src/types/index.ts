@@ -62,6 +62,7 @@ export interface Execution {
   error_type: string | null;
   mode: "manual" | "trigger" | "webhook" | "retry";
   data?: ExecutionData;
+  graph?: ExecutionGraph;
 }
 
 export interface ExecutionData {
@@ -77,6 +78,31 @@ export interface ExecutionNode {
   output_items?: unknown[];
   error?: string;
   error_description?: string;
+}
+
+export interface ExecutionGraph {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+}
+
+export interface GraphNode {
+  name: string;
+  type: string;
+  position: [number, number];
+  status: "ran" | "skipped" | "error";
+  duration_ms?: number;
+  input_items?: unknown[];
+  output_items?: unknown[];
+  error?: string;
+  error_description?: string;
+}
+
+export interface GraphEdge {
+  from: string;
+  to: string;
+  output_index: number;
+  taken: boolean;
+  label?: string;
 }
 
 // ─── Incident ─────────────────────────────────────────────────────────────────

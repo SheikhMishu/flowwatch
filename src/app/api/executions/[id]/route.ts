@@ -8,7 +8,7 @@ export async function GET(
 ) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (session.orgId === "org_demo") return NextResponse.json({ nodes: [] });
+  if (session.orgId === "org_demo") return NextResponse.json({ nodes: [], graph: null });
 
   const { id } = await params;
   const compositeId = decodeURIComponent(id);
@@ -16,5 +16,5 @@ export async function GET(
   const execution = await fetchExecutionWithData(session.orgId, compositeId).catch(() => null);
   if (!execution) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  return NextResponse.json({ nodes: execution.data?.nodes ?? [] });
+  return NextResponse.json({ nodes: execution.data?.nodes ?? [], graph: execution.graph ?? null });
 }

@@ -69,6 +69,7 @@ const config: Config = {
       animation: {
         "fade-in": "fadeIn 0.2s ease-out",
         "slide-in": "slideIn 0.2s ease-out",
+        "slide-in-right": "slideInRight 0.25s ease-out",
         "pulse-dot": "pulseDot 2s ease-in-out infinite",
         "shimmer": "shimmer 1.8s ease-in-out infinite",
         "shake": "shake 0.5s ease-in-out",
@@ -80,6 +81,10 @@ const config: Config = {
         },
         slideIn: {
           "0%": { opacity: "0", transform: "translateX(-8px)" },
+          "100%": { opacity: "1", transform: "translateX(0)" },
+        },
+        slideInRight: {
+          "0%": { opacity: "0", transform: "translateX(100%)" },
           "100%": { opacity: "1", transform: "translateX(0)" },
         },
         pulseDot: {
