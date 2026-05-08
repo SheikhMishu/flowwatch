@@ -107,9 +107,11 @@ async function runInstanceSync(
         mode: normalizeMode(e.mode),
         started_at: e.startedAt,
         finished_at: e.stoppedAt ?? null,
-        duration_ms: e.stoppedAt
-          ? new Date(e.stoppedAt).getTime() - new Date(e.startedAt).getTime()
-          : null,
+        duration_ms: (() => {
+          if (!e.stoppedAt || !e.startedAt) return null;
+          const d = new Date(e.stoppedAt).getTime() - new Date(e.startedAt).getTime();
+          return d > 0 && d < 86_400_000 * 30 ? d : null; // null if negative or > 30 days (corrupt timestamp)
+        })(),
         failed_node: errorDetail?.failed_node ?? null,
         error_message: errorDetail?.error_message ?? null,
         error_type: errorDetail?.error_type ?? null,
