@@ -104,6 +104,43 @@ export class N8nClient {
     return data.data ?? [];
   }
 
+  // Paginate executions from newest downward.
+  // sinceId: stop when we hit this ID (incremental mode). null = sweep back cutoffDays (initial mode).
+  // maxPages caps total pages fetched to prevent runaway API calls (100 executions per page).
+  async getExecutionsSince(
+    sinceId: number | null,
+    opts: { maxPages?: number; cutoffDays?: number } = {}
+  ): Promise<N8nExecutionRaw[]> {
+    const maxPages = opts.maxPages ?? 20;
+    const cutoffDate = Date.now() - (opts.cutoffDays ?? 90) * 24 * 60 * 60 * 1000;
+
+    const all: N8nExecutionRaw[] = [];
+    let pageLastId: number | undefined;
+
+    for (let page = 0; page < maxPages; page++) {
+      const params = new URLSearchParams({ limit: "100", includeData: "false" });
+      if (pageLastId !== undefined) params.set("lastId", String(pageLastId));
+
+      const data = await this.get<{ data: N8nExecutionRaw[] }>(`/executions?${params}`);
+      const results = data.data ?? [];
+      if (results.length === 0) break;
+
+      for (const e of results) {
+        if (sinceId !== null && e.id <= sinceId) return all;
+        if (sinceId === null) {
+          const ts = e.startedAt ?? e.stoppedAt;
+          if (ts && new Date(ts).getTime() < cutoffDate) return all;
+        }
+        all.push(e);
+      }
+
+      pageLastId = results[results.length - 1].id;
+      if (results.length < 100) break;
+    }
+
+    return all;
+  }
+
   async getWorkflowById(id: string): Promise<N8nWorkflowRaw> {
     return this.get<N8nWorkflowRaw>(`/workflows/${id}`);
   }
