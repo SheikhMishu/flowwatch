@@ -171,7 +171,7 @@ export function toExecution(e: N8nExecutionRaw, instanceId: string, workflowName
     workflow_name: e.workflowName ?? workflowName,
     n8n_execution_id: String(e.id),
     status: normalizeStatus(e.status),
-    started_at: startedAt,
+    started_at: startedAt ?? finishedAt ?? new Date().toISOString(),
     finished_at: finishedAt,
     duration_ms: durationMs,
     failed_node: null,
@@ -249,8 +249,8 @@ export function computeStats(
   const failures = recent.filter((e) => e.status === "error" || e.status === "crashed");
 
   const durations = recent
-    .filter((e) => e.stoppedAt)
-    .map((e) => new Date(e.stoppedAt!).getTime() - new Date(e.startedAt).getTime())
+    .filter((e) => e.stoppedAt && e.startedAt)
+    .map((e) => new Date(e.stoppedAt!).getTime() - new Date(e.startedAt!).getTime())
     .filter((d) => d >= 0);
 
   const avgDuration =
@@ -268,7 +268,7 @@ export function computeStats(
     const hourStart = now - (24 - i) * 3600000;
     const hourEnd = hourStart + 3600000;
     const inHour = recent.filter((e) => {
-      const t = new Date(e.startedAt).getTime();
+      const t = new Date(e.startedAt!).getTime();
       return t >= hourStart && t < hourEnd;
     });
     return {
@@ -301,7 +301,7 @@ export function enrichWorkflowsWithStats(
   const now = Date.now();
   const since24h = now - 24 * 60 * 60 * 1000;
 
-  const recent = executions.filter((e) => new Date(e.startedAt).getTime() > since24h);
+  const recent = executions.filter((e) => e.startedAt && new Date(e.startedAt).getTime() > since24h);
 
   return workflows.map((wf) => {
     const wfExecs = recent.filter((e) => `${instanceId}:${e.workflowId}` === wf.id);
@@ -322,7 +322,7 @@ export function enrichWorkflowsWithStats(
         : 0;
 
     const sorted = [...wfExecs].sort(
-      (a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()
+      (a, b) => new Date(b.startedAt!).getTime() - new Date(a.startedAt!).getTime()
     );
     const latest = sorted[0];
 
