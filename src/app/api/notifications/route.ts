@@ -65,7 +65,7 @@ export async function GET() {
               instance_name: inst.name,
               instance_id: inst.id,
               error_message: null,
-              started_at: e.startedAt,
+              started_at: e.startedAt ?? e.stoppedAt ?? new Date().toISOString(),
             });
           }
         }
