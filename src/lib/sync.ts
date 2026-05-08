@@ -95,7 +95,9 @@ async function runInstanceSync(
     );
 
     // Upsert executions — update on conflict so "running" → "success" transitions are captured
-    const execRows = rawExecutions.map((e) => {
+    const execRows = rawExecutions
+      .filter((e) => e.startedAt || e.stoppedAt) // skip executions with no usable timestamp
+      .map((e) => {
       const errorDetail = errorDetailMap.get(String(e.id));
       return {
         org_id: orgId,
@@ -105,7 +107,7 @@ async function runInstanceSync(
         workflow_name: nameMap[e.workflowId] ?? e.workflowName ?? "Unknown Workflow",
         status: normalizeStatus(e.status),
         mode: normalizeMode(e.mode),
-        started_at: e.startedAt,
+        started_at: e.startedAt ?? e.stoppedAt, // fall back to stoppedAt if startedAt is missing
         finished_at: e.stoppedAt ?? null,
         duration_ms: (() => {
           if (!e.stoppedAt || !e.startedAt) return null;
