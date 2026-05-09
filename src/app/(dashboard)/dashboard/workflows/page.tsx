@@ -10,9 +10,9 @@ import { WorkflowsClient } from "./workflows-client";
 export default async function WorkflowsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ instance?: string }>;
+  searchParams: Promise<{ instance?: string; status?: string }>;
 }) {
-  const { instance: instanceId } = await searchParams;
+  const { instance: instanceId, status } = await searchParams;
   const session = await getSession();
   const isDemo = !session || session.orgId === "org_demo";
 
@@ -38,6 +38,7 @@ export default async function WorkflowsPage({
   const total = workflows.length;
   const active = workflows.filter((w) => w.status === "active").length;
   const inactive = total - active;
+  const initialStatus = status === "active" || status === "inactive" ? status : "all";
 
   return (
     <div className="flex flex-col min-h-full">
@@ -91,7 +92,7 @@ export default async function WorkflowsPage({
             </div>
           </div>
         ) : (
-          <WorkflowsClient workflows={workflows} />
+          <WorkflowsClient workflows={workflows} initialStatus={initialStatus} />
         )}
       </div>
     </div>

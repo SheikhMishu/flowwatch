@@ -150,6 +150,7 @@ export default async function DashboardPage({
             icon={Workflow}
             iconColor="text-primary"
             iconBg="bg-accent"
+            href="/dashboard/workflows"
             className="col-span-1"
           />
           <StatCard
@@ -160,6 +161,7 @@ export default async function DashboardPage({
             iconColor="text-success"
             iconBg="bg-success/10"
             trend={{ value: 3.2, label: "vs last week" }}
+            href="/dashboard/workflows?status=active"
             className="col-span-1"
           />
           <StatCard
@@ -170,6 +172,7 @@ export default async function DashboardPage({
             iconColor="text-primary"
             iconBg="bg-accent"
             trend={{ value: 12.4, label: "vs yesterday" }}
+            href="/dashboard/executions"
             className="col-span-1"
           />
           <StatCard
@@ -180,6 +183,7 @@ export default async function DashboardPage({
             iconColor="text-destructive"
             iconBg="bg-destructive/10"
             trend={{ value: -8.3, label: "vs yesterday" }}
+            href="/dashboard/executions?status=error"
             className="col-span-1"
           />
           <StatCard
@@ -189,6 +193,7 @@ export default async function DashboardPage({
             icon={CheckCircle2}
             iconColor="text-success"
             iconBg="bg-success/10"
+            href="/dashboard/analytics"
             className="col-span-1"
           />
           <StatCard
@@ -199,6 +204,7 @@ export default async function DashboardPage({
             iconColor="text-warning"
             iconBg="bg-warning/10"
             trend={{ value: -2.1, label: "faster" }}
+            href="/dashboard/analytics"
             className="col-span-1"
           />
         </div>

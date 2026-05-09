@@ -8,9 +8,9 @@ import { ExecutionsClient } from "./executions-client";
 export default async function ExecutionsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ instance?: string }>;
+  searchParams: Promise<{ instance?: string; status?: string }>;
 }) {
-  const { instance: instanceId } = await searchParams;
+  const { instance: instanceId, status } = await searchParams;
   const session = await getSession();
 
   const isDemo = !session || session.orgId === "org_demo";
@@ -55,7 +55,10 @@ export default async function ExecutionsPage({
           </div>
         </div>
 
-        <ExecutionsClient executions={executions} />
+        <ExecutionsClient
+          executions={executions}
+          initialStatus={status === "success" || status === "error" || status === "running" || status === "waiting" || status === "canceled" ? status : "all"}
+        />
       </div>
     </div>
   );

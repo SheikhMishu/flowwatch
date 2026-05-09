@@ -15,7 +15,7 @@ import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { TrendPoint } from "@/types";
 
-const RANGES = ["6h", "12h", "24h"] as const;
+const RANGES = ["1h", "6h", "12h", "24h"] as const;
 type Range = (typeof RANGES)[number];
 
 interface ExecutionChartProps {
@@ -44,7 +44,7 @@ function CustomTooltip({ active, payload, label }: any) {
 export function ExecutionChart({ data }: ExecutionChartProps) {
   const [range, setRange] = useState<Range>("24h");
 
-  const hours = range === "6h" ? 6 : range === "12h" ? 12 : 24;
+  const hours = range === "1h" ? 1 : range === "6h" ? 6 : range === "12h" ? 12 : 24;
   const sliced = data.slice(-hours);
 
   const chartData = sliced.map((d) => ({

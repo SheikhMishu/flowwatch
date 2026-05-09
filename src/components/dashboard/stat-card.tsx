@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { LucideIcon, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
@@ -13,6 +14,7 @@ interface StatCardProps {
     value: number;
     label: string;
   };
+  href?: string;
   className?: string;
 }
 
@@ -24,18 +26,19 @@ export function StatCard({
   iconColor = "text-primary",
   iconBg = "bg-accent",
   trend,
+  href,
   className,
 }: StatCardProps) {
   const trendPositive = trend && trend.value > 0;
   const trendNegative = trend && trend.value < 0;
 
-  return (
-    <div
-      className={cn(
-        "rounded-xl border border-border bg-card p-5 shadow-card hover:shadow-card-hover transition-shadow duration-200",
-        className
-      )}
-    >
+  const cardClass = cn(
+    "rounded-xl border border-border bg-card p-5 shadow-card hover:shadow-card-hover transition-shadow duration-200",
+    href && "hover:border-primary/30"
+  );
+
+  const inner = (
+    <>
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
@@ -65,6 +68,20 @@ export function StatCard({
           <Icon className={cn("w-5 h-5", iconColor)} />
         </div>
       </div>
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link href={href} className={cn(cardClass, className)}>
+        {inner}
+      </Link>
+    );
+  }
+
+  return (
+    <div className={cn(cardClass, className)}>
+      {inner}
     </div>
   );
 }

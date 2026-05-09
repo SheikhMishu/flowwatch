@@ -20,6 +20,7 @@ import type { Workflow, WorkflowStatus } from "@/types";
 
 interface WorkflowsClientProps {
   workflows: Workflow[];
+  initialStatus?: StatusFilter;
 }
 
 type StatusFilter = "all" | WorkflowStatus;
@@ -60,10 +61,10 @@ function LastRunCell({ at }: { at: string | null }) {
   );
 }
 
-export function WorkflowsClient({ workflows }: WorkflowsClientProps) {
+export function WorkflowsClient({ workflows, initialStatus = "all" }: WorkflowsClientProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>(initialStatus);
   const [tagFilter, setTagFilter] = useState<string | null>(null);
 
   const allTags = useMemo(() => {

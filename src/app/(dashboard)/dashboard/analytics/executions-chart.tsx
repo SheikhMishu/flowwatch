@@ -15,9 +15,10 @@ import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { TrendPoint } from "@/types";
 
-type Range = "6h" | "12h" | "24h";
+type Range = "1h" | "6h" | "12h" | "24h";
 
 const RANGE_HOURS: Record<Range, number> = {
+  "1h": 1,
   "6h": 6,
   "12h": 12,
   "24h": 24,
@@ -86,7 +87,7 @@ export function ExecutionsChart({ data }: ExecutionsChartProps) {
 
         {/* Range selector */}
         <div className="flex items-center gap-1 rounded-lg border border-border bg-muted p-0.5">
-          {(["6h", "12h", "24h"] as Range[]).map((r) => (
+          {(["1h", "6h", "12h", "24h"] as Range[]).map((r) => (
             <button
               key={r}
               onClick={() => setRange(r)}

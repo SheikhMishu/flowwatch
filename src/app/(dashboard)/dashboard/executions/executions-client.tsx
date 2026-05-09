@@ -27,10 +27,12 @@ import type { Execution, ExecutionStatus } from "@/types";
 
 interface ExecutionsClientProps {
   executions: Execution[];
+  initialStatus?: StatusFilter;
 }
 
 type StatusFilter = "all" | ExecutionStatus;
 type ModeFilter = "all" | Execution["mode"];
+type TimeFilter = "all" | "1h" | "15m";
 
 function StatusBadge({ status }: { status: ExecutionStatus }) {
   switch (status) {
@@ -369,10 +371,11 @@ function ExecutionRow({ execution }: { execution: Execution }) {
   );
 }
 
-export function ExecutionsClient({ executions }: ExecutionsClientProps) {
+export function ExecutionsClient({ executions, initialStatus = "all" }: ExecutionsClientProps) {
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>(initialStatus);
   const [modeFilter, setModeFilter] = useState<ModeFilter>("all");
+  const [timeFilter, setTimeFilter] = useState<TimeFilter>("all");
 
   const allModes = useMemo(() => {
     const set = new Set(executions.map((e) => e.mode));
@@ -380,13 +383,18 @@ export function ExecutionsClient({ executions }: ExecutionsClientProps) {
   }, [executions]);
 
   const filtered = useMemo(() => {
+    const now = Date.now();
+    const cutoffMs = timeFilter === "1h" ? now - 60 * 60 * 1000
+                   : timeFilter === "15m" ? now - 15 * 60 * 1000
+                   : null;
     return executions.filter((e) => {
       const matchesSearch = e.workflow_name.toLowerCase().includes(search.toLowerCase());
       const matchesStatus = statusFilter === "all" || e.status === statusFilter;
       const matchesMode = modeFilter === "all" || e.mode === modeFilter;
-      return matchesSearch && matchesStatus && matchesMode;
+      const matchesTime = cutoffMs === null || parseISO(e.started_at).getTime() >= cutoffMs;
+      return matchesSearch && matchesStatus && matchesMode && matchesTime;
     });
-  }, [executions, search, statusFilter, modeFilter]);
+  }, [executions, search, statusFilter, modeFilter, timeFilter]);
 
   return (
     <div className="space-y-4">
@@ -435,6 +443,24 @@ export function ExecutionsClient({ executions }: ExecutionsClientProps) {
             >
               {m !== "all" && <ModeIcon mode={m as Execution["mode"]} />}
               {m}
+            </button>
+          ))}
+        </div>
+
+        {/* Time window filter */}
+        <div className="flex items-center gap-1 rounded-lg border border-border bg-card p-1 shadow-card self-start">
+          {(["all", "1h", "15m"] as TimeFilter[]).map((t) => (
+            <button
+              key={t}
+              onClick={() => setTimeFilter(t)}
+              className={cn(
+                "rounded-md px-3 py-1 text-sm font-medium transition-colors",
+                timeFilter === t
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+              )}
+            >
+              {t === "all" ? "All time" : `Last ${t}`}
             </button>
           ))}
         </div>
