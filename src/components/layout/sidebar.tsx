@@ -17,6 +17,7 @@ import {
   BarChart3,
   ScrollText,
   HelpCircle,
+  Building2,
 } from "lucide-react";
 import { FlowMonixMark } from "@/components/brand/mark";
 import { WorkspaceSwitcher } from "@/components/layout/workspace-switcher";
@@ -81,6 +82,7 @@ export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [openIncidents, setOpenIncidents] = useState(0);
   const [currentOrg, setCurrentOrg] = useState<{ id: string; name: string } | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const instanceId = searchParams.get("instance");
@@ -106,7 +108,10 @@ export function Sidebar() {
         const res = await fetch("/api/auth/me");
         if (!res.ok) return;
         const { user } = await res.json();
-        if (user) setCurrentOrg({ id: user.orgId, name: user.orgName });
+        if (user) {
+          setCurrentOrg({ id: user.orgId, name: user.orgName });
+          setIsOwner(user.role === "owner");
+        }
       } catch {}
     }
     fetchMe();
@@ -204,6 +209,32 @@ export function Sidebar() {
 
         {/* Bottom */}
         <div className="border-t border-border py-3 px-2 space-y-0.5">
+          {isOwner && (() => {
+            const isActive = pathname === "/dashboard/workspaces";
+            const linkContent = (
+              <Link
+                href="/dashboard/workspaces"
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors",
+                  "hover:bg-secondary hover:text-foreground",
+                  isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground",
+                  collapsed && "justify-center px-0"
+                )}
+              >
+                <Building2 className="shrink-0 w-4 h-4" />
+                {!collapsed && <span>Workspaces</span>}
+              </Link>
+            );
+            if (collapsed) {
+              return (
+                <Tooltip key="workspaces">
+                  <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
+                  <TooltipContent side="right">Workspaces</TooltipContent>
+                </Tooltip>
+              );
+            }
+            return <div key="workspaces">{linkContent}</div>;
+          })()}
           {bottomItems.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;

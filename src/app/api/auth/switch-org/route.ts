@@ -22,6 +22,8 @@ export async function POST(req: NextRequest) {
   }
 
   const db = getServerDb();
+
+  // Check direct membership first
   const { data: membership } = await db
     .from("organization_members")
     .select("role, organizations(id, name)")
@@ -29,18 +31,45 @@ export async function POST(req: NextRequest) {
     .eq("org_id", orgId)
     .single();
 
-  if (!membership || !membership.organizations) {
-    return NextResponse.json({ error: "Not a member of this workspace" }, { status: 403 });
-  }
+  let org: { id: string; name: string };
+  let role: string;
 
-  const org = membership.organizations as unknown as { id: string; name: string };
+  if (membership && membership.organizations) {
+    org = membership.organizations as unknown as { id: string; name: string };
+    role = membership.role;
+  } else {
+    // Check implicit access: user is owner of the target org's parent
+    const { data: targetOrg } = await db
+      .from("organizations")
+      .select("id, name, parent_org_id")
+      .eq("id", orgId)
+      .single();
+
+    if (!targetOrg?.parent_org_id) {
+      return NextResponse.json({ error: "Not a member of this workspace" }, { status: 403 });
+    }
+
+    const { data: parentMembership } = await db
+      .from("organization_members")
+      .select("role")
+      .eq("org_id", targetOrg.parent_org_id)
+      .eq("user_id", session.userId)
+      .single();
+
+    if (!parentMembership || parentMembership.role !== "owner") {
+      return NextResponse.json({ error: "Not a member of this workspace" }, { status: 403 });
+    }
+
+    org = { id: targetOrg.id, name: targetOrg.name };
+    role = "owner";
+  }
   const token = await createSession({
     userId: session.userId,
     email: session.email,
     name: session.name,
     orgId: org.id,
     orgName: org.name,
-    role: membership.role as OrgRole,
+    role: role as OrgRole,
   });
 
   logger.info("Workspace switched", { category: "auth", userId: session.userId, fromOrg: session.orgId, toOrg: org.id });

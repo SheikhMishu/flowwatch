@@ -25,6 +25,7 @@ export async function POST(req: NextRequest) {
     const userId: string = (body.userId ?? "").trim();
     const email: string = (body.email ?? "").toLowerCase().trim();
     const orgName: string = (body.orgName ?? "").trim();
+    const parentOrgId: string | null = (body.parentOrgId ?? "").trim() || null;
 
     // Validate
     if (!userId || !email) {
@@ -65,10 +66,23 @@ export async function POST(req: NextRequest) {
       slug = `${slug}-${randomSuffix()}`;
     }
 
+    // ── If parentOrgId given, verify the user owns that org ───────────────────
+    if (parentOrgId) {
+      const { data: parentMembership } = await db
+        .from("organization_members")
+        .select("role")
+        .eq("org_id", parentOrgId)
+        .eq("user_id", userId)
+        .single();
+      if (!parentMembership || parentMembership.role !== "owner") {
+        return NextResponse.json({ error: "You must be the owner of the parent workspace" }, { status: 403 });
+      }
+    }
+
     // ── Create organization ────────────────────────────────────────────────────
     const { data: org, error: orgError } = await db
       .from("organizations")
-      .insert({ name: orgName, slug, plan: "free" })
+      .insert({ name: orgName, slug, plan: "free", ...(parentOrgId ? { parent_org_id: parentOrgId } : {}) })
       .select("id, name, slug")
       .single();
 
