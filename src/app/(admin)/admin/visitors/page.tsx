@@ -201,12 +201,18 @@ export default async function AdminVisitorsPage() {
   // Unique IPs
   const uniqueIpsTotal = new Set((recentVisits ?? []).map((v) => v.ip).filter(Boolean)).size;
 
+  // Demo session count (all time)
+  const { count: demoSessions } = await db
+    .from("demo_sessions")
+    .select("id", { count: "exact", head: true });
+
   return (
     <VisitorsClient
       totalVisits={totalVisits ?? 0}
       visitsToday={visitsToday ?? 0}
       visitsThisWeek={visitsThisWeek ?? 0}
       uniqueIpsTotal={uniqueIpsTotal}
+      demoSessions={demoSessions ?? 0}
       recentVisits={(recentVisits ?? []) as Visit[]}
       topPages={topPagesAgg}
       topCountries={topCountriesAgg}

@@ -19,6 +19,7 @@ interface Props {
   visitsToday: number;
   visitsThisWeek: number;
   uniqueIpsTotal: number;
+  demoSessions: number;
   recentVisits: Visit[];
   topPages: Array<{ page: string; count: number }>;
   topCountries: Array<{ name: string; code: string; count: number }>;
@@ -68,6 +69,7 @@ export function VisitorsClient({
   visitsToday,
   visitsThisWeek,
   uniqueIpsTotal,
+  demoSessions,
   recentVisits,
   topPages,
   topCountries,
@@ -134,12 +136,13 @@ export function VisitorsClient({
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         {[
           { label: "Total Visits", value: totalVisits.toLocaleString(), sub: "all time", color: "text-indigo-400" },
           { label: "Today", value: visitsToday.toLocaleString(), sub: "page views", color: "text-green-400" },
           { label: "This Week", value: visitsThisWeek.toLocaleString(), sub: "page views", color: "text-blue-400" },
           { label: "Unique IPs", value: uniqueIpsTotal.toLocaleString(), sub: "in last 200 visits", color: "text-purple-400" },
+          { label: "Demo Sessions", value: demoSessions.toLocaleString(), sub: "all time", color: "text-amber-400" },
         ].map((s) => (
           <div key={s.label} className="bg-gray-900 border border-gray-800 rounded-xl p-4">
             <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">{s.label}</p>
