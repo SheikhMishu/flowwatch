@@ -21,6 +21,7 @@ export type ActivityAction =
   | "auth.pin_failed"
   | "auth.org_created"
   | "auth.invite_accepted"
+  | "auth.workspace_switched"
   // Instances
   | "instance.created"
   | "instance.deleted"

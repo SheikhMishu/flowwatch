@@ -19,6 +19,7 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { FlowMonixMark } from "@/components/brand/mark";
+import { WorkspaceSwitcher } from "@/components/layout/workspace-switcher";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -79,6 +80,7 @@ const bottomItems = [
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [openIncidents, setOpenIncidents] = useState(0);
+  const [currentOrg, setCurrentOrg] = useState<{ id: string; name: string } | null>(null);
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const instanceId = searchParams.get("instance");
@@ -96,6 +98,18 @@ export function Sidebar() {
     fetchCount();
     const interval = setInterval(fetchCount, 60_000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    async function fetchMe() {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (!res.ok) return;
+        const { user } = await res.json();
+        if (user) setCurrentOrg({ id: user.orgId, name: user.orgName });
+      } catch {}
+    }
+    fetchMe();
   }, []);
 
   return (
@@ -126,6 +140,17 @@ export function Sidebar() {
             </span>
           )}
         </div>
+
+        {/* Workspace switcher */}
+        {currentOrg && (
+          <div className={cn("border-b border-border px-2 py-2", collapsed && "px-1")}>
+            <WorkspaceSwitcher
+              currentOrgId={currentOrg.id}
+              currentOrgName={currentOrg.name}
+              collapsed={collapsed}
+            />
+          </div>
+        )}
 
         {/* Nav */}
         <nav data-tour="nav" className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">

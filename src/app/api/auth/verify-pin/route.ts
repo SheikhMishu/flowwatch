@@ -205,7 +205,7 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Look up org membership ─────────────────────────────────────────────────
-    const { data: membership } = await db
+    const { data: memberships } = await db
       .from("organization_members")
       .select(`
         role,
@@ -214,20 +214,30 @@ export async function POST(req: NextRequest) {
           name
         )
       `)
-      .eq("user_id", userId)
-      .limit(1)
-      .single();
+      .eq("user_id", userId);
 
-    if (membership && membership.organizations) {
-      // Has org — create full session
-      const org = membership.organizations as unknown as { id: string; name: string };
+    const validMemberships = (memberships ?? []).filter((m) => m.organizations);
+
+    if (validMemberships.length > 1) {
+      // Multiple workspaces — let the user pick
+      const orgs = validMemberships.map((m) => {
+        const org = m.organizations as unknown as { id: string; name: string };
+        return { id: org.id, name: org.name, role: m.role };
+      });
+      return NextResponse.json({ ok: true, multiOrg: true, orgs, userId, email });
+    }
+
+    if (validMemberships.length === 1) {
+      // Single org — auto-login as before
+      const m = validMemberships[0];
+      const org = m.organizations as unknown as { id: string; name: string };
       const token = await createSession({
         userId,
         email,
         name: userName ?? email,
         orgId: org.id,
         orgName: org.name,
-        role: membership.role as OrgRole,
+        role: m.role as OrgRole,
       });
       logger.info("PIN verified — login", { category: "auth", userId, email, orgId: org.id });
       logActivity({ userId, email, orgId: org.id }, "auth.login");

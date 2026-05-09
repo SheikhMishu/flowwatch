@@ -9,7 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
-type Step = "email" | "pin" | "create-org";
+type Step = "email" | "pin" | "pick-org" | "create-org";
+
+interface OrgOption { id: string; name: string; role: string; }
 
 const PIN_LENGTH = 6;
 const RESEND_SECONDS = 30;
@@ -33,6 +35,10 @@ export default function LoginPage() {
   const [resendCountdown, setResendCountdown] = useState(RESEND_SECONDS);
   const [resendLoading, setResendLoading] = useState(false);
   const pinRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // — Pick-org step
+  const [orgOptions, setOrgOptions] = useState<OrgOption[]>([]);
+  const [pickOrgLoading, setPickOrgLoading] = useState<string | null>(null);
 
   // — Create-org step
   const [orgName, setOrgName] = useState("");
@@ -119,6 +125,11 @@ export default function LoginPage() {
         }
         if (data.redirect) {
           router.push(data.redirect);
+        } else if (data.multiOrg) {
+          setVerifiedUserId(data.userId ?? "");
+          setVerifiedEmail(data.email ?? email);
+          setOrgOptions(data.orgs ?? []);
+          setStep("pick-org");
         } else if (data.needsOrg) {
           setVerifiedUserId(data.userId ?? "");
           setVerifiedEmail(data.email ?? email);
@@ -221,7 +232,29 @@ export default function LoginPage() {
     }
   };
 
-  // ─── Step 3: Create org ────────────────────────────────────────────────────
+  // ─── Step 3a: Pick workspace (multi-org users) ────────────────────────────
+  const handleSelectOrg = async (orgId: string) => {
+    setPickOrgLoading(orgId);
+    try {
+      const res = await fetch("/api/auth/select-org", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: verifiedUserId, email: verifiedEmail, orgId }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setPinError(data.error || "Failed to select workspace.");
+        setPickOrgLoading(null);
+        return;
+      }
+      router.push(data.redirect ?? "/dashboard");
+    } catch {
+      setPinError("Something went wrong. Please try again.");
+      setPickOrgLoading(null);
+    }
+  };
+
+  // ─── Step 3b: Create org ────────────────────────────────────────────────────
   const handleCreateOrg = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!orgName.trim()) return;
@@ -510,6 +543,56 @@ export default function LoginPage() {
                   </p>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* ── Step: PICK-ORG ───────────────────────────────────── */}
+          {step === "pick-org" && (
+            <div key="pick-org" className="animate-fade-in space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shrink-0">
+                  <Building2 className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-foreground">Choose a workspace</h1>
+                  <p className="text-sm text-muted-foreground mt-0.5">
+                    You belong to multiple workspaces
+                  </p>
+                </div>
+              </div>
+
+              {pinError && (
+                <div className="rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2 text-sm text-destructive">
+                  {pinError}
+                </div>
+              )}
+
+              <div className="space-y-2">
+                {orgOptions.map((org) => (
+                  <button
+                    key={org.id}
+                    type="button"
+                    onClick={() => handleSelectOrg(org.id)}
+                    disabled={pickOrgLoading !== null}
+                    className="w-full flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3.5 text-left transition-colors hover:border-primary/50 hover:bg-accent disabled:opacity-60"
+                  >
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">{org.name}</p>
+                      <p className="text-xs text-muted-foreground capitalize mt-0.5">{org.role}</p>
+                    </div>
+                    {pickOrgLoading === org.id ? (
+                      <span className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                    ) : (
+                      <ArrowRight className="w-4 h-4 text-muted-foreground" />
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              <p className="text-xs text-center text-muted-foreground">
+                Signed in as{" "}
+                <span className="font-medium text-foreground">{verifiedEmail}</span>
+              </p>
             </div>
           )}
 
