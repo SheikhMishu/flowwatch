@@ -11,6 +11,7 @@ import {
   Shield,
   Eye,
   X,
+  FlaskConical,
 } from "lucide-react";
 import { FlowMonixMark } from "@/components/brand/mark";
 import { cn } from "@/lib/utils";
@@ -21,6 +22,7 @@ const navItems = [
   { label: "Users",         href: "/admin/users",   icon: Users },
   { label: "Usage",         href: "/admin/usage",   icon: Activity },
   { label: "Visitors",      href: "/admin/visitors",icon: Eye },
+  { label: "Demo",          href: "/admin/demo",    icon: FlaskConical },
 ];
 
 interface AdminSidebarProps {

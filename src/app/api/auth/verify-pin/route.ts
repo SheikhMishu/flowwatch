@@ -8,6 +8,8 @@ import { getServerDb } from "@/lib/db";
 import type { OrgRole } from "@/types";
 import { logger } from "@/lib/logger";
 import { logActivity } from "@/lib/activity";
+import { startDemoSession, DEMO_SESSION_COOKIE } from "@/lib/demo-tracking";
+import { randomUUID } from "crypto";
 
 const MAX_PIN_ATTEMPTS = 5;
 
@@ -35,8 +37,24 @@ export async function POST(req: NextRequest) {
         orgName: "Demo Org",
         role: "owner" as OrgRole,
       });
+      const demoSessionToken = randomUUID();
+      const ip =
+        req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+        req.headers.get("x-real-ip") ??
+        req.headers.get("cf-connecting-ip") ??
+        undefined;
+      void startDemoSession(demoSessionToken, ip);
       const response = NextResponse.json({ ok: true, redirect: "/dashboard" });
       response.cookies.set({ ...getSessionCookieOptions(), value: token });
+      response.cookies.set({
+        name: DEMO_SESSION_COOKIE,
+        value: demoSessionToken,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 24, // 24 hours
+      });
       return response;
     }
 

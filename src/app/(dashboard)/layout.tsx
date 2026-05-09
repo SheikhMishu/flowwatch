@@ -4,6 +4,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { NavProgress } from "@/components/layout/nav-progress";
 import { OnboardingController } from "@/components/onboarding/onboarding-controller";
+import { DemoTracker } from "@/components/demo/demo-tracker";
 import { getSession } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
@@ -28,6 +29,7 @@ export default async function DashboardLayout({
         </main>
       </div>
       <MobileNav />
+      <DemoTracker isDemo={session.orgId === "org_demo"} />
       <Suspense fallback={null}>
         <OnboardingController userName={userName} />
       </Suspense>
