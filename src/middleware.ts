@@ -23,6 +23,7 @@ export async function middleware(req: NextRequest) {
     PUBLIC_ROUTES.some((r) => pathname === r) ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/cron") ||
+    pathname.startsWith("/api/health") ||
     pathname.startsWith("/api/sync") ||
     pathname.startsWith("/api/status") ||
     pathname.startsWith("/api/billing/webhook") ||
