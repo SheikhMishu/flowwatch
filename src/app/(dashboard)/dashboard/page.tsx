@@ -19,6 +19,7 @@ import { ExecutionChart } from "@/components/dashboard/execution-chart";
 import { FailuresFeed } from "@/components/dashboard/failures-feed";
 import { WorkflowHealth } from "@/components/dashboard/workflow-health";
 import { IncidentsWidget } from "@/components/dashboard/incidents-widget";
+import { AgencyOverview } from "@/components/dashboard/agency-overview";
 import { mockStats, mockExecutions, mockWorkflows, mockIncidents } from "@/lib/mock-data";
 import type { Incident } from "@/types";
 import { formatDuration } from "@/lib/utils";
@@ -94,6 +95,9 @@ export default async function DashboardPage({
             Live
           </div>
         </div>
+
+        {/* Agency overview — self-hides for non-agency users */}
+        {!isDemo && <AgencyOverview />}
 
         {/* Empty state: no instances connected */}
         {!isDemo && !hasInstances && (

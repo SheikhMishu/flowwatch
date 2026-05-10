@@ -321,6 +321,15 @@ export function WorkspacesClient() {
 
   const healthyCnt = workspaces.filter((w) => w.status === "healthy").length;
   const degradedCnt = workspaces.filter((w) => w.status === "degraded").length;
+  const noInstancesCnt = workspaces.filter((w) => w.status === "no_instances").length;
+  const totalIncidents = workspaces.reduce((sum, w) => sum + w.openIncidents, 0);
+
+  // Sort: degraded first, then no_instances, then healthy
+  const sorted = [
+    ...workspaces.filter((w) => w.status === "degraded"),
+    ...workspaces.filter((w) => w.status === "no_instances"),
+    ...workspaces.filter((w) => w.status === "healthy"),
+  ];
 
   return (
     <>
@@ -354,6 +363,34 @@ export function WorkspacesClient() {
           </button>
         </div>
       </div>
+
+      {/* Summary stats bar */}
+      {!loading && workspaces.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          {[
+            { label: "Total workspaces", value: workspaces.length, color: "text-foreground" },
+            { label: "Healthy", value: healthyCnt, color: "text-success" },
+            { label: "Need attention", value: degradedCnt, color: degradedCnt > 0 ? "text-destructive" : "text-muted-foreground" },
+            { label: "Open incidents", value: totalIncidents, color: totalIncidents > 0 ? "text-destructive" : "text-muted-foreground" },
+          ].map((stat) => (
+            <div key={stat.label} className="rounded-xl border border-border bg-card px-4 py-3">
+              <p className="text-xs text-muted-foreground">{stat.label}</p>
+              <p className={cn("text-2xl font-bold mt-1", stat.color)}>{stat.value}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Alert banner */}
+      {!loading && degradedCnt > 0 && (
+        <div className="flex items-center gap-2.5 rounded-xl border border-destructive/20 bg-destructive/5 px-4 py-3 mb-6">
+          <AlertCircle className="w-4 h-4 text-destructive shrink-0" />
+          <p className="text-sm text-foreground">
+            <span className="font-semibold">{degradedCnt} client {degradedCnt === 1 ? "workspace has" : "workspaces have"} open incidents</span>
+            {noInstancesCnt > 0 && <> · {noInstancesCnt} {noInstancesCnt === 1 ? "workspace has" : "workspaces have"} no instances connected</>}
+          </p>
+        </div>
+      )}
 
       {/* Loading */}
       {loading && (
@@ -402,7 +439,7 @@ export function WorkspacesClient() {
       {/* Grid */}
       {!loading && workspaces.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          {workspaces.map((ws) => (
+          {sorted.map((ws) => (
             <WorkspaceCard key={ws.id} workspace={ws} />
           ))}
         </div>
