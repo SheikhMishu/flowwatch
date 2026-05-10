@@ -689,6 +689,7 @@ function TeamSection() {
 function StatusPageSection() {
   const [slug, setSlug] = React.useState("");
   const [enabled, setEnabled] = React.useState(false);
+  const [customDomain, setCustomDomain] = React.useState("");
   const [isOwner, setIsOwner] = React.useState(false);
   const [isDemo, setIsDemo] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -697,8 +698,10 @@ function StatusPageSection() {
   const [errorMsg, setErrorMsg] = React.useState("");
   const savedSlug = React.useRef("");
   const savedEnabled = React.useRef(false);
+  const savedCustomDomain = React.useRef("");
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://flowmonix.com";
+  const appHost = appUrl.replace(/^https?:\/\//, "");
 
   React.useEffect(() => {
     fetch("/api/auth/me").then((r) => r.json()).then((d) => {
@@ -712,10 +715,13 @@ function StatusPageSection() {
     fetch("/api/org/status-page").then((r) => r.json()).then((d) => {
       const s = d.slug ?? "";
       const e = d.status_page_enabled ?? false;
+      const cd = d.custom_domain ?? "";
       setSlug(s);
       setEnabled(e);
+      setCustomDomain(cd);
       savedSlug.current = s;
       savedEnabled.current = e;
+      savedCustomDomain.current = cd;
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
@@ -728,7 +734,11 @@ function StatusPageSection() {
       const res = await fetch("/api/org/status-page", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug: slug.trim(), status_page_enabled: enabled }),
+        body: JSON.stringify({
+          slug: slug.trim(),
+          status_page_enabled: enabled,
+          custom_domain: customDomain.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/.*$/, ""),
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -737,11 +747,14 @@ function StatusPageSection() {
         return;
       }
       const s = data.slug ?? "";
-      const e = data.status_page_enabled;
+      const en = data.status_page_enabled;
+      const cd = data.custom_domain ?? "";
       setSlug(s);
-      setEnabled(e);
+      setEnabled(en);
+      setCustomDomain(cd);
       savedSlug.current = s;
-      savedEnabled.current = e;
+      savedEnabled.current = en;
+      savedCustomDomain.current = cd;
       setStatus("success");
       setTimeout(() => setStatus("idle"), 3000);
     } catch {
@@ -753,8 +766,9 @@ function StatusPageSection() {
   }
 
   const publicUrl = slug ? `${appUrl}/status/${slug}` : null;
+  const customDomainUrl = customDomain ? `https://${customDomain}` : null;
   const canEdit = isOwner && !isDemo;
-  const isDirty = slug !== savedSlug.current || enabled !== savedEnabled.current;
+  const isDirty = slug !== savedSlug.current || enabled !== savedEnabled.current || customDomain !== savedCustomDomain.current;
 
   return (
     <Card>
@@ -815,6 +829,65 @@ function StatusPageSection() {
               <ExternalLink className="w-3.5 h-3.5" />
               {publicUrl}
             </a>
+          )}
+
+          <Separator />
+
+          {/* Custom domain */}
+          <div className="space-y-1.5">
+            <Label htmlFor="custom-domain">Custom domain <span className="text-muted-foreground font-normal">(optional)</span></Label>
+            <input
+              id="custom-domain"
+              type="text"
+              value={customDomain}
+              onChange={(e) => setCustomDomain(e.target.value.toLowerCase().replace(/\s/g, ""))}
+              placeholder="status.yourcompany.com"
+              disabled={!canEdit || saving}
+              maxLength={253}
+              className={inputClass + " disabled:opacity-60"}
+            />
+            <p className="text-xs text-muted-foreground">
+              Point a <code className="font-mono bg-muted px-1 py-0.5 rounded text-xs">CNAME</code> record at your DNS provider from this domain to <code className="font-mono bg-muted px-1 py-0.5 rounded text-xs">{appHost}</code>, then enter the domain here.
+            </p>
+          </div>
+
+          {/* Custom domain live link */}
+          {customDomainUrl && enabled && (
+            <a
+              href={customDomainUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              {customDomainUrl}
+            </a>
+          )}
+
+          {/* DNS instructions panel — shown when domain is set */}
+          {customDomain && canEdit && (
+            <div className="rounded-lg border border-border bg-muted/40 px-4 py-3 space-y-2">
+              <p className="text-xs font-semibold text-foreground">DNS setup</p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="text-muted-foreground">
+                      <th className="text-left pr-4 pb-1 font-medium">Type</th>
+                      <th className="text-left pr-4 pb-1 font-medium">Name</th>
+                      <th className="text-left pb-1 font-medium">Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="font-mono">
+                      <td className="pr-4 py-0.5 text-muted-foreground">CNAME</td>
+                      <td className="pr-4 py-0.5 text-foreground">{customDomain.split(".").slice(0, -2).join(".") || "@"}</td>
+                      <td className="py-0.5 text-foreground">{appHost}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-xs text-muted-foreground">DNS changes can take up to 48 hours to propagate. Railway handles SSL automatically once the CNAME resolves.</p>
+            </div>
           )}
 
           {/* Not owner notice */}

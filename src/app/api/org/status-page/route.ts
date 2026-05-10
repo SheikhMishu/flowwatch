@@ -17,7 +17,7 @@ export async function GET() {
   const db = getServerDb();
   const { data, error } = await db
     .from("organizations")
-    .select("slug, status_page_enabled")
+    .select("slug, status_page_enabled, custom_domain")
     .eq("id", session.orgId)
     .single();
 
@@ -26,7 +26,11 @@ export async function GET() {
     return NextResponse.json({ error: "Failed to fetch settings" }, { status: 500 });
   }
 
-  return NextResponse.json({ slug: data.slug ?? "", status_page_enabled: data.status_page_enabled });
+  return NextResponse.json({
+    slug: data.slug ?? "",
+    status_page_enabled: data.status_page_enabled,
+    custom_domain: data.custom_domain ?? "",
+  });
 }
 
 // PATCH /api/org/status-page — update slug and/or enabled flag
@@ -55,6 +59,22 @@ export async function PATCH(req: NextRequest) {
     updates.slug = slug;
   }
 
+  if ("custom_domain" in body) {
+    const raw = String(body.custom_domain ?? "").toLowerCase().trim();
+    if (raw === "") {
+      updates.custom_domain = null;
+    } else {
+      // strip protocol if user accidentally included it
+      const stripped = raw.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+      // basic hostname validation: labels separated by dots, no leading/trailing hyphens
+      const valid = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/.test(stripped);
+      if (!valid) {
+        return NextResponse.json({ error: "Invalid domain format. Use a hostname like status.example.com." }, { status: 400 });
+      }
+      updates.custom_domain = stripped;
+    }
+  }
+
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: "Nothing to update" }, { status: 400 });
   }
@@ -64,7 +84,7 @@ export async function PATCH(req: NextRequest) {
     .from("organizations")
     .update(updates)
     .eq("id", session.orgId)
-    .select("slug, status_page_enabled")
+    .select("slug, status_page_enabled, custom_domain")
     .single();
 
   if (error) {
@@ -83,5 +103,9 @@ export async function PATCH(req: NextRequest) {
     metadata: updates,
   });
 
-  return NextResponse.json({ slug: data.slug ?? "", status_page_enabled: data.status_page_enabled });
+  return NextResponse.json({
+    slug: data.slug ?? "",
+    status_page_enabled: data.status_page_enabled,
+    custom_domain: data.custom_domain ?? "",
+  });
 }

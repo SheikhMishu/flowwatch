@@ -6,6 +6,27 @@ const AUTH_ROUTES = ["/login"];
 
 const NOTRACK_COOKIE = "fm_notrack";
 
+const APP_HOST = (process.env.NEXT_PUBLIC_APP_URL ?? "https://app.flowmonix.com")
+  .replace(/^https?:\/\//, "")
+  .split("/")[0];
+
+async function resolveCustomDomain(hostname: string): Promise<string | null> {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !serviceKey) return null;
+  try {
+    const res = await fetch(
+      `${supabaseUrl}/rest/v1/organizations?custom_domain=eq.${encodeURIComponent(hostname)}&status_page_enabled=eq.true&select=slug&limit=1`,
+      { headers: { apikey: serviceKey, Authorization: `Bearer ${serviceKey}` } },
+    );
+    if (!res.ok) return null;
+    const rows: { slug: string }[] = await res.json();
+    return rows[0]?.slug ?? null;
+  } catch {
+    return null;
+  }
+}
+
 // Pages we track visits for (not API routes, not admin, not static)
 function shouldTrack(pathname: string): boolean {
   return (
@@ -18,6 +39,19 @@ function shouldTrack(pathname: string): boolean {
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  const hostname = req.headers.get("host")?.split(":")[0] ?? "";
+
+  // Custom domain: serve status page for any hostname that isn't our own app
+  if (hostname && hostname !== APP_HOST && hostname !== "localhost" && !hostname.endsWith(".localhost")) {
+    const slug = await resolveCustomDomain(hostname);
+    if (slug) {
+      // Rewrite to the status page — keeps the visitor's URL intact
+      const url = req.nextUrl.clone();
+      url.pathname = `/status/${slug}`;
+      return NextResponse.rewrite(url);
+    }
+    // Unknown custom domain — let Next.js handle it (will 404)
+  }
 
   const isPublic =
     PUBLIC_ROUTES.some((r) => pathname === r) ||
