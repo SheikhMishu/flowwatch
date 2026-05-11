@@ -23,7 +23,7 @@ export default function Footer() {
           {/* Links */}
           <div className="flex items-center gap-5">
             <a
-              href="https://app.flowmonix.com/blog"
+              href="/blog"
               className="text-zinc-400 hover:text-zinc-700 text-xs transition-colors duration-200"
             >
               Blog

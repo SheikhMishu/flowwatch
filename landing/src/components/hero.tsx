@@ -30,7 +30,7 @@ export default function Hero() {
         </div>
         <div className="flex items-center gap-6">
           <a
-            href="https://app.flowmonix.com/blog"
+            href="/blog"
             className="text-sm text-zinc-500 hover:text-zinc-800 transition-colors duration-200"
           >
             Blog
