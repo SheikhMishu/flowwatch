@@ -57,6 +57,8 @@ export async function middleware(req: NextRequest) {
         ip,
         ua: req.headers.get("user-agent") ?? "",
         referrer: req.headers.get("referer") ?? "",
+        userId: session?.userId ?? null,
+        orgId: session?.orgId ?? null,
       }),
     }).catch(() => {});
   }

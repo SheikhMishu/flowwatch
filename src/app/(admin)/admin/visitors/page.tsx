@@ -67,7 +67,7 @@ export default async function AdminVisitorsPage() {
     // Recent 200 visits for the table
     withIpFilter(
       db.from("page_visits")
-        .select("id, page, ip, country, country_code, city, region, browser, os, device, referrer, created_at")
+        .select("id, page, ip, country, country_code, city, region, browser, os, device, referrer, created_at, user_id, org_id")
         .order("created_at", { ascending: false })
         .limit(200)
     ),
@@ -123,6 +123,22 @@ export default async function AdminVisitorsPage() {
         .limit(20000)
     ),
   ]);
+
+  // Enrich visits with user email + org name for signed-in sessions
+  const userIds = [...new Set((recentVisits ?? []).map((v) => v.user_id).filter(Boolean))] as string[];
+  const orgIds  = [...new Set((recentVisits ?? []).map((v) => v.org_id).filter(Boolean))]  as string[];
+
+  const [{ data: userRows }, { data: orgRows }] = await Promise.all([
+    userIds.length > 0
+      ? db.from("users").select("id, email, name").in("id", userIds)
+      : Promise.resolve({ data: [] }),
+    orgIds.length > 0
+      ? db.from("organizations").select("id, name, slug").in("id", orgIds)
+      : Promise.resolve({ data: [] }),
+  ]);
+
+  const userMap = Object.fromEntries((userRows ?? []).map((u) => [u.id, u]));
+  const orgMap  = Object.fromEntries((orgRows  ?? []).map((o) => [o.id, o]));
 
   // Aggregate top pages
   const pageCounts: Record<string, number> = {};
@@ -213,7 +229,13 @@ export default async function AdminVisitorsPage() {
       visitsThisWeek={visitsThisWeek ?? 0}
       uniqueIpsTotal={uniqueIpsTotal}
       demoSessions={demoSessions ?? 0}
-      recentVisits={(recentVisits ?? []) as Visit[]}
+      recentVisits={(recentVisits ?? []).map((v) => ({
+        ...v,
+        user_email: v.user_id ? (userMap[v.user_id]?.email ?? null) : null,
+        user_name:  v.user_id ? (userMap[v.user_id]?.name  ?? null) : null,
+        org_name:   v.org_id  ? (orgMap[v.org_id]?.name   ?? null) : null,
+        org_slug:   v.org_id  ? (orgMap[v.org_id]?.slug   ?? null) : null,
+      })) as Visit[]}
       topPages={topPagesAgg}
       topCountries={topCountriesAgg}
       deviceCounts={deviceCounts}
@@ -239,4 +261,10 @@ export interface Visit {
   device: string | null;
   referrer: string | null;
   created_at: string;
+  user_id: string | null;
+  org_id: string | null;
+  user_email: string | null;
+  user_name: string | null;
+  org_name: string | null;
+  org_slug: string | null;
 }

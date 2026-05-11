@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
-import { Monitor, Smartphone, Tablet, Bot, Globe, Search, WifiOff } from "lucide-react";
+import { Monitor, Smartphone, Tablet, Bot, Globe, Search, WifiOff, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Visit } from "./page";
 
@@ -81,20 +81,27 @@ export function VisitorsClient({
   excludedIps,
 }: Props) {
   const [search, setSearch] = useState("");
+  const [authFilter, setAuthFilter] = useState<"all" | "authed" | "anon">("all");
 
   const filtered = useMemo(() => {
+    let list = recentVisits;
+    if (authFilter === "authed") list = list.filter((v) => v.user_id !== null);
+    if (authFilter === "anon")   list = list.filter((v) => v.user_id === null);
     const q = search.toLowerCase().trim();
-    if (!q) return recentVisits;
-    return recentVisits.filter(
+    if (!q) return list;
+    return list.filter(
       (v) =>
         v.page.toLowerCase().includes(q) ||
         (v.ip ?? "").includes(q) ||
         (v.country ?? "").toLowerCase().includes(q) ||
         (v.browser ?? "").toLowerCase().includes(q) ||
         (v.os ?? "").toLowerCase().includes(q) ||
-        (v.referrer ?? "").toLowerCase().includes(q)
+        (v.referrer ?? "").toLowerCase().includes(q) ||
+        (v.user_email ?? "").toLowerCase().includes(q) ||
+        (v.user_name ?? "").toLowerCase().includes(q) ||
+        (v.org_name ?? "").toLowerCase().includes(q)
     );
-  }, [recentVisits, search]);
+  }, [recentVisits, search, authFilter]);
 
   const totalDevice = Object.values(deviceCounts).reduce((s, n) => s + n, 0);
   const maxPage = topPages[0]?.count ?? 1;
@@ -268,21 +275,41 @@ export function VisitorsClient({
 
       {/* Visit log table */}
       <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800 gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 py-3 border-b border-gray-800 gap-3">
           <p className="text-sm font-semibold text-gray-200 shrink-0">
             Visit Log
             <span className="ml-2 text-xs text-gray-500 font-normal">
-              {search ? `${filtered.length} of ` : ""}{recentVisits.length} visits
+              {(search || authFilter !== "all") ? `${filtered.length} of ` : ""}{recentVisits.length} visits
             </span>
           </p>
-          <div className="relative max-w-xs w-full">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-600" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Filter by IP, page, country…"
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-8 pr-3 py-1.5 text-xs text-gray-300 placeholder-gray-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30"
-            />
+          <div className="flex items-center gap-2">
+            {/* Auth filter */}
+            <div className="flex items-center rounded-lg border border-gray-700 bg-gray-800 p-0.5 shrink-0">
+              {(["all", "authed", "anon"] as const).map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setAuthFilter(f)}
+                  className={cn(
+                    "px-2.5 py-1 text-xs rounded-md font-medium transition-colors",
+                    authFilter === f
+                      ? "bg-gray-700 text-gray-100"
+                      : "text-gray-500 hover:text-gray-300"
+                  )}
+                >
+                  {f === "all" ? "All" : f === "authed" ? "Signed-in" : "Anonymous"}
+                </button>
+              ))}
+            </div>
+            {/* Search */}
+            <div className="relative max-w-xs w-full">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-600" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Filter by IP, page, user…"
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-8 pr-3 py-1.5 text-xs text-gray-300 placeholder-gray-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30"
+              />
+            </div>
           </div>
         </div>
 
@@ -292,6 +319,7 @@ export function VisitorsClient({
               <tr className="border-b border-gray-800 text-gray-500">
                 <th className="text-left px-4 py-2.5 font-medium">Time</th>
                 <th className="text-left px-4 py-2.5 font-medium">Page</th>
+                <th className="text-left px-4 py-2.5 font-medium">User</th>
                 <th className="text-left px-4 py-2.5 font-medium">IP</th>
                 <th className="text-left px-4 py-2.5 font-medium">Location</th>
                 <th className="text-left px-4 py-2.5 font-medium">Device</th>
@@ -303,7 +331,7 @@ export function VisitorsClient({
             <tbody>
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-gray-600">
+                  <td colSpan={9} className="px-4 py-8 text-center text-gray-600">
                     No visits yet
                   </td>
                 </tr>
@@ -317,6 +345,30 @@ export function VisitorsClient({
                   </td>
                   <td className="px-4 py-2.5">
                     <span className="text-indigo-400 font-mono">{v.page}</span>
+                  </td>
+                  <td className="px-4 py-2.5 max-w-[160px]">
+                    {v.user_id ? (
+                      <div className="flex items-start gap-1.5">
+                        <User className="w-3 h-3 text-emerald-400 mt-0.5 shrink-0" />
+                        <div className="min-w-0">
+                          {v.user_name && (
+                            <p className="text-emerald-400 font-medium truncate text-xs leading-tight">
+                              {v.user_name}
+                            </p>
+                          )}
+                          <p className="text-gray-500 truncate text-xs leading-tight">
+                            {v.user_email ?? "—"}
+                          </p>
+                          {v.org_name && (
+                            <p className="text-gray-600 truncate text-[10px] leading-tight">
+                              {v.org_name}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-gray-700 text-xs">anon</span>
+                    )}
                   </td>
                   <td className="px-4 py-2.5 font-mono text-gray-400 whitespace-nowrap">
                     {v.ip ?? "—"}
