@@ -1,7 +1,7 @@
 ---
 title: "Your n8n Workflows Are Failing Right Now — And You Don't Know It"
 description: "n8n doesn't alert you when workflows fail. Learn why silent failures happen, how n8n error workflows actually work (and where they break), and how to set up real monitoring that catches failures in under 2 minutes."
-publishedAt: "2026-05-11"
+publishedAt: "2026-05-05"
 readingTime: "8 min read"
 category: "n8n Monitoring"
 tags: ["n8n", "workflow monitoring", "n8n error handling", "n8n silent failures", "automation ops"]

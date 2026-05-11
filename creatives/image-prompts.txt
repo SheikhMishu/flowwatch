@@ -1,0 +1,446 @@
+FLOWMONIX — AI IMAGE GENERATION PROMPTS (v2 — based on real app screenshots)
+==============================================================================
+Tool: Leonardo AI / Google ImageFX / Gemini Imagen
+Aspect ratio: 16:9 (1440x900) for hero; ~4:3 or 16:9 for feature cards
+Style anchor: ultra high fidelity SaaS app UI screenshot, photorealistic, pixel-perfect,
+              sharp focus, no blur, real browser screenshot style
+
+APP DESIGN REFERENCE (from actual app):
+- Theme: LIGHT — white background (#ffffff), very light gray card borders
+- Sidebar: white left sidebar, "Flowmonix" logo top-left in indigo-purple gradient
+- Nav items: Dashboard, Workflows, Executions, Incidents, Logs, Analytics, Alerts, Instances
+- Active nav item: soft indigo/lavender background highlight, indigo text
+- KPI stat cards: white rounded cards with light gray border, bold black number, colored icon
+- Accent color: indigo (#6366f1) and violet/purple
+- Failures: red (#ef4444) with "needs attention" subtext
+- Success: green (#22c55e)
+- Charts: blue filled area (executions) + red thin line (failures), white background
+- Top bar: "All instances" dropdown, live sync dot, notification bell, user avatar top-right
+- Typography: clean sans-serif, dark gray/black body text
+
+Negative prompt for ALL images:
+"low quality, blurry, watermark, painting, illustration, cartoon, 3D render, abstract,
+bokeh, people, hands, dark theme, dark background, black background"
+
+
+==============================================================================
+IMAGE 0 — HERO — CONCEPT A: "The Rescue Moment" (RECOMMENDED)
+==============================================================================
+Target size: 1440x900px — most important image, drives conversions
+Logo: ATTACH your Flowmonix logo PNG as Image Reference in Leonardo, Style Strength 0.3
+
+Concept: Show the dashboard at a high-stakes moment — multiple workflows failing, FlowMonix
+has caught everything, and the AI is already showing the fix. This tells the full product
+story in one image: failure detected → grouped → AI explains → fix ready. A visitor should
+feel "I need this" the moment they see it.
+
+Ultra high fidelity screenshot of FlowMonix dashboard, light theme, white background, 1440x900px.
+White left sidebar with attached Flowmonix logo top-left (use image reference), nav items:
+Dashboard (active, indigo highlight), Workflows, Executions, Incidents, Logs, Analytics, Alerts,
+Instances. Top header: "Dashboard" bold black, "All instances" dropdown, red notification bell
+badge showing "5", green "● Live" dot, user avatar top-right.
+
+KPI stat row — 6 white cards: "TOTAL WORKFLOWS 52" purple icon — "ACTIVE WORKFLOWS 32" green —
+"EXECUTIONS (24H) 189" blue, "+18% vs yesterday" green — "FAILURES (24H) 31" RED bold, red icon,
+"needs attention" in red — "SUCCESS RATE 78.8%" amber, slight downward arrow — "AVG DURATION 5.5s".
+The Failures card should visually stand out with a subtle red border or red background tint.
+
+Execution Activity chart: blue filled area (executions, ~10-14 range) but with a VISIBLE red
+failure line that SPIKES upward at 14:00-15:00 timeframe — making it clear something went wrong.
+The spike is the drama. Red failure line rises to 6-8, then drops back down. Chart title
+"Execution Activity" with live pulsing red dot.
+
+Bottom — two panels side by side:
+LEFT "Recent Failures" panel — 4 active failure rows:
+  • Red circle icon, "Stripe Webhook Handler" bold, red badge "NodeApiError", "Invalid signature"
+    gray small, "2m ago"
+  • Red circle, "CRM Sync Pipeline", red badge "TimeoutError", "Connection timed out after 30s",
+    "5m ago"
+  • Red circle, "Invoice Generator", red badge "AuthError", "API key expired", "8m ago"
+  • Red circle, "Slack Notifier", amber badge "RateLimitError", "Too many requests", "12m ago"
+
+RIGHT "Open Incidents" panel — NOT empty, showing 2 active incidents:
+  • Red pill "OPEN", "Stripe Webhook Handler", "7 failures grouped", "2 min ago", indigo
+    "View →" link
+  • Amber pill "INVESTIGATING", "CRM Sync Pipeline", "3 failures grouped", "5 min ago"
+  Floating on top of or beside this panel: a white popup/tooltip card showing AI analysis —
+  small brain/sparkle indigo icon, "AI Root Cause" label, 2 lines of text: "Raw body parsed
+  before HMAC verification" and below "Fix: disable bodyParser for webhook route" in green.
+  This popup feels like it just appeared — fresh, live, actionable.
+
+Overall mood: active, urgent but controlled — the tool is on top of it. NOT a calm empty dashboard.
+Ultra sharp photorealistic SaaS UI screenshot, pixel perfect, high fidelity, real product feel.
+
+Negative: low quality, blurry, watermark, painting, illustration, cartoon, dark theme,
+dark background, 3D render, bokeh, people, hands, empty dashboard, no incidents
+
+
+==============================================================================
+IMAGE 0B — HERO — CONCEPT B: "Command Center" (alternative, generate both)
+==============================================================================
+Target size: 1440x900px
+Logo: ATTACH Flowmonix logo PNG as Image Reference, Style Strength 0.3
+
+Concept: Show the Analytics page instead — a bird's-eye view of the past 7 days across
+multiple n8n instances. Feels more "in control" and "big picture." Appeals to agency owners
+managing many clients. The execution heatmap and top failing workflows make it immediately
+clear this is professional-grade monitoring.
+
+Ultra high fidelity screenshot of FlowMonix Analytics page, light theme, white background.
+Sidebar with attached Flowmonix logo (image reference), "Analytics" nav item active indigo.
+Header "Analytics" bold, "All instances" dropdown, notification bell, user avatar.
+
+Top 4 KPI cards: "TOTAL EXECUTIONS (7D) 1,247" black bold — "SUCCESS RATE 91.3%" large indigo
+bold, up arrow green "+2.1% vs last week" — "TOTAL FAILURES 109" large red bold "needs attention"
+— "AVG DURATION 4.8s" amber.
+
+Full-width chart "7-Day Execution Trend": smooth blue area curve rising from Mon to Thu (peak
+~180 executions), gentle decline Fri-Sun. Red failure line stays flat near zero except one
+visible spike Wednesday showing ~20 failures. X-axis: Mon-Sun with dates. Time period buttons.
+
+Bottom row split:
+LEFT "Top Failing Workflows" — 5 ranked rows:
+  #1 "Stripe Webhook Handler" — long red bar — "28 failures" red chip — "61.4%" red
+  #2 "CRM Sync Pipeline" — medium red bar — "12 failures" — "82.1%" amber
+  #3 "Lead Enrichment" — short amber bar — "6 failures" — "91.7%" amber
+  #4 "Invoice Generator" — tiny bar — "4 failures" — "94.2%" green
+  #5 "Slack Notifier" — minimal bar — "2 failures" — "97.8%" green
+
+RIGHT "Execution Heatmap" — calendar grid, days Sun-Sat on Y axis, hours 12am/6am/12pm/6pm/8pm
+on X axis. Cells filled with varying indigo/blue shades — darker = busier. Clear pattern visible:
+weekday mornings busiest (dark blue), weekends lighter. One cell Wednesday noon is bright red
+(the failure spike). Legend "Less ░▒▓█ More". Label: "3 n8n instances · 47 workflows monitored".
+
+Ultra sharp photorealistic SaaS screenshot, high fidelity, pixel perfect.
+
+Negative: low quality, blurry, watermark, painting, illustration, cartoon, dark theme,
+dark background, 3D render, bokeh, people, hands
+
+
+==============================================================================
+IMAGE 1 — ANALYTICS: "The Weekly Debrief" (Features — "Monitor all workflows")
+==============================================================================
+Target size: 1440x860px
+Logo: ATTACH Flowmonix logo PNG as Image Reference, Style Strength 0.3
+
+Concept: An agency owner reviewing the past 7 days across 3 client n8n instances. The value
+is immediate — one screen tells you which clients' automations are struggling, when failures
+spike, and exactly which workflows need fixing. Not a calm green dashboard — show real data
+with contrast between healthy and failing workflows.
+
+Ultra high fidelity screenshot of FlowMonix Analytics page, light theme, white background.
+White sidebar with attached Flowmonix logo (image reference), "Analytics" active indigo.
+Header "Analytics", "3 instances" dropdown showing multiple connected instances, notification
+bell with red "3" badge, user avatar.
+
+Top 4 KPI cards — make them feel real and mixed (not all green):
+"TOTAL EXECUTIONS (7D) 1,247" black bold, "across 47 workflows" gray subtext —
+"SUCCESS RATE 84.2%" large indigo bold, "↓ -3.1% vs last week" in red subtext (trending down) —
+"TOTAL FAILURES 198" large RED bold, "needs attention" red subtext, red icon —
+"AVG DURATION 6.1s" amber, "↑ slower than usual" amber subtext.
+
+Full-width "7-Day Execution Trend" chart: blue filled area curve with clear pattern — Mon-Fri
+active (peaks 180-200), Sat-Sun drops to 40-60. Red failure line mostly flat but has TWO visible
+spikes — Tuesday noon (12 failures) and Thursday evening (18 failures) — makes it feel like a
+real business with real problems. Chart feels like actual n8n production data.
+
+Bottom row split 60/40:
+LEFT "Top Failing Workflows" — 5 rows with clear urgency gradient:
+  #1 "Client A — Lead Enrichment" — long red bar filling 80% — "68 failures" red badge —
+     "52.3%" in bold red — "Client A" blue instance tag
+  #2 "Client B — Stripe Webhooks" — medium red bar — "41 failures" — "71.4%" red
+  #3 "Client A — CRM Sync" — shorter amber bar — "28 failures" — "83.1%" amber
+  #4 "Client C — Invoice Generator" — short amber bar — "12 failures" — "91.2%" amber
+  #5 "Client B — Slack Notifier" — tiny bar — "4 failures" — "97.8%" green
+
+RIGHT "Execution Heatmap" — grid Sun-Sat rows, hours 12am to 11pm columns. Rich indigo
+shading — Tue and Thu show notably darker cells at midday and evening (the failure spikes).
+Wednesday nearly all light. Weekend rows mostly empty/pale. Feels like real business automation
+patterns. Two cells bright amber-red (the spike moments). Legend bottom.
+
+Ultra sharp photorealistic SaaS screenshot, high fidelity, real agency data feel.
+
+Negative: low quality, blurry, watermark, painting, illustration, cartoon, dark theme,
+dark background, 3D render, bokeh, people, hands, all green, no failures
+
+
+==============================================================================
+IMAGE 2 — INCIDENTS: "7 Alerts Became 1" (Features — "Incident Detection")
+==============================================================================
+Target size: 1440x860px
+Logo: ATTACH Flowmonix logo PNG as Image Reference, Style Strength 0.3
+
+Concept: The killer feature of FlowMonix is grouping repeated failures into ONE incident
+instead of spamming 7 separate alerts. Show this moment: an incident expanded to full detail,
+timeline showing 7 failures stacked up, all matching the same error signature. The visitor
+thinks "without this I'd have 7 notifications" — with FlowMonix it's one, with full context.
+
+Ultra high fidelity screenshot of FlowMonix Incidents page, light theme, white background.
+White sidebar with Flowmonix logo (image reference), "Incidents" active indigo, red badge "3"
+on Incidents nav item showing active count. Header "Incidents", filter bar.
+
+TOP: summary banner in light indigo background: "3 open incidents · 2 being investigated ·
+14 failures in the last hour" — makes the scale clear.
+
+Main — ONE large expanded incident card taking most of the screen (the focus):
+Red left vertical accent bar (4px). Top row: large red "OPEN" pill badge, incident title
+"Stripe Webhook Handler" bold 20px black, instance tag "prod-client-a" blue pill.
+
+Stats row below title: "7 executions failed" red chip — "First seen 1h 42m ago" gray chip —
+"Last seen 3 min ago" amber chip — "Same error pattern" indigo chip.
+
+Error signature box — light gray background monospace font:
+"NodeApiError: Invalid signature. No signatures found matching the expected signature for payload.
+Webhook source: stripe.com · Affected node: Stripe Trigger"
+
+Timeline panel on right side of card — vertical line with 7 red dots:
+  14:22:05 — Failed — 1.1s
+  14:19:51 — Failed — 0.9s
+  14:17:30 — Failed — 1.3s
+  14:15:12 — Failed — 1.0s
+  14:12:44 — Failed — 1.2s
+  14:09:18 — Failed — 0.8s
+  14:06:03 — Failed — 1.1s
+All dots red, connected by red dashed line. "7 failures · same signature" label.
+
+Action buttons row: "Analyze with AI ✦" indigo filled button (prominent) — "Retry Latest"
+indigo outline button — "Mark Resolved" gray outline.
+
+Below the main card: two smaller collapsed incident cards visible — amber "INVESTIGATING"
+"CRM Sync Pipeline" "3 failures" — green "RESOLVED" "Slack Notifier" "Auto-resolved 45m ago".
+
+Ultra sharp photorealistic SaaS UI screenshot, real product feel, high fidelity.
+
+Negative: low quality, blurry, watermark, painting, illustration, cartoon, dark theme,
+dark background, 3D render, bokeh, people, hands, empty list, no incidents
+
+
+==============================================================================
+IMAGE 2B — ONE-CLICK RETRY: "Fixed and Back Running" (Features — "One-Click Retry")
+==============================================================================
+Target size: 1440x860px
+Logo: ATTACH Flowmonix logo PNG as Image Reference, Style Strength 0.3
+Output file: save as image-Retry.png
+
+Concept: Show the satisfying moment AFTER the retry succeeds. The incident that was "OPEN"
+now shows a green "Execution Succeeded" confirmation — the workflow is back running without
+the user ever opening n8n. This is the payoff moment that makes the feature click instantly
+for anyone who's ever had to manually hunt down a failed workflow and re-trigger it.
+
+Ultra high fidelity screenshot of FlowMonix incident detail page, light theme, white background.
+White sidebar with Flowmonix logo (image reference), "Incidents" active indigo.
+Breadcrumb: "Incidents > Stripe Webhook Handler"
+
+Top of page: incident title "Stripe Webhook Handler" bold black, instance tag "prod-client-a"
+blue pill. Status row showing transition: crossed-out red "OPEN" pill → green "RESOLVED" pill
+with checkmark. "Resolved just now" in green small text.
+
+SUCCESS BANNER — full width card with green background (#f0fdf4), green left border (4px),
+green checkmark circle icon large. Text: "Execution succeeded — Workflow is back running
+normally." Subtext: "Retried by admin@agency.com · 12 seconds ago". This banner is the hero
+of the image — prominent, satisfying, green.
+
+Below the banner: the incident timeline showing the story:
+  ● 14:06 — 14:22 — 7 failures (red dots, red dashed line)
+  ● 14:23 — Retry triggered (indigo dot, "Retried manually")
+  ● 14:23 — Execution succeeded (GREEN dot, "✓ Resolved")
+The timeline visually shows the arc: failure → retry → success.
+
+Incident stats row updated: "7 failures detected" red chip — "Retry triggered 12s ago" indigo
+chip — "Resolved in 12 seconds" GREEN chip with checkmark.
+
+Below: collapsed execution log card showing the successful retry execution — green "SUCCESS"
+badge, "Duration: 1.3s", "All nodes completed", timestamp. Subtle green glow on this card.
+
+Bottom action row: "View Execution Log" indigo link — "Close Incident" green filled button —
+grayed out "Retry Again" (already resolved, not needed).
+
+Right sidebar mini-panel: "Incident Summary" — Total failures: 7 — Time to detect: <1 min —
+Time to resolve: 17 min — Resolved by: Manual retry. Clean stats, feels professional.
+
+Overall mood: relief and control — the problem is solved, the user did it without leaving
+FlowMonix, everything is back to normal. Green is dominant.
+
+Negative: low quality, blurry, watermark, painting, illustration, cartoon, dark theme,
+dark background, 3D render, bokeh, people, hands, still failing, red dominant
+
+
+==============================================================================
+IMAGE 3 — AI DEBUGGING: "Scary Error → Plain English Fix" (Features — "AI Debugging")
+==============================================================================
+Target size: 1440x860px
+Logo: ATTACH Flowmonix logo PNG as Image Reference, Style Strength 0.3
+
+Concept: The most powerful visual contrast on the landing page. LEFT side shows the terrifying
+raw error — cryptic red monospace stack trace that makes a developer's stomach drop. RIGHT side
+(or below) shows the AI translation: plain English root cause + numbered green fix steps.
+The gap between those two is the entire value of the feature. Make the contrast dramatic.
+
+Ultra high fidelity screenshot of FlowMonix execution detail page, light theme, white background.
+White sidebar with Flowmonix logo (image reference), "Executions" active indigo.
+Breadcrumb: "Executions > Stripe Webhook Handler > Execution #1,847"
+
+Top execution summary card: "Stripe Webhook Handler" bold title — red "FAILED" badge —
+"Executed 3 min ago" — "Duration: 1.1s" — instance "prod-client-a" blue pill.
+
+BEFORE section — white card with red left border, header "Error Output" in red small caps:
+Monospace red/dark text on light red background:
+"ERROR [StripeWebhookTrigger]: No signatures found matching the expected signature for payload.
+Are you passing the raw request body, the signature header, and the correct webhook secret?
+  at verifySignature (/stripe/webhooks.js:142:11)
+  at processWebhook (/routes/stripe.js:38:5)
+  at Layer.handle [as handle_request]..."
+This looks intimidating and technical. Red warning icon top-right.
+
+AFTER section — prominent white card with indigo left border (4px), soft indigo glow/shadow.
+Top: sparkle/brain icon indigo + "AI Root Cause Analysis" bold black + "Pro" indigo badge.
+Small "Generated in 1.2s" gray pill.
+
+"Root Cause" section — indigo label uppercase small:
+Clean readable black text: "The Stripe signature check is failing because your framework is
+parsing the request body into JSON before the webhook handler runs. Stripe needs the raw
+unmodified bytes — once parsed, the signature no longer matches."
+
+"How to fix it" section — green label uppercase small. Numbered list with green checkmark icons:
+  ✓ "Pass rawBody: true in your webhook route options"
+  ✓ "Ensure express.json() middleware does not run before this route"
+  ✓ "Verify using: stripe.webhooks.constructEvent(rawBody, sig, secret)"
+
+Bottom row of AI card: green "Known fix · Result cached" pill left —
+"Copy fix steps" gray button — "Retry Execution" indigo button right.
+
+Ultra sharp photorealistic SaaS screenshot, high contrast before/after layout, high fidelity.
+
+Negative: low quality, blurry, watermark, painting, illustration, cartoon, dark theme,
+dark background, 3D render, bokeh, people, hands
+
+
+==============================================================================
+IMAGE 4 — ALERTS: "The Alert That Just Fired" (Features — "Smart Alerts")
+==============================================================================
+Target size: 1440x820px
+Logo: ATTACH Flowmonix logo PNG as Image Reference, Style Strength 0.3
+
+Concept: Don't show a calm config page — show the moment an alert just fired. The "High
+Failure Rate" rule triggered 2 minutes ago, the Slack notification preview is visible as an
+overlay, the bell is lit up. Makes the feature feel real, live, and immediately useful.
+Visitors understand "this would have woken me up" — and that's exactly what they want.
+
+Ultra high fidelity screenshot of FlowMonix Alerts page, light theme, white background.
+White sidebar with Flowmonix logo (image reference), "Alerts" active indigo, notification
+bell in top header has red badge "1" — something just happened. Page title "Alerts".
+
+Alert rule list — 4 cards, each white rounded card with light gray border:
+
+Card 1 — JUST FIRED (visually highlighted):
+Subtle light amber/yellow background tint on the whole card. Toggle ON indigo.
+Alert name "High Failure Rate" bold. Trigger "3+ failures within 10 minutes" gray.
+Channels: Slack green badge + Email blue badge. Cooldown "30 min".
+Right side: "Last triggered: 2 min ago" in AMBER bold (not gray — this is fresh).
+Small "● Sent" green dot indicator. Edit icon.
+FLOATING OVERLAY on this card — a Slack message preview bubble (white card, slight shadow):
+  Slack hash icon + "#alerts" channel name gray.
+  Message content: "🚨 FlowMonix Alert — High Failure Rate
+  Workflow: Stripe Webhook Handler
+  Failures: 7 in the last 10 minutes
+  Instance: prod-client-a
+  View incident →" indigo link
+  Timestamp "2 min ago"
+
+Card 2: toggle ON indigo. "Instance Offline". "No sync for 15 min". Slack + email.
+"Last triggered: 3 days ago" gray.
+
+Card 3: toggle OFF gray. "First Failure". "Any new failure". Email only. "Never triggered".
+
+Card 4: toggle OFF gray. "Weekly Summary". "Every Monday 9am". Email only.
+
+Ultra sharp photorealistic SaaS UI screenshot, live feel, high fidelity.
+
+Negative: low quality, blurry, watermark, painting, illustration, cartoon, dark theme,
+dark background, 3D render, bokeh, people, hands, all calm, nothing triggered
+
+
+==============================================================================
+IMAGE 5 — STATUS PAGE: "Client Transparency During an Outage" (Features — Agencies)
+==============================================================================
+Target size: 1440x860px
+No logo reference needed — this is the public page clients see, not the FlowMonix app.
+
+Concept: An all-green status page is boring and tells no story. Show the page during a PARTIAL
+outage — most workflows healthy, but 2 degraded, 1 active incident being investigated. This
+shows the real value for agencies: instead of a client emailing "is something broken?", they
+can check the status page and see it's already being handled. Proactive transparency = trust.
+
+Ultra high fidelity screenshot of a public status page website, light theme white background,
+minimal clean professional design. Browser URL bar: "status.flowmonix.com/acme-automations".
+
+Top bar: "Acme Automations" organization name centered bold dark. Right: "Auto-refreshes ·
+Last updated 18s ago" green pill. Bottom-right corner small gray: "Powered by FlowMonix".
+
+ACTIVE INCIDENT BANNER — full width below top bar, light amber background (#fef3c7), amber
+left border. Icon: amber warning triangle. Text: "Investigating — Stripe integration workflows
+are experiencing elevated failure rates. Our team is aware and working on a fix."
+Right side: "Started 24 min ago" amber. This banner makes the page feel real and live.
+
+Status summary row: amber circle icon + "Partial Outage" in amber bold large text (NOT all
+green) + subtext "16 of 18 workflows operational".
+
+Workflow grid — 3 columns, 3 rows of workflow status cards, white rounded cards light shadow:
+Row 1: "Invoice Generator" green dot "Operational" 99.9% — "Lead Enrichment" green "Operational"
+100% — "CRM Sync" green "Operational" 98.4%
+Row 2: "Email Campaigns" green "Operational" 99.1% — "Stripe Webhooks" AMBER dot "Degraded"
+amber text, "61% success rate" red small — "Stripe Trigger" AMBER "Degraded" "Failing since
+24 min ago" amber small
+Row 3: "Slack Notifier" green "Operational" — "Reporting Pipeline" green "Operational" —
+"Data Export" green "Operational"
+
+Active Incidents section: amber header "1 Active Incident". White card:
+"Stripe Integration — Elevated Failure Rate · Investigating · Started 24 min ago"
+Timeline: "24 min ago — Incident detected and under investigation."
+
+Incident History section below: "Past 30 days — 2 incidents, both resolved within 15 min"
+in green. Clean uptime bars for each workflow (mostly solid green, tiny amber blip).
+
+Footer: "Status page provided by FlowMonix · flowmonix.com" gray small.
+
+Ultra sharp photorealistic real website screenshot, professional agency quality, high fidelity.
+
+Negative: low quality, blurry, watermark, painting, illustration, cartoon, dark theme,
+dark background, 3D render, bokeh, people, hands, all green, fully operational
+
+
+==============================================================================
+PLACEMENT GUIDE
+==============================================================================
+
+IMAGE 0  (Dashboard overview)  → hero.tsx — hero section
+IMAGE 0B (Analytics page)      → solution.tsx — "Monitor all workflows" card
+IMAGE 2  (Incidents list)      → features.tsx — "Incident Detection" card
+IMAGE 2B (Retry success)       → features.tsx — "One-Click Retry" card  ← MISSING, generate this
+IMAGE 3  (AI analysis panel)   → features.tsx — "AI Debugging" card
+IMAGE 4  (Alerts config)       → features.tsx — "Smart Alerts" card
+IMAGE 5  (Public status page)  → features.tsx — "Public Status Page" card (agencies)
+
+
+==============================================================================
+GENERATION TIPS (Leonardo AI)
+==============================================================================
+
+- Model: "PhotoReal v2" or "Kino XL" — best for UI screenshots
+- Guidance Scale: 7–8
+- Enable "Prompt Magic v3" toggle
+- Resolution: 1472x832 (closest 16:9 available in Leonardo)
+- Generate 4 variations per prompt, pick sharpest
+- If it goes dark/illustrated: add to prompt "light theme white background real SaaS app
+  screenshot, NOT dark, NOT illustrated"
+- The app accent color is indigo #6366f1 — mention this if outputs look generic
+
+
+==============================================================================
+WHAT CHANGED FROM v1
+==============================================================================
+
+v1 was written based on the CSS code (which had a dark placeholder mockup).
+v2 is based on actual app screenshots — the real app is LIGHT themed, white background,
+with indigo accents, colored stat cards, area charts, and a clean minimal layout.
+All 6 prompts have been fully rewritten to match the real product.
