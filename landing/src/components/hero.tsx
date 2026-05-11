@@ -28,12 +28,20 @@ export default function Hero() {
             <span style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>monix</span>
           </span>
         </div>
-        <a
-          href="#signup"
-          className="flex items-center gap-1.5 text-sm text-zinc-800 hover:text-zinc-900 transition-colors duration-200"
-        >
-          Get Started Free <ArrowRight className="w-3.5 h-3.5" />
-        </a>
+        <div className="flex items-center gap-6">
+          <a
+            href="https://app.flowmonix.com/blog"
+            className="text-sm text-zinc-500 hover:text-zinc-800 transition-colors duration-200"
+          >
+            Blog
+          </a>
+          <a
+            href="#signup"
+            className="flex items-center gap-1.5 text-sm text-zinc-800 hover:text-zinc-900 transition-colors duration-200"
+          >
+            Get Started Free <ArrowRight className="w-3.5 h-3.5" />
+          </a>
+        </div>
       </nav>
 
       {/* Main content */}
