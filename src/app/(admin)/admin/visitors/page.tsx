@@ -43,7 +43,7 @@ export default async function AdminVisitorsPage() {
     ? `(${excludedIps.join(",")})`
     : null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function withIpFilter<T extends { not: (...args: any[]) => T }>(q: T): T {
+  function withIpFilter(q: any): any {
     return ipFilter ? q.not("ip", "in", ipFilter) : q;
   }
 
@@ -125,8 +125,10 @@ export default async function AdminVisitorsPage() {
   ]);
 
   // Enrich visits with user email + org name for signed-in sessions
-  const userIds = [...new Set((recentVisits ?? []).map((v) => v.user_id).filter(Boolean))] as string[];
-  const orgIds  = [...new Set((recentVisits ?? []).map((v) => v.org_id).filter(Boolean))]  as string[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const visits = (recentVisits ?? []) as any[];
+  const userIds = [...new Set(visits.map((v) => v.user_id).filter(Boolean))] as string[];
+  const orgIds  = [...new Set(visits.map((v) => v.org_id).filter(Boolean))]  as string[];
 
   const [{ data: userRows }, { data: orgRows }] = await Promise.all([
     userIds.length > 0
@@ -215,7 +217,7 @@ export default async function AdminVisitorsPage() {
   const dailyVisits = Object.entries(dailyBuckets).map(([date, count]) => ({ date, count }));
 
   // Unique IPs
-  const uniqueIpsTotal = new Set((recentVisits ?? []).map((v) => v.ip).filter(Boolean)).size;
+  const uniqueIpsTotal = new Set(visits.map((v) => v.ip).filter(Boolean)).size;
 
   // Demo session count (all time)
   const { count: demoSessions } = await db
@@ -229,7 +231,7 @@ export default async function AdminVisitorsPage() {
       visitsThisWeek={visitsThisWeek ?? 0}
       uniqueIpsTotal={uniqueIpsTotal}
       demoSessions={demoSessions ?? 0}
-      recentVisits={(recentVisits ?? []).map((v) => ({
+      recentVisits={visits.map((v) => ({
         ...v,
         user_email: v.user_id ? (userMap[v.user_id]?.email ?? null) : null,
         user_name:  v.user_id ? (userMap[v.user_id]?.name  ?? null) : null,
