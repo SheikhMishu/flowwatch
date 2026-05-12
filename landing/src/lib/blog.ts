@@ -29,7 +29,7 @@ export function getAllPostMeta(): PostMeta[] {
   if (!fs.existsSync(BLOG_DIR)) return [];
   return fs
     .readdirSync(BLOG_DIR)
-    .filter((f) => f.endsWith(".md"))
+    .filter((f) => f.endsWith(".md") && f.toLowerCase() !== "readme.md")
     .map((filename) => {
       const slug = filename.replace(/\.md$/, "");
       const raw = fs.readFileSync(path.join(BLOG_DIR, filename), "utf8");
