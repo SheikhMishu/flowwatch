@@ -47,6 +47,9 @@ export default async function AdminOrgDetailPage({
     { count: openIncidents },
     { data: aiUsage },
     { count: alertFirings },
+    { data: workflows },
+    { data: recentExecutions },
+    { data: allIncidents },
   ] = await Promise.all([
     db
       .from("organization_members")
@@ -90,6 +93,24 @@ export default async function AdminOrgDetailPage({
       .select("id", { count: "exact", head: true })
       .eq("org_id", id)
       .gte("fired_at", monthStart),
+    db
+      .from("workflow_snapshots")
+      .select("id, name, is_active, node_count, tags, updated_at, n8n_instances(name)")
+      .eq("org_id", id)
+      .order("updated_at", { ascending: false })
+      .limit(500),
+    db
+      .from("synced_executions")
+      .select("id, workflow_name, status, mode, started_at, finished_at, duration_ms, error_message, failed_node")
+      .eq("org_id", id)
+      .order("started_at", { ascending: false })
+      .limit(200),
+    db
+      .from("incidents")
+      .select("id, workflow_name, severity, status, title, failure_count, first_seen_at, last_seen_at, resolved_at")
+      .eq("org_id", id)
+      .order("last_seen_at", { ascending: false })
+      .limit(200),
   ]);
 
   const aiTotal = (aiUsage ?? []).reduce((s, r) => s + r.count, 0);
@@ -109,6 +130,9 @@ export default async function AdminOrgDetailPage({
       aiTotal={aiTotal}
       aiThisMonth={aiThisMonth}
       alertFirings={alertFirings ?? 0}
+      workflows={(workflows ?? []) as unknown as Parameters<typeof OrgDetailClient>[0]["workflows"]}
+      recentExecutions={recentExecutions ?? []}
+      allIncidents={allIncidents ?? []}
     />
   );
 }
