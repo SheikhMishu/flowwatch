@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { ArrowRight, CheckCircle2, Lock } from 'lucide-react'
-import { FlowMonixMark } from './brand-mark'
+import NavBar from './nav-bar'
 
 const frictionBullets = [
   'Connect your n8n in 60 seconds',
@@ -13,39 +13,16 @@ const flowSteps = ['Sign up', 'Connect n8n', 'See failures instantly']
 export default function Hero() {
   return (
     <section className="relative min-h-screen flex flex-col overflow-hidden grid-bg">
+      <NavBar />
 
       {/* Sharp geometric top accent line */}
       <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-indigo-600 via-violet-500 to-indigo-600" />
 
-      {/* Nav */}
-      <nav className="relative z-10 flex items-center justify-between max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-5">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-            <FlowMonixMark className="w-5 h-5" />
-          </div>
-          <span className="font-display font-extrabold text-lg tracking-tight">
-            <span className="text-zinc-900">Flow</span>
-            <span style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>monix</span>
-          </span>
-        </div>
-        <div className="flex items-center gap-6">
-          <a
-            href="/blog"
-            className="text-sm text-zinc-500 hover:text-zinc-800 transition-colors duration-200"
-          >
-            Blog
-          </a>
-          <a
-            href="#signup"
-            className="flex items-center gap-1.5 text-sm text-zinc-800 hover:text-zinc-900 transition-colors duration-200"
-          >
-            Get Started Free <ArrowRight className="w-3.5 h-3.5" />
-          </a>
-        </div>
-      </nav>
+      {/* Spacer for fixed nav */}
+      <div className="h-[72px] flex-shrink-0" />
 
       {/* Main content */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-16">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center max-w-5xl mx-auto px-4 sm:px-6 pt-4 pb-16">
 
         {/* Badge */}
         <div className="animate-in gradient-border inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-8 cursor-default">
@@ -69,7 +46,7 @@ export default function Hero() {
         <div className="animate-in delay-300 flex flex-col items-center gap-3">
           <a
             href="#signup"
-            className="cta-primary inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-sm hover:opacity-95 hover:scale-[1.02] active:scale-100 transition-transform duration-200 text-center"
+            className="cta-primary inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-sm hover:opacity-95 hover:scale-[1.02] active:scale-[0.97] transition-transform duration-100 text-center"
           >
             Start Free — See Your First Failure in 2 Minutes
             <ArrowRight className="w-4 h-4 flex-shrink-0" />
@@ -98,7 +75,6 @@ export default function Hero() {
               <Lock className="w-3 h-3" /> Credentials encrypted
             </span>
           </p>
-
         </div>
 
         {/* User flow */}
@@ -114,6 +90,13 @@ export default function Hero() {
         {/* Dashboard mockup */}
         <div className="float-anim mt-8 sm:mt-14 w-full max-w-5xl mx-auto">
           <div className="animate-in delay-500 relative">
+
+            {/* Ambient glow — first child renders behind everything */}
+            <div
+              className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-4/5 h-40 blur-3xl pointer-events-none"
+              style={{ background: 'radial-gradient(ellipse, rgba(99,102,241,0.22) 0%, rgba(139,92,246,0.1) 45%, transparent 70%)' }}
+            />
+
             <div className="rounded-2xl border border-zinc-200 overflow-hidden shadow-2xl shadow-zinc-300/40">
               <Image
                 src="/images/hero.png"
@@ -126,13 +109,13 @@ export default function Hero() {
             </div>
 
             {/* Overlay: failed workflow indicator */}
-            <div className="absolute top-3 left-3 sm:top-5 sm:left-5 flex items-center gap-2 bg-white rounded-xl px-2.5 py-1.5 shadow-lg border border-red-100 pointer-events-none">
+            <div className="badge-slide-left absolute top-3 left-3 sm:top-5 sm:left-5 flex items-center gap-2 bg-white rounded-xl px-2.5 py-1.5 shadow-lg border border-red-100 pointer-events-none">
               <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
               <span className="text-[11px] font-semibold text-red-600 whitespace-nowrap">7 failures in 5 min</span>
             </div>
 
-            {/* Overlay: AI root cause — hidden on mobile to prevent overlap */}
-            <div className="hidden sm:block absolute top-5 right-5 bg-white rounded-xl px-3 py-2 shadow-lg border border-indigo-100 max-w-[210px] pointer-events-none">
+            {/* Overlay: AI root cause — hidden on mobile */}
+            <div className="badge-slide-right hidden sm:block absolute top-5 right-5 bg-white rounded-xl px-3 py-2 shadow-lg border border-indigo-100 max-w-[210px] pointer-events-none">
               <p className="text-[9px] font-bold text-indigo-600 uppercase tracking-wide mb-1">AI Root Cause</p>
               <p className="text-[11px] text-zinc-700 leading-snug">API timeout on payment step — increase timeout to 30s</p>
             </div>

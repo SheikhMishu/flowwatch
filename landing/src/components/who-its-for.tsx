@@ -57,9 +57,9 @@ export default function WhoItsFor() {
             return (
               <div
                 key={a.title}
-                className="group glass-card rounded-2xl p-7 hover:border-indigo-200 hover:shadow-md transition-all duration-300"
+                className="group glass-card rounded-2xl p-7 hover:border-indigo-200 hover:shadow-md hover:-translate-y-[3px] transition-[transform,border-color,box-shadow] duration-200"
               >
-                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${a.gradient} ${a.hoverGradient} flex items-center justify-center mb-5 group-hover:scale-110 transition-all duration-300`}>
+                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${a.gradient} ${a.hoverGradient} flex items-center justify-center mb-5 group-hover:scale-105 transition-[transform,background] duration-200`}>
                   <Icon className={`w-6 h-6 ${a.iconColor}`} />
                 </div>
 

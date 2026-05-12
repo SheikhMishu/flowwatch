@@ -84,7 +84,7 @@ export default function Pricing() {
         {/* Plan cards */}
         <AnimateOnScroll animation="stagger-children" className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
           {plans.map((plan) => (
-            <div key={plan.name} className={`relative rounded-2xl p-7 transition-all duration-300 ${plan.cardStyle}`}>
+            <div key={plan.name} className={`relative rounded-2xl p-7 hover:-translate-y-[3px] transition-[transform,border-color,box-shadow] duration-200 ${plan.cardStyle}`}>
               {/* Popular badge */}
               {plan.popular && (
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
@@ -117,7 +117,7 @@ export default function Pricing() {
               {/* CTA */}
               <a
                 href="#signup"
-                className={`flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${plan.ctaStyle}`}
+                className={`flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-semibold hover:scale-[1.02] active:scale-[0.97] transition-transform duration-100 ${plan.ctaStyle}`}
               >
                 {plan.cta}
                 <ArrowRight className="w-4 h-4" />

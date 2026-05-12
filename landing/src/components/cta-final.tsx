@@ -43,7 +43,7 @@ export default function CtaFinal() {
 
             <a
               href="#signup"
-              className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-white text-indigo-700 font-bold text-base hover:bg-white/95 hover:scale-[1.02] active:scale-100 transition-all duration-200 shadow-2xl shadow-black/30"
+              className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-white text-indigo-700 font-bold text-base hover:bg-white/95 hover:scale-[1.02] active:scale-[0.97] transition-[transform,background-color] duration-100 shadow-2xl shadow-black/30"
             >
               Get Started Free
               <ArrowRight className="w-5 h-5" />

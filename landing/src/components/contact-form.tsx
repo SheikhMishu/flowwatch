@@ -136,7 +136,7 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-sm hover:opacity-90 hover:scale-[1.01] active:scale-100 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-indigo-300/50 mt-2"
+          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-sm hover:opacity-90 hover:scale-[1.01] active:scale-[0.97] disabled:opacity-60 disabled:cursor-not-allowed transition-[transform,opacity] duration-100 shadow-lg shadow-indigo-300/50 mt-2"
         >
           {status === 'loading' ? (
             <>

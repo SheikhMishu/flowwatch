@@ -69,7 +69,7 @@ export default function Trust() {
           {expectations.map((item) => {
             const Icon = item.icon
             return (
-              <div key={item.title} className="glass-card rounded-2xl p-6 hover:border-indigo-200 hover:shadow-md transition-all duration-300">
+              <div key={item.title} className="glass-card rounded-2xl p-6 hover:border-indigo-200 hover:shadow-md hover:-translate-y-[3px] transition-[transform,border-color,box-shadow] duration-200">
                 <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center mb-4">
                   <Icon className="w-4.5 h-4.5 text-indigo-500" />
                 </div>

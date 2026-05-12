@@ -96,12 +96,12 @@ export default function Features() {
             return (
               <div
                 key={f.title}
-                className="group glass-card rounded-2xl overflow-hidden hover:border-indigo-200 hover:shadow-md transition-all duration-300"
+                className="group glass-card rounded-2xl overflow-hidden hover:border-indigo-200 hover:shadow-md hover:-translate-y-[3px] transition-[transform,border-color,box-shadow] duration-200"
               >
                 {/* Text content */}
                 <div className="p-7">
                   <div className="flex items-start justify-between mb-5">
-                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-100 to-violet-100 flex items-center justify-center group-hover:from-indigo-200 group-hover:to-violet-200 transition-all duration-300">
+                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-100 to-violet-100 flex items-center justify-center group-hover:from-indigo-200 group-hover:to-violet-200 transition-[background] duration-200">
                       <Icon className="w-5 h-5 text-indigo-600" />
                     </div>
                     {f.badge && (
@@ -144,12 +144,12 @@ export default function Features() {
           const Icon = f.icon
           return (
             <AnimateOnScroll key={f.title}>
-              <div className="group glass-card rounded-2xl overflow-hidden hover:border-indigo-200 hover:shadow-md transition-all duration-300">
+              <div className="group glass-card rounded-2xl overflow-hidden hover:border-indigo-200 hover:shadow-md hover:-translate-y-[3px] transition-[transform,border-color,box-shadow] duration-200">
                 <div className="md:flex">
                   {/* Text */}
                   <div className="p-7 md:w-2/5 flex flex-col justify-center">
                     <div className="flex items-start justify-between mb-5">
-                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-100 to-violet-100 flex items-center justify-center group-hover:from-indigo-200 group-hover:to-violet-200 transition-all duration-300">
+                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-100 to-violet-100 flex items-center justify-center group-hover:from-indigo-200 group-hover:to-violet-200 transition-[background] duration-200">
                         <Icon className="w-5 h-5 text-indigo-600" />
                       </div>
                       {f.badge && (

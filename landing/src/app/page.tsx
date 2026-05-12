@@ -4,26 +4,30 @@ import Solution from '@/components/solution'
 import ValueLoop from '@/components/value-loop'
 import Features from '@/components/features'
 import WhoItsFor from '@/components/who-its-for'
-import Pricing from '@/components/pricing'
 import Trust from '@/components/trust'
+import Pricing from '@/components/pricing'
 import SignupForm from '@/components/signup-form'
 import CtaFinal from '@/components/cta-final'
 import Footer from '@/components/footer'
+import ScrollToTop from '@/components/scroll-to-top'
 
 export default function Home() {
   return (
+    <>
+    <ScrollToTop />
     <main>
       <Hero />
-      <ValueLoop />
       <Problem />
       <Solution />
+      <ValueLoop />
       <Features />
       <WhoItsFor />
-      <Pricing />
       <Trust />
+      <Pricing />
       <SignupForm />
       <CtaFinal />
       <Footer />
     </main>
+    </>
   )
 }

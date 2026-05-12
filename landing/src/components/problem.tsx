@@ -45,7 +45,7 @@ export default function Problem() {
     <section className="py-28 bg-[#f1f5f9]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <AnimateOnScroll className="text-center mb-16">
+        <AnimateOnScroll animation="fade-in" className="text-center mb-16">
           <div className="w-8 h-[2px] bg-red-500 mx-auto mb-3" />
           <p className="text-xs font-bold uppercase tracking-widest text-red-500 mb-5">The Problem</p>
           <h2 className="font-display font-bold text-4xl sm:text-5xl text-zinc-900 leading-tight">
@@ -62,9 +62,9 @@ export default function Problem() {
             return (
               <div
                 key={p.title}
-                className={`glass-card rounded-2xl p-7 group transition-all duration-300 ${p.borderAccent} hover:shadow-md`}
+                className={`glass-card rounded-2xl p-7 group hover:shadow-md hover:-translate-y-[3px] transition-[transform,border-color,box-shadow] duration-200 ${p.borderAccent}`}
               >
-                <div className={`w-11 h-11 rounded-xl ${p.iconBg} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}>
+                <div className={`w-11 h-11 rounded-xl ${p.iconBg} flex items-center justify-center mb-5 group-hover:scale-105 transition-transform duration-200`}>
                   <Icon className={`w-5 h-5 ${p.iconColor}`} />
                 </div>
                 <h3 className="font-display font-bold text-zinc-900 text-lg mb-2">{p.title}</h3>
