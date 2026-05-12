@@ -48,6 +48,7 @@ export function getAllPostMeta(): PostMeta[] {
 }
 
 export async function getPost(slug: string): Promise<Post | null> {
+  if (slug.toLowerCase() === "readme") return null;
   const filePath = path.join(BLOG_DIR, `${slug}.md`);
   if (!fs.existsSync(filePath)) return null;
   const raw = fs.readFileSync(filePath, "utf8");
