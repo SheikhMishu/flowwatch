@@ -38,15 +38,107 @@ function makeClient(inst: StoredInstance): N8nClient | null {
 
 // ─── DB readers ───────────────────────────────────────────────────────────────
 
-async function fetchOrgExecutionsFromDB(orgId: string, instanceId?: string): Promise<Execution[]> {
+export interface DailyExecutionAggregate {
+  date: string; // YYYY-MM-DD in UTC
+  total: number;
+  failures: number;
+  avg_duration_ms: number | null;
+}
+
+export interface WorkflowPerformanceStat {
+  workflow_name: string;
+  total: number;
+  failures: number;
+  avg_duration_ms: number | null;
+  last_run_at: string; // ISO timestamp
+}
+
+export interface ErrorMessageStat {
+  error_message: string;
+  count: number;
+}
+
+export async function fetchOrgDailyAggregates(
+  orgId: string,
+  instanceId?: string,
+  days = 7
+): Promise<DailyExecutionAggregate[]> {
+  const db = getServerDb();
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+
+  const { data } = await db.rpc("get_daily_execution_aggregates", {
+    p_org_id: orgId,
+    p_since: since,
+    p_instance_id: instanceId ?? null,
+  });
+
+  if (!data || data.length === 0) return [];
+
+  return (data as { date: string; total: number; failures: number; avg_duration_ms: number | null }[]).map((row) => ({
+    date: row.date,
+    total: Number(row.total),
+    failures: Number(row.failures),
+    avg_duration_ms: row.avg_duration_ms != null ? Number(row.avg_duration_ms) : null,
+  }));
+}
+
+export async function fetchWorkflowPerformanceStats(
+  orgId: string,
+  instanceId?: string,
+  days = 7
+): Promise<WorkflowPerformanceStat[]> {
+  const db = getServerDb();
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+
+  const { data } = await db.rpc("get_workflow_performance_stats", {
+    p_org_id: orgId,
+    p_since: since,
+    p_instance_id: instanceId ?? null,
+  });
+
+  if (!data || data.length === 0) return [];
+
+  return (data as { workflow_name: string; total: number; failures: number; avg_duration_ms: number | null; last_run_at: string }[]).map((row) => ({
+    workflow_name: row.workflow_name,
+    total: Number(row.total),
+    failures: Number(row.failures),
+    avg_duration_ms: row.avg_duration_ms != null ? Number(row.avg_duration_ms) : null,
+    last_run_at: row.last_run_at,
+  }));
+}
+
+export async function fetchErrorMessageBreakdown(
+  orgId: string,
+  instanceId?: string,
+  days = 7
+): Promise<ErrorMessageStat[]> {
+  const db = getServerDb();
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+
+  const { data } = await db.rpc("get_error_message_breakdown", {
+    p_org_id: orgId,
+    p_since: since,
+    p_instance_id: instanceId ?? null,
+  });
+
+  if (!data || data.length === 0) return [];
+
+  return (data as { error_message: string; count: number }[]).map((row) => ({
+    error_message: row.error_message,
+    count: Number(row.count),
+  }));
+}
+
+async function fetchOrgExecutionsFromDB(orgId: string, instanceId?: string, since?: string): Promise<Execution[]> {
   const db = getServerDb();
   let query = db
     .from("synced_executions")
     .select("*")
     .eq("org_id", orgId)
     .order("started_at", { ascending: false })
-    .limit(200);
+    .limit(since ? 2000 : 200);
   if (instanceId) query = query.eq("instance_id", instanceId);
+  if (since) query = query.gte("started_at", since);
   const { data } = await query;
   if (!data || data.length === 0) return [];
 
@@ -254,8 +346,8 @@ export async function fetchOrgWorkflows(orgId: string, instanceId?: string): Pro
   return fetchOrgWorkflowsLive(orgId, instanceId);
 }
 
-export async function fetchOrgExecutions(orgId: string, instanceId?: string): Promise<Execution[]> {
-  const dbResults = await fetchOrgExecutionsFromDB(orgId, instanceId);
+export async function fetchOrgExecutions(orgId: string, instanceId?: string, since?: string): Promise<Execution[]> {
+  const dbResults = await fetchOrgExecutionsFromDB(orgId, instanceId, since);
   if (dbResults.length > 0) return dbResults;
   return fetchOrgExecutionsLive(orgId, instanceId);
 }

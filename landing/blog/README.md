@@ -11,9 +11,18 @@ Location: `landing/blog/*.md`
 | `n8n-workflow-monitoring-silent-failures` | n8n workflow monitoring | 2026-05-05 |
 | `how-to-debug-n8n-workflows` | how to debug n8n workflows | 2026-05-12 |
 
+## In Drafts (not yet published)
+
+| Slug | Primary Keyword | Planned |
+|---|---|---|
+| `n8n-execution-errors-vs-silent-data-failures` | n8n execution errors vs silent failures | 2026-05-15 |
+| `n8n-successful-failures-production-monitoring` | n8n successful failures production | TBD |
+
 ## Topics Covered (don't repeat)
 - Silent failures / no alerts
 - Debugging techniques (pin data, execution log, HTTP/JSON errors)
+- Execution errors vs silent data failures (webhooks stopping, API returning empty data, partial success)
+- Workflows that succeed but break business processes (partial syncs, AI node degradation, duplicate executions, slow degradation)
 
 ## Ideas for Future Posts
 - n8n error workflow setup

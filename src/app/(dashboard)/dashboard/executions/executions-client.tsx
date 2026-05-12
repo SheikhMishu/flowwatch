@@ -28,6 +28,7 @@ import type { Execution, ExecutionStatus } from "@/types";
 interface ExecutionsClientProps {
   executions: Execution[];
   initialStatus?: StatusFilter;
+  initialWorkflow?: string;
 }
 
 type StatusFilter = "all" | ExecutionStatus;
@@ -371,8 +372,8 @@ function ExecutionRow({ execution }: { execution: Execution }) {
   );
 }
 
-export function ExecutionsClient({ executions, initialStatus = "all" }: ExecutionsClientProps) {
-  const [search, setSearch] = useState("");
+export function ExecutionsClient({ executions, initialStatus = "all", initialWorkflow = "" }: ExecutionsClientProps) {
+  const [search, setSearch] = useState(initialWorkflow);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>(initialStatus);
   const [modeFilter, setModeFilter] = useState<ModeFilter>("all");
   const [timeFilter, setTimeFilter] = useState<TimeFilter>("all");

@@ -33,3 +33,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 package-lock.json
+
+# blog drafts (publish by moving to landing/blog/)
+landing/blog/drafts/
