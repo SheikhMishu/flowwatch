@@ -31,6 +31,20 @@ export async function POST(req: NextRequest) {
 
   const db = getServerDb();
 
+  // Idempotency: insert event.id; duplicate = already processed, return 200.
+  const { error: dedupError } = await db
+    .from("stripe_processed_events")
+    .insert({ event_id: event.id, event_type: event.type });
+
+  if (dedupError) {
+    if (dedupError.code === "23505") {
+      // Unique violation — this event was already handled
+      return NextResponse.json({ received: true });
+    }
+    logger.error("Webhook dedup insert failed", { category: "billing", eventId: event.id, err: dedupError });
+    return NextResponse.json({ error: "Dedup check failed" }, { status: 500 });
+  }
+
   try {
     switch (event.type) {
       case "checkout.session.completed": {
@@ -130,8 +144,7 @@ export async function POST(req: NextRequest) {
     }
   } catch (err) {
     logger.error("Webhook handler error", { category: "billing", eventType: event.type, err });
-    // Return 500 so Stripe retries on transient failures (DB down, etc.).
-    // All DB writes are idempotent so duplicate delivery is safe.
+    // Return 500 so Stripe retries on transient failures (DB down, etc.)
     return NextResponse.json({ error: "Handler failed" }, { status: 500 });
   }
 
