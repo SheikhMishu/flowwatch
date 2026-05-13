@@ -55,11 +55,25 @@ export default async function BlogPost({ params }: Props) {
             </div>
             <span className="font-display font-extrabold tracking-tight text-[17px]">
               <span className="text-zinc-900">Flow</span>
-              <span style={{ background: "linear-gradient(135deg,#6366f1,#8b5cf6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>monix</span>
+              <span
+                style={{
+                  background: "linear-gradient(135deg,#6366f1,#8b5cf6)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
+              >
+                monix
+              </span>
             </span>
           </Link>
           <nav className="flex items-center gap-6 text-sm">
-            <Link href="/blog" className="text-zinc-500 hover:text-zinc-800 transition-colors">← Blog</Link>
+            <Link
+              href="/blog"
+              className="text-zinc-500 hover:text-zinc-800 transition-colors"
+            >
+              ← Blog
+            </Link>
             <Link
               href="https://app.flowmonix.com/register"
               className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white px-4 py-1.5 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity"
@@ -70,18 +84,30 @@ export default async function BlogPost({ params }: Props) {
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-6 py-14">
-        <Link href="/blog" className="inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-700 transition-colors mb-10">
+      <main className="max-w-3xl mx-auto px-6 py-14">
+        <Link
+          href="/blog"
+          className="inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-700 transition-colors mb-10"
+        >
           <ArrowLeft className="w-3.5 h-3.5" /> All articles
         </Link>
 
         <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-400 mb-5">
-          <span className="bg-indigo-50 text-indigo-600 px-2.5 py-0.5 rounded-full font-semibold">{post.category}</span>
-          <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{post.readingTime}</span>
+          <span className="bg-indigo-50 text-indigo-600 px-2.5 py-0.5 rounded-full font-semibold">
+            {post.category}
+          </span>
+          <span className="flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            {post.readingTime}
+          </span>
           {post.publishedAt && (
             <span className="flex items-center gap-1">
               <Calendar className="w-3 h-3" />
-              {new Date(post.publishedAt).toLocaleDateString("en-AU", { year: "numeric", month: "long", day: "numeric" })}
+              {new Date(post.publishedAt).toLocaleDateString("en-AU", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
             </span>
           )}
         </div>
@@ -113,7 +139,7 @@ export default async function BlogPost({ params }: Props) {
 
       {/* CTA */}
       <div className="border-t border-zinc-200 bg-white mt-6">
-        <div className="max-w-2xl mx-auto px-6 py-12 text-center">
+        <div className="max-w-3xl mx-auto px-6 py-12 text-center">
           <div className="inline-flex items-center gap-2 text-xs font-semibold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 inline-block" />
             FlowMonix
@@ -122,7 +148,8 @@ export default async function BlogPost({ params }: Props) {
             Stop finding out from your clients
           </h2>
           <p className="text-zinc-500 mb-6 max-w-md mx-auto text-[15px]">
-            FlowMonix monitors every n8n execution automatically. No per-workflow setup, no gaps. First incident in under 2 minutes.
+            FlowMonix monitors every n8n execution automatically. No
+            per-workflow setup, no gaps. First incident in under 2 minutes.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
@@ -131,11 +158,16 @@ export default async function BlogPost({ params }: Props) {
             >
               Start Free — No Credit Card
             </Link>
-            <Link href="/blog" className="border border-zinc-200 text-zinc-700 px-6 py-2.5 rounded-xl font-medium hover:bg-zinc-50 transition-colors text-sm">
+            <Link
+              href="/blog"
+              className="border border-zinc-200 text-zinc-700 px-6 py-2.5 rounded-xl font-medium hover:bg-zinc-50 transition-colors text-sm"
+            >
               Read more articles
             </Link>
           </div>
-          <p className="text-xs text-zinc-400 mt-4">Free tier available · Setup in 2 minutes</p>
+          <p className="text-xs text-zinc-400 mt-4">
+            Free tier available · Setup in 2 minutes
+          </p>
         </div>
       </div>
     </div>

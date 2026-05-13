@@ -1,3 +1,4 @@
+import React from 'react'
 import Image from 'next/image'
 import { ArrowRight, CheckCircle2, Lock } from 'lucide-react'
 import NavBar from './nav-bar'
@@ -109,15 +110,30 @@ export default function Hero() {
             </div>
 
             {/* Overlay: failed workflow indicator */}
-            <div className="badge-slide-left absolute top-3 left-3 sm:top-5 sm:left-5 flex items-center gap-2 bg-white rounded-xl px-2.5 py-1.5 shadow-lg border border-red-100 pointer-events-none">
+            <div
+              className="badge-slide-left absolute top-3 left-3 sm:top-5 sm:left-5 flex items-center gap-2 bg-white rounded-xl px-2.5 py-1.5 border border-red-100 pointer-events-none"
+              style={{ '--badge-glow': 'rgba(239,68,68,0.3)' } as React.CSSProperties}
+            >
               <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
               <span className="text-[11px] font-semibold text-red-600 whitespace-nowrap">7 failures in 5 min</span>
             </div>
 
             {/* Overlay: AI root cause — hidden on mobile */}
-            <div className="badge-slide-right hidden sm:block absolute top-5 right-5 bg-white rounded-xl px-3 py-2 shadow-lg border border-indigo-100 max-w-[210px] pointer-events-none">
+            <div
+              className="badge-slide-right hidden sm:block absolute top-5 right-5 bg-white rounded-xl px-3 py-2 border border-indigo-100 max-w-[210px] pointer-events-none"
+              style={{ '--badge-glow': 'rgba(99,102,241,0.3)' } as React.CSSProperties}
+            >
               <p className="text-[9px] font-bold text-indigo-600 uppercase tracking-wide mb-1">AI Root Cause</p>
               <p className="text-[11px] text-zinc-700 leading-snug">API timeout on payment step — increase timeout to 30s</p>
+            </div>
+
+            {/* Overlay: resolved confirmation */}
+            <div
+              className="badge-slide-up absolute bottom-28 left-3 sm:bottom-24 sm:left-5 flex items-center gap-2 bg-white rounded-xl px-2.5 py-1.5 border border-green-100 pointer-events-none"
+              style={{ '--badge-glow': 'rgba(34,197,94,0.3)' } as React.CSSProperties}
+            >
+              <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+              <span className="text-[11px] font-semibold text-green-600 whitespace-nowrap">Resolved in 2m 14s</span>
             </div>
 
             {/* Fade gradient at bottom blends into light page bg */}

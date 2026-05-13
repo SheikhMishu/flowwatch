@@ -1,8 +1,29 @@
+import React from 'react'
 import Image from 'next/image'
 import { FolderOpen, Brain, Bell, RotateCcw, Globe } from 'lucide-react'
 import { AnimateOnScroll } from './animate-on-scroll'
 
-const features = [
+interface Overlay {
+  position: string
+  label: string
+  sublabel?: string
+  dot: string
+  border: string
+  text: string
+  glow: string
+}
+
+const features: {
+  icon: typeof FolderOpen
+  title: string
+  badge: string | null
+  badgeColor: string
+  description: string
+  points: string[]
+  image: string
+  imageAlt: string
+  overlay: Overlay
+}[] = [
   {
     icon: FolderOpen,
     title: 'Incident Detection',
@@ -16,6 +37,14 @@ const features = [
     ],
     image: '/images/incidents.png',
     imageAlt: 'FlowMonix incident detection grouping 7 failures into one incident with timeline',
+    overlay: {
+      position: 'top-3 left-3',
+      label: '7 failures → 1 incident',
+      dot: 'bg-indigo-500',
+      border: 'border-indigo-100',
+      text: 'text-indigo-600',
+      glow: 'rgba(99,102,241,0.3)',
+    },
   },
   {
     icon: RotateCcw,
@@ -30,6 +59,14 @@ const features = [
     ],
     image: '/images/retry.png',
     imageAlt: 'FlowMonix one-click retry showing successful execution after incident resolution',
+    overlay: {
+      position: 'top-3 right-3',
+      label: '✓ Retried successfully',
+      dot: 'bg-green-500',
+      border: 'border-green-100',
+      text: 'text-green-600',
+      glow: 'rgba(34,197,94,0.3)',
+    },
   },
   {
     icon: Brain,
@@ -44,6 +81,15 @@ const features = [
     ],
     image: '/images/debugging.png',
     imageAlt: 'FlowMonix AI debugging panel showing root cause analysis and fix steps',
+    overlay: {
+      position: 'top-3 left-3',
+      label: 'Root cause found',
+      sublabel: 'Fix applied in 30s',
+      dot: 'bg-violet-500',
+      border: 'border-violet-100',
+      text: 'text-violet-600',
+      glow: 'rgba(139,92,246,0.3)',
+    },
   },
   {
     icon: Bell,
@@ -58,6 +104,14 @@ const features = [
     ],
     image: '/images/alerts.png',
     imageAlt: 'FlowMonix smart alerts configuration with Slack and email channels',
+    overlay: {
+      position: 'top-3 right-3',
+      label: 'Alert sent to Slack',
+      dot: 'bg-orange-400',
+      border: 'border-orange-100',
+      text: 'text-orange-600',
+      glow: 'rgba(251,146,60,0.3)',
+    },
   },
   {
     icon: Globe,
@@ -72,8 +126,31 @@ const features = [
     ],
     image: '/images/status-page.png',
     imageAlt: 'FlowMonix public status page showing workflow health to clients',
+    overlay: {
+      position: 'top-3 left-3',
+      label: 'Live · All systems up',
+      dot: 'bg-green-500',
+      border: 'border-green-100',
+      text: 'text-green-600',
+      glow: 'rgba(34,197,94,0.3)',
+    },
   },
 ]
+
+function OverlayBadge({ overlay }: { overlay: Overlay }) {
+  return (
+    <div
+      className={`badge-float absolute ${overlay.position} flex items-center gap-2 bg-white rounded-xl px-2.5 py-1.5 border ${overlay.border} pointer-events-none`}
+      style={{ '--badge-glow': overlay.glow } as React.CSSProperties}
+    >
+      <span className={`w-2 h-2 rounded-full ${overlay.dot} flex-shrink-0`} />
+      <div>
+        <p className={`text-[11px] font-semibold ${overlay.text} whitespace-nowrap leading-none`}>{overlay.label}</p>
+        {overlay.sublabel && <p className="text-[10px] text-zinc-400 mt-0.5 leading-none">{overlay.sublabel}</p>}
+      </div>
+    </div>
+  )
+}
 
 export default function Features() {
   return (
@@ -125,14 +202,17 @@ export default function Features() {
                 </div>
 
                 {/* Screenshot */}
-                <div className="mx-4 mb-4 rounded-xl overflow-hidden border border-zinc-200 shadow-sm">
-                  <Image
-                    src={f.image}
-                    alt={f.imageAlt}
-                    width={800}
-                    height={500}
-                    className="w-full h-auto max-h-[240px] sm:max-h-none object-cover object-top"
-                  />
+                <div className="mx-4 mb-4 relative">
+                  <div className="rounded-xl overflow-hidden border border-zinc-200 shadow-sm">
+                    <Image
+                      src={f.image}
+                      alt={f.imageAlt}
+                      width={800}
+                      height={500}
+                      className="w-full h-auto max-h-[240px] sm:max-h-none object-cover object-top"
+                    />
+                  </div>
+                  <OverlayBadge overlay={f.overlay} />
                 </div>
               </div>
             )
@@ -174,14 +254,17 @@ export default function Features() {
 
                   {/* Screenshot */}
                   <div className="md:w-3/5 p-4 flex items-center">
-                    <div className="rounded-xl overflow-hidden border border-zinc-200 shadow-sm w-full">
-                      <Image
-                        src={f.image}
-                        alt={f.imageAlt}
-                        width={900}
-                        height={560}
-                        className="w-full h-auto max-h-[260px] sm:max-h-none object-cover object-top"
-                      />
+                    <div className="relative w-full">
+                      <div className="rounded-xl overflow-hidden border border-zinc-200 shadow-sm">
+                        <Image
+                          src={f.image}
+                          alt={f.imageAlt}
+                          width={900}
+                          height={560}
+                          className="w-full h-auto max-h-[260px] sm:max-h-none object-cover object-top"
+                        />
+                      </div>
+                      <OverlayBadge overlay={f.overlay} />
                     </div>
                   </div>
                 </div>

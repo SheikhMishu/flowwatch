@@ -213,7 +213,7 @@ body {
   .cta-primary::before { animation: none; }
 }
 
-/* Hero overlay badge entrances */
+/* Hero overlay badge entrances + glow/float */
 @keyframes slideFromLeft {
   from { opacity: 0; transform: translateX(-14px); }
   to   { opacity: 1; transform: translateX(0); }
@@ -222,25 +222,55 @@ body {
   from { opacity: 0; transform: translateX(14px); }
   to   { opacity: 1; transform: translateX(0); }
 }
+@keyframes slideFromBottom {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes badgeGlow {
+  0%, 100% { box-shadow: 0 4px 10px rgba(0,0,0,0.07); }
+  50%       { box-shadow: 0 6px 22px var(--badge-glow, rgba(99,102,241,0.35)); }
+}
+@keyframes badgeFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-3px); }
+}
+
 .badge-slide-left {
   opacity: 0;
-  animation: slideFromLeft 0.45s var(--ease-out-strong) 0.7s forwards;
+  animation:
+    slideFromLeft 0.45s var(--ease-out-strong) 0.7s forwards,
+    badgeGlow 3.2s ease-in-out 1.2s infinite;
 }
 .badge-slide-right {
   opacity: 0;
-  animation: slideFromRight 0.45s var(--ease-out-strong) 0.95s forwards;
+  animation:
+    slideFromRight 0.45s var(--ease-out-strong) 0.95s forwards,
+    badgeGlow 3.2s ease-in-out 1.45s infinite;
+}
+.badge-slide-up {
+  opacity: 0;
+  animation:
+    slideFromBottom 0.45s var(--ease-out-strong) 1.3s forwards,
+    badgeGlow 3.2s ease-in-out 1.75s infinite;
+}
+.badge-float {
+  animation:
+    badgeFloat 4.5s ease-in-out infinite,
+    badgeGlow 3.5s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .badge-slide-left,
-  .badge-slide-right {
+  .badge-slide-right,
+  .badge-slide-up {
     animation: none;
     opacity: 1;
   }
+  .badge-float { animation: none; }
 }
 
 /* Custom scrollbar */
-::-webkit-scrollbar       { width: 5px; }
-::-webkit-scrollbar-track { background: #f8fafc; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+::-webkit-scrollbar       { width: 8px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: #64748b; }
