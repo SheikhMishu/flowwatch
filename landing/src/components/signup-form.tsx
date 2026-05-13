@@ -64,7 +64,9 @@ export default function SignupForm() {
       }
       setStatus('success')
       if (typeof window !== 'undefined' && (window as Window & { fbq?: (...args: unknown[]) => void }).fbq) {
-        (window as Window & { fbq?: (...args: unknown[]) => void }).fbq!('track', 'CompleteRegistration')
+        (window as Window & { fbq?: (...args: unknown[]) => void }).fbq!(
+          'track', 'CompleteRegistration', {}, { eventID: data.event_id }
+        )
       }
     } catch {
       setError('Network error — please try again.')
