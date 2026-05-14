@@ -97,13 +97,14 @@ export default function SignupForm() {
               </div>
               <h3 className="font-display font-bold text-zinc-900 text-2xl mb-2">You&apos;re in!</h3>
               <p className="text-zinc-500 text-sm leading-relaxed mb-6">
-                Your spot is reserved. Head to the app to create your free account and start monitoring now.
+                Click below — we&apos;ll send a 6-digit sign-in code to{' '}
+                <span className="font-medium text-zinc-700">{email}</span> so you can open your dashboard instantly.
               </p>
               <a
-                href="https://app.flowmonix.com"
+                href={`https://app.flowmonix.com/login?email=${encodeURIComponent(email)}`}
                 className="inline-flex items-center gap-2 py-3 px-6 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-sm hover:opacity-90 transition-opacity"
               >
-                Go to FlowMonix <ArrowRight className="w-4 h-4" />
+                Open FlowMonix <ArrowRight className="w-4 h-4" />
               </a>
             </AnimateOnScroll>
           ) : (

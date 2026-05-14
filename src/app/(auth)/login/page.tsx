@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useRef, useEffect, useCallback, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight, Building2 } from "lucide-react";
 import { FlowMonixMark } from "@/components/brand/mark";
 import { Button } from "@/components/ui/button";
@@ -14,8 +14,9 @@ type Step = "email" | "pin" | "create-org";
 const PIN_LENGTH = 6;
 const RESEND_SECONDS = 30;
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // — State machine
   const [step, setStep] = useState<Step>("email");
@@ -65,6 +66,33 @@ export default function LoginPage() {
       setTimeout(() => pinRefs.current[0]?.focus(), 50);
     }
   }, [step]);
+
+  // — Auto-send PIN when ?email= query param is present (from landing page signup)
+  const autoSentRef = useRef(false);
+  useEffect(() => {
+    const emailParam = searchParams.get("email");
+    if (!emailParam || autoSentRef.current) return;
+    autoSentRef.current = true;
+    setEmail(emailParam);
+    setEmailLoading(true);
+    fetch("/api/auth/send-pin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: emailParam }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.ok) {
+          setPin(Array(PIN_LENGTH).fill(""));
+          setPinError("");
+          setStep("pin");
+        } else {
+          setEmailError(data.error || "Failed to send code. Try again.");
+        }
+      })
+      .catch(() => setEmailError("Something went wrong. Please try again."))
+      .finally(() => setEmailLoading(false));
+  }, [searchParams]);
 
   // ─── Step 1: Send PIN ──────────────────────────────────────────────────────
   const handleSendPin = async (e: React.FormEvent) => {
@@ -578,5 +606,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen" />}>
+      <LoginForm />
+    </Suspense>
   );
 }
