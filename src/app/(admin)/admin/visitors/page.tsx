@@ -68,6 +68,7 @@ export default async function AdminVisitorsPage() {
     { data: appUniqueTodayRaw },
     { data: appUniqueWeekRaw },
     { data: appUniqueUsersRaw },
+    { count: landingDirectCount },
   ] = await Promise.all([
     // Landing counts
     withIpFilter(db.from("page_visits").select("id", { count: "exact", head: true }).eq("source", "landing")),
@@ -114,6 +115,9 @@ export default async function AdminVisitorsPage() {
 
     // Demo sessions all time
     db.from("demo_sessions").select("id", { count: "exact", head: true }),
+
+    // Landing: direct visits (no referrer) in last 30 days
+    withIpFilter(db.from("page_visits").select("id", { count: "exact", head: true }).eq("source", "landing").is("referrer", null).gte("created_at", thirtyDaysAgo)),
 
     // Unique visitors by distinct IP
     db.rpc("admin_unique_visitors", { p_source: "landing", p_since: todayStart, p_excluded_ips: excludedIps }),
@@ -175,15 +179,19 @@ export default async function AdminVisitorsPage() {
     if (!r.referrer) continue;
     try {
       const host = new URL(String(r.referrer)).hostname.replace("www.", "");
+      if (host.endsWith("flowmonix.com")) continue;
       referrerHostCounts[host] = (referrerHostCounts[host] ?? 0) + Number(r.count);
     } catch {
       referrerHostCounts[String(r.referrer)] = (referrerHostCounts[String(r.referrer)] ?? 0) + Number(r.count);
     }
   }
-  const landingReferrers = Object.entries(referrerHostCounts)
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 8)
-    .map(([referrer, count]) => ({ referrer, count }));
+  const landingReferrers = [
+    { referrer: "direct", count: landingDirectCount ?? 0 },
+    ...Object.entries(referrerHostCounts)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 8)
+      .map(([referrer, count]) => ({ referrer, count })),
+  ].sort((a, b) => b.count - a.count);
 
   // Browsers already stripped of version by the RPC
   const landingBrowsers = anyRows(landingBrowsersRaw).map((r) => ({ browser: String(r.browser), count: Number(r.count) }));

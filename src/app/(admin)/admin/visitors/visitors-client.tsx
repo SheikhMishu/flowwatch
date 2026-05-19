@@ -519,19 +519,23 @@ export function VisitorsClient({
           </div>
 
           {/* Referrers */}
-          {landingReferrers.length > 0 && (
-            <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3 flex items-center gap-1.5">
-                <Globe className="w-3.5 h-3.5" />
-                Traffic Sources (Referrers)
-              </p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {landingReferrers.map((r) => (
-                  <BarRow key={r.referrer} label={r.referrer} count={r.count} max={maxReferrer} color="#22c55e" />
-                ))}
-              </div>
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3 flex items-center gap-1.5">
+              <Globe className="w-3.5 h-3.5" />
+              Traffic Sources (30d)
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {landingReferrers.map((r) => (
+                <BarRow
+                  key={r.referrer}
+                  label={r.referrer}
+                  count={r.count}
+                  max={maxReferrer}
+                  color={r.referrer === "direct" ? "#6366f1" : "#22c55e"}
+                />
+              ))}
             </div>
-          )}
+          </div>
 
           {/* Visit log */}
           <VisitTable visits={recentVisits} source="landing" />
