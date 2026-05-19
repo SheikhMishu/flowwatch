@@ -40,6 +40,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid channel" }, { status: 400 });
   }
 
+  const tc = threshold_count ?? 1;
+  const tm = threshold_minutes ?? 5;
+  const cm = cooldown_minutes ?? 60;
+  if (!Number.isInteger(tc) || tc < 1 || tc > 100)
+    return NextResponse.json({ error: "threshold_count must be between 1 and 100" }, { status: 400 });
+  if (!Number.isInteger(tm) || tm < 1 || tm > 1440)
+    return NextResponse.json({ error: "threshold_minutes must be between 1 and 1440" }, { status: 400 });
+  if (!Number.isInteger(cm) || cm < 1 || cm > 10080)
+    return NextResponse.json({ error: "cooldown_minutes must be between 1 and 10080" }, { status: 400 });
+
   const db = getServerDb();
 
   // Enforce plan alert-rule limit and channel restrictions
@@ -75,9 +85,9 @@ export async function POST(req: NextRequest) {
       name: name.trim(),
       channel,
       destination: destination.trim(),
-      threshold_count: threshold_count ?? 1,
-      threshold_minutes: threshold_minutes ?? 5,
-      cooldown_minutes: cooldown_minutes ?? 60,
+      threshold_count: tc,
+      threshold_minutes: tm,
+      cooldown_minutes: cm,
       is_active: true,
     })
     .select("*")

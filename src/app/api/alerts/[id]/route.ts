@@ -40,6 +40,21 @@ export async function PATCH(
   if (updates.channel && !["email", "slack", "webhook"].includes(updates.channel as string)) {
     return NextResponse.json({ error: "Invalid channel" }, { status: 400 });
   }
+  if ("threshold_count" in updates) {
+    const tc = updates.threshold_count as unknown;
+    if (!Number.isInteger(tc) || (tc as number) < 1 || (tc as number) > 100)
+      return NextResponse.json({ error: "threshold_count must be between 1 and 100" }, { status: 400 });
+  }
+  if ("threshold_minutes" in updates) {
+    const tm = updates.threshold_minutes as unknown;
+    if (!Number.isInteger(tm) || (tm as number) < 1 || (tm as number) > 1440)
+      return NextResponse.json({ error: "threshold_minutes must be between 1 and 1440" }, { status: 400 });
+  }
+  if ("cooldown_minutes" in updates) {
+    const cm = updates.cooldown_minutes as unknown;
+    if (!Number.isInteger(cm) || (cm as number) < 1 || (cm as number) > 10080)
+      return NextResponse.json({ error: "cooldown_minutes must be between 1 and 10080" }, { status: 400 });
+  }
 
   const db = getServerDb();
   const { data, error } = await db
