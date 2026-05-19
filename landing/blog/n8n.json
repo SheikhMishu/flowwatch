@@ -1,0 +1,359 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1,
+                4
+              ],
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "18df92f5-4a2d-42ca-ae1e-28088f763d63",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "blog_topics",
+        "limit": 1,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "idea"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        240,
+        0
+      ],
+      "id": "466b17c6-7ecd-4dde-97d9-239cf861cfdc",
+      "name": "Get Next Topic",
+      "credentials": {
+        "supabaseApi": {
+          "id": "xiqmYg7ErwF8w7ca",
+          "name": "Supabase account FL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "blog_topics",
+        "returnAll": true,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "published"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        496,
+        0
+      ],
+      "id": "1d282324-7be0-4257-a83a-d84559565243",
+      "name": "Get Published Topics",
+      "credentials": {
+        "supabaseApi": {
+          "id": "xiqmYg7ErwF8w7ca",
+          "name": "Supabase account FL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const topic = $('Get Next Topic').first().json;\nconst published = $('Get Published Topics').all();\n\nconst coveredList = published\n  .map(i => i.json.primary_keyword)\n  .filter(Boolean)\n  .map(k => `- ${k}`)\n  .join('\\n');\n\nconst today = new Date().toISOString().split('T')[0];\n\nconst prompt = `You are writing a blog post for FlowMonix (flowmonix.com), a monitoring tool for n8n workflows. FlowMonix detects silent failures, groups them into incidents, and gives AI-powered root cause analysis. Target audience: n8n power users, automation agencies, and freelancers running n8n for clients.\n\nWrite a blog post for the FlowMonix blog. Requirements:\n- Practical and specific — real scenarios, not generic advice\n- Targets n8n users running workflows in production\n- Mentions FlowMonix naturally where relevant, not as a sales pitch\n- 800–1200 words\n\nTone: Direct, technical, written by a practitioner. No fluff. Avoid \"In conclusion\", \"In today's world\", \"game-changer\", \"seamless\".\n\nOUTPUT FORMAT — follow exactly:\n- Output ONLY the raw markdown — no explanation, no commentary\n- Start with the frontmatter block below, nothing before it\n- Do NOT add an H1 heading after the frontmatter\n- End with the last sentence of the article, nothing after it\n- Do not wrap output in triple backticks\n- Inner code blocks are fine — just don't wrap the entire output\n- If the title contains double quotes, escape them: \\\"like this\\\"\n\nUse this frontmatter exactly (fill in the values):\n---\ntitle: \"Post Title Here\"\ndescription: \"One sentence description for SEO and card preview\"\npublishedAt: \"${today}\"\nreadingTime: \"CALCULATE_THIS\"\ncategory: \"${topic.category}\"\ntags: [\"n8n\", \"fill-in-relevant-tags\"]\nprimaryKeyword: \"${topic.primary_keyword}\"\n---\n\nTopics already covered — do NOT duplicate or overlap:\n${coveredList}\n\nTopic for this post: ${topic.topic}\nPrimary keyword to target: ${topic.primary_keyword}`;\n\nreturn [{\n  json: {\n    prompt,\n    topicId: topic.id,\n    topicName: topic.topic,\n    primaryKeyword: topic.primary_keyword,\n    category: topic.category\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        0
+      ],
+      "id": "dd383269-c39f-41aa-beac-49282c746569",
+      "name": "Build Prompt"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.prompt }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        0,
+        240
+      ],
+      "id": "de854682-c1d0-4375-9139-30398baff0d9",
+      "name": "Generate Blog Post"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        400
+      ],
+      "id": "41553940-ac00-45d9-8280-96965f7f797d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "PU2gSY52U3wAhPhW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const content = $input.first().json.text;\nconst topicId = $('Build Prompt').first().json.topicId;\n\n// Extract title from frontmatter\nconst titleMatch = content.match(/^title:\\s*\"(.+?)(?<!\\\\)\"/m);\nconst title = titleMatch ? titleMatch[1] : 'untitled';\n\n// Derive slug: lowercase, alphanumeric + hyphens only\nconst slug = title\n  .toLowerCase()\n  .replace(/[^a-z0-9\\s]/g, '')\n  .trim()\n  .replace(/\\s+/g, '-');\n\n// Estimate reading time (200 words per minute)\nconst wordCount = content.split(/\\s+/).length;\nconst minutes = Math.ceil(wordCount / 200);\nconst readingTime = `${minutes} min read`;\n\n// Replace the CALCULATE_THIS placeholder in the frontmatter\nconst finalContent = content.replace('CALCULATE_THIS', readingTime);\n\nreturn [{\n  json: {\n    content: finalContent,\n    slug,\n    title,\n    topicId,\n    readingTime\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        240
+      ],
+      "id": "5202be5d-a92c-44f6-bf30-82a230abdb57",
+      "name": "Derive Slug"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "value": "SheikhMishu",
+          "mode": "list",
+          "cachedResultName": "SheikhMishu",
+          "cachedResultUrl": "https://github.com/SheikhMishu"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "flowwatch",
+          "mode": "list",
+          "cachedResultName": "flowwatch",
+          "cachedResultUrl": "https://github.com/SheikhMishu/flowwatch"
+        },
+        "filePath": "=landing/blog/{{ $json.slug }}.md",
+        "fileContent": "={{ $json.content }}",
+        "commitMessage": "=Add blog post: {{ $json.title }}",
+        "additionalParameters": {
+          "branch": {
+            "branch": "master"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        544,
+        240
+      ],
+      "id": "f4b1f2b0-6e9a-4b37-b8f0-072a3cc3ca5c",
+      "name": "Commit Blog Post",
+      "webhookId": "517a7bc6-2dcd-4eb3-85ef-2bc89e042f19",
+      "credentials": {
+        "githubApi": {
+          "id": "0g4rKF6jbzLGro2O",
+          "name": "GitHub account Sheikh"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "blog_topics",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Derive Slug').item.json.topicId }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "published"
+            },
+            {
+              "fieldId": "slug",
+              "fieldValue": "={{ $('Derive Slug').item.json.slug }}"
+            },
+            {
+              "fieldId": "published_at",
+              "fieldValue": "={{ new Date().toISOString().split('T')[0] }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        752,
+        240
+      ],
+      "id": "dced1069-b000-4abd-bab7-8b5df0778a1f",
+      "name": "Mark Published",
+      "credentials": {
+        "supabaseApi": {
+          "id": "xiqmYg7ErwF8w7ca",
+          "name": "Supabase account FL"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Generate Blog Post": [
+      {
+        "json": {
+          "text": "---\ntitle: \"Setting Up n8n Error Workflows for Robust Automation\"\ndescription: \"A guide to setting up error workflows in n8n to enhance the reliability of your automation processes.\"\npublishedAt: \"2026-05-12\"\nreadingTime: \"9 min read\"\ncategory: \"n8n Debugging\"\ntags: [\"n8n\", \"automation\", \"workflow\", \"error-handling\"]\nprimaryKeyword: \"n8n error workflow\"\n---\n\nWhen deploying n8n into production environments, one of the critical aspects is setting up robust error handling. For n8n power users and agencies managing automation for clients, configuring effective error workflows can make the difference between catching issues early or facing silent, damaging failures.\n\n## Understanding n8n Error Workflows\n\nAn error workflow in n8n acts as a safety net. If an individual node or a series of nodes fail during execution, the error workflow is triggered to handle the failure gracefully, keeping your primary operations unaffected. Setting these up requires foresight into potential failure points within your workflows.\n\n### Identifying Critical Nodes for Error Handling\n\nIn most workflows, certain nodes are more susceptible to errors. These could include:\n\n- **HTTP Request Nodes:** Failures such as server downtimes, incorrect endpoints, or authorization errors.\n- **Database Nodes:** Issues like connectivity problems or SQL errors.\n- **Custom Code Nodes:** Potential bugs or runtime exceptions.\n\nThese nodes should have dedicated error handling strategies to catch and report failures effectively.\n\n## Setting Up an Error Workflow\n\n### Step 1: Designing the Error Handling Workflow\n\nBegin with a clear vision of what your error handling should achieve:\n- **Notification Alerts:** Ensure you receive real-time alerts for critical failures.\n- **Retry Mechanisms:** Automate retries for transient errors.\n- **Data Logging:** Collect error data for post-mortem analysis.\n\nUse FlowMonix to feed data into your incident management system. FlowMonix can aggregate silent failures from n8n and provide root cause analysis with AI-driven insights.\n\n### Step 2: Configuring Error Triggers\n\nIn n8n, configure an error trigger at the beginning of your error workflow. This node will catch all failed executions from any designated workflow. Here's how you can set it up:\n\n1. **Create a New Workflow:** This will serve solely as the error handler.\n2. **Add the Error Trigger Node:** This node listens for any errors in linked workflows.\n3. **Configure the Trigger Settings:** Specify which workflows you want this error handler to cover.\n\n### Step 3: Adding Notification Logic\n\nIntegrate with tools like Slack, Email, or SMS gateways for instant notifications:\n\n```yaml\n{\n  \"nodes\": [\n    {\n      \"parameters\": {\n        \"webhookUri\": \"https://hooks.slack.com/services/.../...\",\n        \"jsonParameters\": true,\n        \"bodyJson\": \"{\\n  \\\"text\\\": \\\"Error in {{workflow}}: {{error.message}}\\\"\\n}\"\n      },\n      \"name\": \"Slack Notification\",\n      \"type\": \"n8n-nodes-base.slack\"\n    }\n  ]\n}\n```\n\n### Step 4: Implementing Retry Logic\n\nFor temporary failures, use a combination of Wait and Retry nodes:\n\n- **Wait Node**: Introduce a delay before a retry.\n- **Execute Workflow Node**: Trigger the original workflow with the same parameters.\n\n### Step 5: Logging Errors for Analysis\n\nUtilize the Set Node to format error data, then send it to a database or use a custom logging solution:\n\n```json\n{\n  \"nodes\": [\n    {\n      \"parameters\": {\n        \"values\": {\n          \"string\": [\n            {\n              \"name\": \"Error\",\n              \"value\": \"{{$json[\\\"error\\\"]}}\"\n            }\n          ]\n        }\n      },\n      \"name\": \"Log Error\",\n      \"type\": \"n8n-nodes-base.set\"\n    },\n    {\n      \"parameters\": {\n        \"resource\": \"document\",\n        \"operation\": \"insert\",\n        \"collection\": \"error_logs\",\n        \"fields\": \"Error\"\n      },\n      \"name\": \"Database Log\",\n      \"type\": \"n8n-nodes-base.mongoDb\"\n    }\n  ]\n}\n```\n\n## Best Practices for Robust Error Handling\n\n### Continuous Monitoring\n\nOnce your error workflows are operational, continuous monitoring is critical. Here, FlowMonix comes into play by providing automated incident grouping and prioritization, helping you focus on what matters most.\n\n### Regular Updates and Testing\n\nRegularly update your error workflows to accommodate new failure scenarios. Test these workflows rigorously with all possible edge cases to ensure reliability.\n\n### Use Analytics for Improvement\n\nAnalyze error logs and metrics collected by tools like FlowMonix to refine your workflows. Understanding common failure trends can help you anticipate new points of failure and adapt proactively.\n\nImplementing these strategies and leveraging FlowMonix can help you maintain a resilient automation system with n8n, ensuring that your workflows run smoothly and efficiently with minimal disruptions."
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Next Topic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Next Topic": {
+      "main": [
+        [
+          {
+            "node": "Get Published Topics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Published Topics": {
+      "main": [
+        [
+          {
+            "node": "Build Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Prompt": {
+      "main": [
+        [
+          {
+            "node": "Generate Blog Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Blog Post",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Blog Post": {
+      "main": [
+        [
+          {
+            "node": "Derive Slug",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Derive Slug": {
+      "main": [
+        [
+          {
+            "node": "Commit Blog Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Commit Blog Post": {
+      "main": [
+        [
+          {
+            "node": "Mark Published",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "eacb4cca-6938-4240-bd39-746201b80d6d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1853eb922c025f45eb45b8ec11f638d816a5624157ad158b4096a411eebb5cb6"
+  },
+  "id": "9cboV3Tmm5ZXFakR",
+  "tags": []
+}

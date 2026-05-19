@@ -6,6 +6,7 @@ import { NavProgress } from "@/components/layout/nav-progress";
 import { OnboardingController } from "@/components/onboarding/onboarding-controller";
 import { DemoTracker } from "@/components/demo/demo-tracker";
 import { getSession } from "@/lib/auth";
+import { getServerDb } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
@@ -19,10 +20,18 @@ export default async function DashboardLayout({
 
   const userName = session.name ?? session.email ?? "";
 
+  const db = getServerDb();
+  const { data: me } = await db
+    .from("users")
+    .select("is_super_admin")
+    .eq("id", session.userId)
+    .single();
+  const isAdmin = me?.is_super_admin === true;
+
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <NavProgress />
-      <Sidebar />
+      <Sidebar isAdmin={isAdmin} />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <main className="flex-1 overflow-y-auto pb-20 md:pb-0">
           {children}

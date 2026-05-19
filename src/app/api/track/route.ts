@@ -9,13 +9,14 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => null);
     if (!body?.page) return NextResponse.json({ ok: false }, { status: 400 });
 
-    const { page, ip, ua, referrer, userId, orgId } = body as {
+    const { page, ip, ua, referrer, userId, orgId, source } = body as {
       page: string;
       ip: string;
       ua: string;
       referrer: string;
       userId: string | null;
       orgId: string | null;
+      source: "landing" | "app" | null;
     };
 
     const { browser, os, device } = parseUA(ua ?? "");
@@ -85,6 +86,7 @@ export async function POST(req: NextRequest) {
       referrer: referrer || null,
       user_id: userId ?? null,
       org_id: orgId ?? null,
+      source: source ?? null,
     });
 
     return NextResponse.json({ ok: true });

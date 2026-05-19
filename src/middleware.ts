@@ -59,6 +59,7 @@ export async function middleware(req: NextRequest) {
         referrer: req.headers.get("referer") ?? "",
         userId: session?.userId ?? null,
         orgId: session?.orgId ?? null,
+        source: "app",
       }),
     }).catch(() => {});
   }

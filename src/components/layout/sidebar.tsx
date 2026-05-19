@@ -17,6 +17,7 @@ import {
   BarChart3,
   ScrollText,
   HelpCircle,
+  ShieldCheck,
 } from "lucide-react";
 import { FlowMonixMark } from "@/components/brand/mark";
 import { cn } from "@/lib/utils";
@@ -76,7 +77,7 @@ const bottomItems = [
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
-export function Sidebar() {
+export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   const [collapsed, setCollapsed] = useState(false);
   const [openIncidents, setOpenIncidents] = useState(0);
   const pathname = usePathname();
@@ -179,7 +180,7 @@ export function Sidebar() {
 
         {/* Bottom */}
         <div className="border-t border-border py-3 px-2 space-y-0.5">
-          {bottomItems.map((item) => {
+          {(isAdmin ? [...bottomItems, { label: "Admin", href: "/admin", icon: ShieldCheck }] : bottomItems).map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
 

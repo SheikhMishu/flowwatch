@@ -32,6 +32,7 @@ export async function middleware(req: NextRequest) {
         ip,
         ua: req.headers.get("user-agent") ?? "",
         referrer: req.headers.get("referer") ?? "",
+        source: "landing",
       }),
     }).catch(() => {});
   }

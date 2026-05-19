@@ -38,95 +38,82 @@ export default async function AdminVisitorsPage() {
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
-  // Helper: applies excluded-IP filter to any query when list is non-empty
-  const ipFilter = excludedIps.length > 0
-    ? `(${excludedIps.join(",")})`
-    : null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const ipFilter = excludedIps.length > 0 ? `(${excludedIps.join(",")})` : null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function withIpFilter(q: any): any {
     return ipFilter ? q.not("ip", "in", ipFilter) : q;
   }
 
   const [
-    { count: totalVisits },
-    { count: visitsToday },
-    { count: visitsThisWeek },
-    { data: recentVisits },
-    { data: topPages },
-    { data: topCountries },
-    { data: deviceBreakdown },
-    { data: referrerData },
-    { data: browserData },
-    { data: dailyData },
+    { count: landingTotal },
+    { count: landingToday },
+    { count: landingWeek },
+    { count: landingAnon },
+    { count: appTotal },
+    { count: appToday },
+    { count: appWeek },
+    { data: recentVisitsRaw },
+    { data: landingPagesRaw },
+    { data: appPagesRaw },
+    { data: landingCountriesRaw },
+    { data: landingDevicesRaw },
+    { data: landingReferrersRaw },
+    { data: landingBrowsersRaw },
+    { data: landingDailyRaw },
+    { data: appDailyRaw },
+    { count: demoSessions },
   ] = await Promise.all([
-    // Totals
-    withIpFilter(db.from("page_visits").select("id", { count: "exact", head: true })),
-    withIpFilter(db.from("page_visits").select("id", { count: "exact", head: true }).gte("created_at", todayStart)),
-    withIpFilter(db.from("page_visits").select("id", { count: "exact", head: true }).gte("created_at", weekAgo)),
+    // Landing counts
+    withIpFilter(db.from("page_visits").select("id", { count: "exact", head: true }).eq("source", "landing")),
+    withIpFilter(db.from("page_visits").select("id", { count: "exact", head: true }).eq("source", "landing").gte("created_at", todayStart)),
+    withIpFilter(db.from("page_visits").select("id", { count: "exact", head: true }).eq("source", "landing").gte("created_at", weekAgo)),
+    withIpFilter(db.from("page_visits").select("id", { count: "exact", head: true }).eq("source", "landing").is("user_id", null)),
 
-    // Recent 200 visits for the table
+    // App counts
+    withIpFilter(db.from("page_visits").select("id", { count: "exact", head: true }).eq("source", "app")),
+    withIpFilter(db.from("page_visits").select("id", { count: "exact", head: true }).eq("source", "app").gte("created_at", todayStart)),
+    withIpFilter(db.from("page_visits").select("id", { count: "exact", head: true }).eq("source", "app").gte("created_at", weekAgo)),
+
+    // Recent 300 visits (all sources)
     withIpFilter(
       db.from("page_visits")
-        .select("id, page, ip, country, country_code, city, region, browser, os, device, referrer, created_at, user_id, org_id")
+        .select("id, page, ip, country, country_code, city, region, browser, os, device, referrer, created_at, user_id, org_id, source")
         .order("created_at", { ascending: false })
-        .limit(200)
+        .limit(300)
     ),
 
-    // Top pages (last 30 days)
-    withIpFilter(
-      db.from("page_visits")
-        .select("page")
-        .gte("created_at", thirtyDaysAgo)
-        .limit(20000)
-    ),
+    // Landing: top pages (aggregated in DB)
+    db.rpc("admin_top_pages", { p_source: "landing", p_days: 30, p_limit: 10, p_excluded_ips: excludedIps }),
 
-    // Country breakdown (last 30 days)
-    withIpFilter(
-      db.from("page_visits")
-        .select("country, country_code")
-        .gte("created_at", thirtyDaysAgo)
-        .not("country_code", "is", null)
-        .limit(20000)
-    ),
+    // App: top pages (aggregated in DB)
+    db.rpc("admin_top_pages", { p_source: "app", p_days: 30, p_limit: 10, p_excluded_ips: excludedIps }),
 
-    // Device breakdown (last 30 days)
-    withIpFilter(
-      db.from("page_visits")
-        .select("device")
-        .gte("created_at", thirtyDaysAgo)
-        .limit(20000)
-    ),
+    // Landing: countries (aggregated in DB)
+    db.rpc("admin_top_countries", { p_source: "landing", p_days: 30, p_limit: 10, p_excluded_ips: excludedIps }),
 
-    // Referrer breakdown (last 30 days)
-    withIpFilter(
-      db.from("page_visits")
-        .select("referrer")
-        .gte("created_at", thirtyDaysAgo)
-        .not("referrer", "is", null)
-        .limit(20000)
-    ),
+    // Landing: devices (aggregated in DB)
+    db.rpc("admin_device_breakdown", { p_source: "landing", p_days: 30, p_excluded_ips: excludedIps }),
 
-    // Browser breakdown (last 30 days)
-    withIpFilter(
-      db.from("page_visits")
-        .select("browser")
-        .gte("created_at", thirtyDaysAgo)
-        .limit(20000)
-    ),
+    // Landing: referrers (aggregated in DB, hostname extraction stays in JS)
+    db.rpc("admin_top_referrers", { p_source: "landing", p_days: 30, p_limit: 50, p_excluded_ips: excludedIps }),
 
-    // Daily visits for last 30 days — descending so recent days are always captured first
-    withIpFilter(
-      db.from("page_visits")
-        .select("created_at")
-        .gte("created_at", thirtyDaysAgo)
-        .order("created_at", { ascending: false })
-        .limit(20000)
-    ),
+    // Landing: browsers (aggregated in DB, version stripped in SQL)
+    db.rpc("admin_top_browsers", { p_source: "landing", p_days: 30, p_limit: 6, p_excluded_ips: excludedIps }),
+
+    // Landing: daily aggregated in DB — no row limit problem
+    db.rpc("admin_daily_visit_counts", { p_source: "landing", p_days: 30, p_excluded_ips: excludedIps }),
+
+    // App: daily aggregated in DB — no row limit problem
+    db.rpc("admin_daily_visit_counts", { p_source: "app", p_days: 30, p_excluded_ips: excludedIps }),
+
+    // Demo sessions all time
+    db.from("demo_sessions").select("id", { count: "exact", head: true }),
   ]);
 
-  // Enrich visits with user email + org name for signed-in sessions
+  // Enrich recent visits with user email / org name
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const visits = (recentVisits ?? []) as any[];
+  const visits = (recentVisitsRaw ?? []) as any[];
   const userIds = [...new Set(visits.map((v) => v.user_id).filter(Boolean))] as string[];
   const orgIds  = [...new Set(visits.map((v) => v.org_id).filter(Boolean))]  as string[];
 
@@ -142,108 +129,115 @@ export default async function AdminVisitorsPage() {
   const userMap = Object.fromEntries((userRows ?? []).map((u) => [u.id, u]));
   const orgMap  = Object.fromEntries((orgRows  ?? []).map((o) => [o.id, o]));
 
-  // Aggregate top pages
-  const pageCounts: Record<string, number> = {};
-  for (const r of topPages ?? []) {
-    pageCounts[r.page] = (pageCounts[r.page] ?? 0) + 1;
-  }
-  const topPagesAgg = Object.entries(pageCounts)
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 10)
-    .map(([page, count]) => ({ page, count }));
+  const enrichedVisits = visits.map((v) => ({
+    ...v,
+    user_email: v.user_id ? (userMap[v.user_id]?.email ?? null) : null,
+    user_name:  v.user_id ? (userMap[v.user_id]?.name  ?? null) : null,
+    org_name:   v.org_id  ? (orgMap[v.org_id]?.name   ?? null) : null,
+    org_slug:   v.org_id  ? (orgMap[v.org_id]?.slug   ?? null) : null,
+  })) as Visit[];
 
-  // Aggregate countries
-  const countryCounts: Record<string, { name: string; code: string; count: number }> = {};
-  for (const r of topCountries ?? []) {
-    if (!r.country_code) continue;
-    if (!countryCounts[r.country_code]) {
-      countryCounts[r.country_code] = { name: r.country ?? r.country_code, code: r.country_code, count: 0 };
-    }
-    countryCounts[r.country_code].count++;
-  }
-  const topCountriesAgg = Object.values(countryCounts)
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 10);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const anyRows = (v: any) => (v ?? []) as any[];
 
-  // Aggregate devices
-  const deviceCounts: Record<string, number> = {};
-  for (const r of deviceBreakdown ?? []) {
-    const d = r.device ?? "unknown";
-    deviceCounts[d] = (deviceCounts[d] ?? 0) + 1;
+  // RPC results already aggregated — just cast and normalise
+  const landingPages = anyRows(landingPagesRaw).map((r) => ({ page: String(r.page), count: Number(r.count) }));
+  const appPages     = anyRows(appPagesRaw).map((r)     => ({ page: String(r.page), count: Number(r.count) }));
+
+  const landingCountries = anyRows(landingCountriesRaw).map((r) => ({
+    name:  String(r.country ?? r.country_code),
+    code:  String(r.country_code),
+    count: Number(r.count),
+  }));
+
+  const landingDeviceCounts: Record<string, number> = {};
+  for (const r of anyRows(landingDevicesRaw)) {
+    landingDeviceCounts[String(r.device ?? "unknown")] = Number(r.count);
   }
 
-  // Aggregate referrers
-  const referrerCounts: Record<string, number> = {};
-  for (const r of referrerData ?? []) {
+  // Referrers: group by hostname (DB returned top 50 raw URLs)
+  const referrerHostCounts: Record<string, number> = {};
+  for (const r of anyRows(landingReferrersRaw)) {
     if (!r.referrer) continue;
     try {
-      const host = new URL(r.referrer).hostname.replace("www.", "");
-      referrerCounts[host] = (referrerCounts[host] ?? 0) + 1;
+      const host = new URL(String(r.referrer)).hostname.replace("www.", "");
+      referrerHostCounts[host] = (referrerHostCounts[host] ?? 0) + Number(r.count);
     } catch {
-      referrerCounts[r.referrer] = (referrerCounts[r.referrer] ?? 0) + 1;
+      referrerHostCounts[String(r.referrer)] = (referrerHostCounts[String(r.referrer)] ?? 0) + Number(r.count);
     }
   }
-  const topReferrers = Object.entries(referrerCounts)
+  const landingReferrers = Object.entries(referrerHostCounts)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 8)
     .map(([referrer, count]) => ({ referrer, count }));
 
-  // Aggregate browsers
-  const browserCounts: Record<string, number> = {};
-  for (const r of browserData ?? []) {
-    const b = r.browser ?? "Unknown";
-    // Normalize version out (e.g. "Chrome 124" → "Chrome")
-    const bName = b.split(" ")[0];
-    browserCounts[bName] = (browserCounts[bName] ?? 0) + 1;
-  }
-  const topBrowsers = Object.entries(browserCounts)
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 6)
-    .map(([browser, count]) => ({ browser, count }));
+  // Browsers already stripped of version by the RPC
+  const landingBrowsers = anyRows(landingBrowsersRaw).map((r) => ({ browser: String(r.browser), count: Number(r.count) }));
 
-  // Daily visit buckets — keyed by Melbourne date so they match the visitsToday boundary
+  // Zero-fill daily buckets so missing days appear as 0 in the chart
   const melbDate = (ts: string | number | Date) => {
     const d = new TZDate(ts instanceof Date ? ts : new Date(ts), MELB);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   };
-  const dailyBuckets: Record<string, number> = {};
-  for (let i = 29; i >= 0; i--) {
-    dailyBuckets[melbDate(now.getTime() - i * 24 * 60 * 60 * 1000)] = 0;
-  }
-  for (const r of dailyData ?? []) {
-    const day = melbDate(r.created_at);
-    if (day in dailyBuckets) dailyBuckets[day]++;
-  }
-  const dailyVisits = Object.entries(dailyBuckets).map(([date, count]) => ({ date, count }));
+  const emptyBuckets = () => {
+    const b: Record<string, number> = {};
+    for (let i = 29; i >= 0; i--) {
+      b[melbDate(now.getTime() - i * 24 * 60 * 60 * 1000)] = 0;
+    }
+    return b;
+  };
 
-  // Unique IPs
-  const uniqueIpsTotal = new Set(visits.map((v) => v.ip).filter(Boolean)).size;
+  const landingDailyBuckets = emptyBuckets();
+  for (const r of (landingDailyRaw ?? []) as { day: string; count: number }[]) {
+    if (r.day in landingDailyBuckets) landingDailyBuckets[r.day] = Number(r.count);
+  }
 
-  // Demo session count (all time)
-  const { count: demoSessions } = await db
-    .from("demo_sessions")
-    .select("id", { count: "exact", head: true });
+  const appDailyBuckets = emptyBuckets();
+  for (const r of (appDailyRaw ?? []) as { day: string; count: number }[]) {
+    if (r.day in appDailyBuckets) appDailyBuckets[r.day] = Number(r.count);
+  }
+
+  // Unique app users — separate query since daily RPC no longer returns user_id
+  const { data: appUserIdsRaw } = await withIpFilter(
+    db.from("page_visits")
+      .select("user_id")
+      .eq("source", "app")
+      .gte("created_at", thirtyDaysAgo)
+      .not("user_id", "is", null)
+      .limit(50000)
+  );
+  const appUniqueUsers = new Set(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (appUserIdsRaw ?? []).map((r: any) => r.user_id)
+  ).size;
+
+  const landingAuthed = (landingTotal ?? 0) - (landingAnon ?? 0);
 
   return (
     <VisitorsClient
-      totalVisits={totalVisits ?? 0}
-      visitsToday={visitsToday ?? 0}
-      visitsThisWeek={visitsThisWeek ?? 0}
-      uniqueIpsTotal={uniqueIpsTotal}
+      landingStats={{
+        total: landingTotal ?? 0,
+        today: landingToday ?? 0,
+        week: landingWeek ?? 0,
+        anonymous: landingAnon ?? 0,
+        authed: landingAuthed,
+      }}
+      appStats={{
+        total: appTotal ?? 0,
+        today: appToday ?? 0,
+        week: appWeek ?? 0,
+        uniqueUsers: appUniqueUsers,
+      }}
+      recentVisits={enrichedVisits}
+      landingPages={landingPages}
+      appPages={appPages}
+      landingCountries={landingCountries}
+      landingDeviceCounts={landingDeviceCounts}
+      landingReferrers={landingReferrers}
+      landingBrowsers={landingBrowsers}
+      landingDaily={Object.entries(landingDailyBuckets).map(([date, count]) => ({ date, count }))}
+      appDaily={Object.entries(appDailyBuckets).map(([date, count]) => ({ date, count }))}
       demoSessions={demoSessions ?? 0}
-      recentVisits={visits.map((v) => ({
-        ...v,
-        user_email: v.user_id ? (userMap[v.user_id]?.email ?? null) : null,
-        user_name:  v.user_id ? (userMap[v.user_id]?.name  ?? null) : null,
-        org_name:   v.org_id  ? (orgMap[v.org_id]?.name   ?? null) : null,
-        org_slug:   v.org_id  ? (orgMap[v.org_id]?.slug   ?? null) : null,
-      })) as Visit[]}
-      topPages={topPagesAgg}
-      topCountries={topCountriesAgg}
-      deviceCounts={deviceCounts}
-      topReferrers={topReferrers}
-      topBrowsers={topBrowsers}
-      dailyVisits={dailyVisits}
       myIp={myIp}
       excludedIps={excludedIps}
     />
@@ -265,6 +259,7 @@ export interface Visit {
   created_at: string;
   user_id: string | null;
   org_id: string | null;
+  source: "landing" | "app" | null;
   user_email: string | null;
   user_name: string | null;
   org_name: string | null;
