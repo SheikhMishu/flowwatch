@@ -63,6 +63,11 @@ export default async function AdminVisitorsPage() {
     { data: landingDailyRaw },
     { data: appDailyRaw },
     { count: demoSessions },
+    { data: landingUniqueTodayRaw },
+    { data: landingUniqueWeekRaw },
+    { data: appUniqueTodayRaw },
+    { data: appUniqueWeekRaw },
+    { data: appUniqueUsersRaw },
   ] = await Promise.all([
     // Landing counts
     withIpFilter(db.from("page_visits").select("id", { count: "exact", head: true }).eq("source", "landing")),
@@ -101,14 +106,23 @@ export default async function AdminVisitorsPage() {
     // Landing: browsers (aggregated in DB, version stripped in SQL)
     db.rpc("admin_top_browsers", { p_source: "landing", p_days: 30, p_limit: 6, p_excluded_ips: excludedIps }),
 
-    // Landing: daily aggregated in DB — no row limit problem
+    // Landing: daily aggregated in DB
     db.rpc("admin_daily_visit_counts", { p_source: "landing", p_days: 30, p_excluded_ips: excludedIps }),
 
-    // App: daily aggregated in DB — no row limit problem
+    // App: daily aggregated in DB
     db.rpc("admin_daily_visit_counts", { p_source: "app", p_days: 30, p_excluded_ips: excludedIps }),
 
     // Demo sessions all time
     db.from("demo_sessions").select("id", { count: "exact", head: true }),
+
+    // Unique visitors by distinct IP
+    db.rpc("admin_unique_visitors", { p_source: "landing", p_since: todayStart, p_excluded_ips: excludedIps }),
+    db.rpc("admin_unique_visitors", { p_source: "landing", p_since: weekAgo,    p_excluded_ips: excludedIps }),
+    db.rpc("admin_unique_visitors", { p_source: "app",     p_since: todayStart, p_excluded_ips: excludedIps }),
+    db.rpc("admin_unique_visitors", { p_source: "app",     p_since: weekAgo,    p_excluded_ips: excludedIps }),
+
+    // Unique authenticated app users (30d) — replaces raw limit(50000) fetch
+    db.rpc("admin_unique_app_users", { p_since: thirtyDaysAgo, p_excluded_ips: excludedIps }),
   ]);
 
   // Enrich recent visits with user email / org name
@@ -197,19 +211,13 @@ export default async function AdminVisitorsPage() {
     if (r.day in appDailyBuckets) appDailyBuckets[r.day] = Number(r.count);
   }
 
-  // Unique app users — separate query since daily RPC no longer returns user_id
-  const { data: appUserIdsRaw } = await withIpFilter(
-    db.from("page_visits")
-      .select("user_id")
-      .eq("source", "app")
-      .gte("created_at", thirtyDaysAgo)
-      .not("user_id", "is", null)
-      .limit(50000)
-  );
-  const appUniqueUsers = new Set(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (appUserIdsRaw ?? []).map((r: any) => r.user_id)
-  ).size;
+  // Extract unique counts from RPC results (each returns a single row with `count`)
+  type CountRow = { count: number };
+  const landingUniqToday = Number((landingUniqueTodayRaw as CountRow[] | null)?.[0]?.count ?? 0);
+  const landingUniqWeek  = Number((landingUniqueWeekRaw  as CountRow[] | null)?.[0]?.count ?? 0);
+  const appUniqToday     = Number((appUniqueTodayRaw     as CountRow[] | null)?.[0]?.count ?? 0);
+  const appUniqWeek      = Number((appUniqueWeekRaw      as CountRow[] | null)?.[0]?.count ?? 0);
+  const appUniqueUsers   = Number((appUniqueUsersRaw     as CountRow[] | null)?.[0]?.count ?? 0);
 
   const landingAuthed = (landingTotal ?? 0) - (landingAnon ?? 0);
 
@@ -221,12 +229,16 @@ export default async function AdminVisitorsPage() {
         week: landingWeek ?? 0,
         anonymous: landingAnon ?? 0,
         authed: landingAuthed,
+        todayUnique: landingUniqToday,
+        weekUnique: landingUniqWeek,
       }}
       appStats={{
         total: appTotal ?? 0,
         today: appToday ?? 0,
         week: appWeek ?? 0,
         uniqueUsers: appUniqueUsers,
+        todayUnique: appUniqToday,
+        weekUnique: appUniqWeek,
       }}
       recentVisits={enrichedVisits}
       landingPages={landingPages}

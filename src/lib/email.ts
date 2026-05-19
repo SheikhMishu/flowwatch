@@ -277,5 +277,42 @@ export async function sendContactEmail(opts: {
   }
 }
 
+// Internal notification: new user signup
+export async function sendNewSignupNotification(opts: {
+  userEmail: string;
+  orgName: string;
+  orgId: string;
+}): Promise<void> {
+  const { userEmail, orgName, orgId } = opts;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://app.flowmonix.com";
+  const to = process.env.ADMIN_NOTIFY_EMAIL ?? "support@flowmonix.com";
+
+  const content = `
+    <h2 style="margin:0 0 16px;font-size:18px;font-weight:700;color:#111827;">🎉 New signup</h2>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"
+           style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:20px;">
+      <tr><td style="padding:16px 20px;">
+        <p style="margin:0 0 8px;font-size:13px;color:#6b7280;">
+          <strong style="color:#374151;">Email:</strong> ${userEmail}
+        </p>
+        <p style="margin:0 0 8px;font-size:13px;color:#6b7280;">
+          <strong style="color:#374151;">Org:</strong> ${orgName}
+        </p>
+        <p style="margin:0;font-size:13px;color:#6b7280;">
+          <strong style="color:#374151;">Time:</strong> ${new Date().toUTCString()}
+        </p>
+      </td></tr>
+    </table>
+    ${ctaButton("View in admin", `${appUrl}/admin/orgs/${orgId}`)}
+  `;
+
+  await sendEmail({
+    to,
+    subject: `New signup: ${userEmail} (${orgName})`,
+    fromEnvKey: "NOTIFY_MAIL_FROM",
+    html: emailLayout(content, "Internal notification — new FlowMonix signup."),
+  });
+}
+
 // Export layout helpers for use in alert-engine.ts
 export { emailLayout, ctaButton };

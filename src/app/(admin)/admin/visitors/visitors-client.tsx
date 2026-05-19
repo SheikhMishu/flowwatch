@@ -20,6 +20,8 @@ interface LandingStats {
   week: number;
   anonymous: number;
   authed: number;
+  todayUnique: number;
+  weekUnique: number;
 }
 
 interface AppStats {
@@ -27,6 +29,8 @@ interface AppStats {
   today: number;
   week: number;
   uniqueUsers: number;
+  todayUnique: number;
+  weekUnique: number;
 }
 
 interface Props {
@@ -434,11 +438,11 @@ export function VisitorsClient({
           {/* Stats */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {[
-              { label: "Total Visits",   value: landingStats.total.toLocaleString(),     sub: "all time",           color: "text-indigo-400" },
-              { label: "Today",          value: landingStats.today.toLocaleString(),     sub: "page views",         color: "text-green-400"  },
-              { label: "This Week",      value: landingStats.week.toLocaleString(),      sub: "page views",         color: "text-blue-400"   },
-              { label: "Prospects",      value: landingStats.anonymous.toLocaleString(), sub: "anonymous visitors", color: "text-amber-400"  },
-              { label: "Demo Sessions",  value: demoSessions.toLocaleString(),           sub: "all time",           color: "text-purple-400" },
+              { label: "Total Visits",   value: landingStats.total.toLocaleString(),     sub: "all time",                                                              color: "text-indigo-400" },
+              { label: "Today",          value: landingStats.today.toLocaleString(),     sub: `${landingStats.todayUnique.toLocaleString()} unique IPs`,               color: "text-green-400"  },
+              { label: "This Week",      value: landingStats.week.toLocaleString(),      sub: `${landingStats.weekUnique.toLocaleString()} unique IPs`,                color: "text-blue-400"   },
+              { label: "Prospects",      value: landingStats.anonymous.toLocaleString(), sub: "anonymous visitors",                                                    color: "text-amber-400"  },
+              { label: "Demo Sessions",  value: demoSessions.toLocaleString(),           sub: "all time",                                                              color: "text-purple-400" },
             ].map((s) => (
               <div key={s.label} className="bg-gray-900 border border-gray-800 rounded-xl p-4">
                 <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">{s.label}</p>
@@ -541,10 +545,10 @@ export function VisitorsClient({
           {/* Stats */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: "Total Visits",   value: appStats.total.toLocaleString(),       sub: "all time",      color: "text-emerald-400" },
-              { label: "Today",          value: appStats.today.toLocaleString(),       sub: "page views",    color: "text-green-400"   },
-              { label: "This Week",      value: appStats.week.toLocaleString(),        sub: "page views",    color: "text-blue-400"    },
-              { label: "Active Users",   value: appStats.uniqueUsers.toLocaleString(), sub: "unique, 30d",   color: "text-amber-400"   },
+              { label: "Total Visits",   value: appStats.total.toLocaleString(),       sub: "all time",                                                         color: "text-emerald-400" },
+              { label: "Today",          value: appStats.today.toLocaleString(),       sub: `${appStats.todayUnique.toLocaleString()} unique IPs`,               color: "text-green-400"   },
+              { label: "This Week",      value: appStats.week.toLocaleString(),        sub: `${appStats.weekUnique.toLocaleString()} unique IPs`,                color: "text-blue-400"    },
+              { label: "Active Users",   value: appStats.uniqueUsers.toLocaleString(), sub: "unique users, 30d",                                                  color: "text-amber-400"   },
             ].map((s) => (
               <div key={s.label} className="bg-gray-900 border border-gray-800 rounded-xl p-4">
                 <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">{s.label}</p>

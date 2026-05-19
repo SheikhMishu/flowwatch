@@ -4,6 +4,7 @@ import { getServerDb } from "@/lib/db";
 import type { OrgRole } from "@/types";
 import { logger } from "@/lib/logger";
 import { logActivity } from "@/lib/activity";
+import { sendNewSignupNotification } from "@/lib/email";
 
 function slugify(name: string): string {
   return name
@@ -103,6 +104,12 @@ export async function POST(req: NextRequest) {
     });
 
     logger.info("Organization created", { category: "auth", userId, orgId: org.id, orgName: org.name });
+
+    // Fire-and-forget — never block the response on notification failure
+    sendNewSignupNotification({ userEmail: user.email, orgName: org.name, orgId: org.id }).catch((err) => {
+      logger.warn("New signup notification failed", { category: "email", orgId: org.id, err });
+    });
+
     logActivity({ userId: user.id, email: user.email, orgId: org.id }, "auth.org_created", {
       resourceType: "organization",
       resourceId: org.id,
