@@ -42,7 +42,7 @@ The main app (`src/`) has NO analytics scripts. Only `landing/` is tracked.
 
 **Meta Pixel events:** PageView fires on every landing page load. CompleteRegistration fires in `landing/src/components/signup-form.tsx` after successful signup. Ad blocker errors on fbevents.js are expected and harmless.
 
-**Visitor tracking middleware** fires POST to `app.flowmonix.com/api/track` on every page visit. Exists in BOTH `src/middleware.ts` (app) and `landing/src/middleware.ts` (landing). Keep them in sync.
+**Visitor tracking middleware** fires POST to `app.flowmonix.com/api/track` on every page visit. Exists in BOTH `src/middleware.ts` (app) and `landing/src/middleware.ts` (landing). Keep them in sync. Both send a `source` field (`"app"` or `"landing"`) so visits can be separated in admin analytics.
 
 **`?notrack` opt-out:** Visit any page with `?notrack` to set `fm_notrack` cookie (1 year) and exclude your own browser from tracking.
 
@@ -60,6 +60,9 @@ When adding new admin pages:
 - **Headers:** stack on mobile with `flex-col sm:flex-row`
 - **Datetimes:** use `fmtMelb()` / `distanceMelb()` from `@/lib/dates` (never raw `format()`)
 - **Dark theme:** automatically applied — `dark` class is on the admin layout root in `admin-layout-client.tsx`
+- **Access control:** check `is_super_admin` on `users` table via DB query on each page; redirect to `/dashboard` if false
+- **Admin link in sidebar:** dashboard layout (`src/app/(dashboard)/layout.tsx`) queries `is_super_admin` and passes `isAdmin` prop to `<Sidebar>`. Link only appears for super admins.
+- **Aggregates must use RPCs:** never fetch raw rows with `limit(N)` and aggregate in JS — high traffic silently truncates data. Write a Supabase RPC function that aggregates in SQL and returns only the rows needed. See migrations 029/030 for examples.
 
 ## n8n Sync — API Gotcha
 The n8n API cursor pagination uses `cursor` query param + `nextCursor` response field.
@@ -77,8 +80,13 @@ Posts live in `landing/blog/`. Check `landing/blog/README.md` before writing new
 6. Connect n8n instance → sync → workflows appear
 7. Open DevTools console on billing page — zero errors
 
-## What's Still Missing (as of 2026-05-12)
-- No E2E test suite
-- Stripe webhook idempotency (event.id dedup)
-- Facebook Conversions API (CAPI) — not implemented
-- Alert threshold values have no server-side validation
+## What's Still Missing (as of 2026-05-19)
+- No E2E test suite — signup → billing → dashboard flow still untested programmatically
+
+## Admin Panel — Known Issues & Planned Work
+- `aiCallsToday` in overview is hardcoded to `0` — never fetched
+- `planData` and `aiData` in overview use `limit(10000)` raw fetches — need RPCs (same fix as visitor analytics)
+- No signup funnel view: landing signups → registered → paid (conversion rate not visible)
+- No recent signups feed (newest users/orgs with timestamps)
+- No churn/downgrade tracking (Pro → Free cancellations)
+- No active vs ghost org classification (signed up but never connected n8n)
