@@ -33,6 +33,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
+    // Deduplicate: skip if this IP hit the same page in the last 5 minutes
+    // Prevents scanner/bot floods from polluting the visits table
+    if (ip && ip !== "unknown") {
+      const db = getServerDb();
+      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+      const { count } = await db
+        .from("page_visits")
+        .select("id", { count: "exact", head: true })
+        .eq("ip", ip)
+        .eq("page", page)
+        .gte("created_at", fiveMinutesAgo);
+      if ((count ?? 0) > 0) return NextResponse.json({ ok: true });
+    }
+
     // Geo lookup via ip-api.com (free, no key, 45 req/min limit)
     let country: string | null = null;
     let countryCode: string | null = null;
@@ -71,8 +85,7 @@ export async function POST(req: NextRequest) {
       countryCode = "LC";
     }
 
-    const db = getServerDb();
-    await db.from("page_visits").insert({
+    await getServerDb().from("page_visits").insert({
       page,
       ip: ip ?? null,
       country,

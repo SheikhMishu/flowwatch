@@ -92,7 +92,7 @@ export async function DELETE(
   if (!existing) return NextResponse.json({ error: "Alert not found" }, { status: 404 });
 
   const db = getServerDb();
-  const { error } = await db.from("alerts").delete().eq("id", id);
+  const { error } = await db.from("alerts").delete().eq("id", id).eq("org_id", session.orgId);
   if (error) {
     logger.error("Failed to delete alert", { category: "alert-engine", orgId: session.orgId, alertId: id, err: error });
     return NextResponse.json({ error: "Failed to delete alert" }, { status: 500 });

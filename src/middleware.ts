@@ -6,13 +6,15 @@ const AUTH_ROUTES = ["/login"];
 
 const NOTRACK_COOKIE = "fm_notrack";
 
-// Pages we track visits for (not API routes, not admin, not static)
+// Pages we track visits for (not API routes, not admin, not static, not auth gates)
+const UNTRACKED_PATHS = new Set(["/login", "/invite"]);
 function shouldTrack(pathname: string): boolean {
   return (
     !pathname.startsWith("/api/") &&
     !pathname.startsWith("/admin") &&
     !pathname.startsWith("/_next/") &&
-    !pathname.includes(".")
+    !pathname.includes(".") &&
+    !UNTRACKED_PATHS.has(pathname)
   );
 }
 
