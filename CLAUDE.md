@@ -21,10 +21,11 @@ startCommand = "NODE_OPTIONS=--max-old-space-size=1024 npm start"
 ```
 
 ## Email Infrastructure
-- **Sending:** AWS SES. Env var: `REG_MAIL_FROM` on the landing Railway service.
+- **Sending:** AWS SES. Env var: `REG_MAIL_FROM` on the landing Railway service; `NOTIFY_MAIL_FROM` on the app Railway service.
 - **Receiving:** Cloudflare Email Routing → sheikh.mishu.au@gmail.com
 - **Active addresses:** info@, hello@, notification@, registration@, support@flowmonix.com
 - **DNS:** SPF + DKIM (SES) + DMARC (p=quarantine) + BIMI all configured in Cloudflare
+- **New signup notification:** `sendNewSignupNotification()` in `src/lib/email.ts` — fires fire-and-forget from `create-org` route. Sends to `ADMIN_NOTIFY_EMAIL` env var (defaults to `support@flowmonix.com`).
 
 ## Analytics & Tracking (landing only)
 The main app (`src/`) has NO analytics scripts. Only `landing/` is tracked.
@@ -64,6 +65,13 @@ When adding new admin pages:
 - **Admin link in sidebar:** dashboard layout (`src/app/(dashboard)/layout.tsx`) queries `is_super_admin` and passes `isAdmin` prop to `<Sidebar>`. Link only appears for super admins.
 - **Aggregates must use RPCs:** never fetch raw rows with `limit(N)` and aggregate in JS — high traffic silently truncates data. Write a Supabase RPC function that aggregates in SQL and returns only the rows needed. See migrations 029/030 for examples.
 
+## API Rate Limiting
+Use `checkRateLimit(key, maxRequests, windowMs)` from `@/lib/rate-limit` on any route that could be abused.
+- Fixed-window, in-memory (single Railway instance only)
+- Key naming: `ai:{orgId}`, `contact:{userId}` — prefix by feature, suffix by the appropriate scope
+- Current limits: `/api/ai/explain` → 10/min per org; `/api/contact` → 5/hr per user
+- Returns 429 + `Retry-After` header when exceeded
+
 ## n8n Sync — API Gotcha
 The n8n API cursor pagination uses `cursor` query param + `nextCursor` response field.
 Do NOT use `lastId` param — it doesn't exist and returns 400. Confirmed via n8n OpenAPI spec.
@@ -83,10 +91,23 @@ Posts live in `landing/blog/`. Check `landing/blog/README.md` before writing new
 ## What's Still Missing (as of 2026-05-19)
 - No E2E test suite — signup → billing → dashboard flow still untested programmatically
 
-## Admin Panel — Known Issues & Planned Work
-- `aiCallsToday` in overview is hardcoded to `0` — never fetched
-- `planData` and `aiData` in overview use `limit(10000)` raw fetches — need RPCs (same fix as visitor analytics)
-- No signup funnel view: landing signups → registered → paid (conversion rate not visible)
-- No recent signups feed (newest users/orgs with timestamps)
-- No churn/downgrade tracking (Pro → Free cancellations)
-- No active vs ghost org classification (signed up but never connected n8n)
+## Admin Panel — Overview Sections (as of 2026-05-19)
+All previously known issues are fixed. Current overview sections:
+- Row 1: Organizations, Total Users, Monthly Revenue, Infrastructure
+- Row 2: AI Calls (total + this month via RPC), Alert Firings, Landing Signups
+- Plan Distribution bar
+- Signup Funnel: Landing Signups → Registered Users → Paying Orgs
+- Subscription Health: Canceled / Canceling / Past Due counts
+- Activation: Active orgs (connected n8n) vs Ghost orgs
+- Recent Signups: last 8 orgs with owner email, plan, timestamp
+
+## Admin Panel — RPC Pattern (migrations 029–032)
+All aggregates use server-side RPCs. Key RPCs:
+- `admin_ai_usage_summary()` → `{total, this_month}`
+- `admin_plan_breakdown()` → `{free, pro, team, enterprise}`
+- `admin_recent_orgs(p_limit)` → org list with owner email
+- `admin_churn_stats()` → `{canceled, canceling, past_due}`
+- `admin_active_ghost_stats()` → `{active_orgs, ghost_orgs}`
+- `admin_unique_visitors(p_source, p_since, p_excluded_ips)` → `{count}` distinct IPs
+- `admin_unique_app_users(p_since, p_excluded_ips)` → `{count}` distinct user_ids
+- `admin_top_referrers` returns raw URLs; `page.tsx` groups by hostname, filters out `*.flowmonix.com` (internal noise), and prepends a `direct` entry (null-referrer count queried separately via `.is("referrer", null)`)

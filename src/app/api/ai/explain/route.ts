@@ -5,6 +5,7 @@ import { getAiDebug, type AiTier } from "@/lib/ai-debug";
 import { getPlanLimits } from "@/lib/plans";
 import { logger } from "@/lib/logger";
 import { logActivity } from "@/lib/activity";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 // ─── Resolve org plan → AI tier + monthly limit ───────────────────────────────
 
@@ -28,6 +29,15 @@ export async function POST(req: NextRequest) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // 10 requests per minute per org
+  const rl = checkRateLimit(`ai:${session.orgId}`, 10, 60_000);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a moment before trying again." },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfterSec) } },
+    );
   }
 
   const body = await req.json().catch(() => null);

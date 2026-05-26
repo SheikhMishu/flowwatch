@@ -2,11 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { sendContactEmail } from "@/lib/email";
 import { logger } from "@/lib/logger";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   try {
     const session = await getSession();
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    // 5 messages per hour per user
+    const rl = checkRateLimit(`contact:${session.userId}`, 5, 60 * 60_000);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: "You've sent too many messages. Please wait before trying again." },
+        { status: 429, headers: { "Retry-After": String(rl.retryAfterSec) } },
+      );
+    }
 
     const body = await req.json();
     const subject: string = (body.subject ?? "").trim();
