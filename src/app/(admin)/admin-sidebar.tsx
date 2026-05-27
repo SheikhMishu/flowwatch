@@ -12,6 +12,7 @@ import {
   Eye,
   X,
   FlaskConical,
+  Timer,
 } from "lucide-react";
 import { FlowMonixMark } from "@/components/brand/mark";
 import { cn } from "@/lib/utils";
@@ -22,6 +23,7 @@ const navItems = [
   { label: "Users",         href: "/admin/users",   icon: Users },
   { label: "Usage",         href: "/admin/usage",   icon: Activity },
   { label: "Visitors",      href: "/admin/visitors",icon: Eye },
+  { label: "Cron History",  href: "/admin/cron",    icon: Timer },
   { label: "Demo",          href: "/admin/demo",    icon: FlaskConical },
 ];
 

@@ -14,6 +14,7 @@ export interface SyncResult {
   error?: string;
   workflowsUpserted: number;
   executionsUpserted: number;
+  duration_ms?: number;
 }
 
 // ─── Core sync logic ──────────────────────────────────────────────────────────
@@ -244,7 +245,12 @@ export async function syncInstance(instanceId: string, orgId: string): Promise<S
   const lastExecutionId = inst.last_execution_id != null ? Number(inst.last_execution_id) : null;
 
   logger.info("syncInstance started", { category: "sync", orgId, instanceId, isIncremental: lastExecutionId !== null });
+  const t0 = Date.now();
   const result = await runInstanceSync(db, orgId, instanceId, inst.url, inst.api_key_encrypted, lastExecutionId);
+  const duration_ms = Date.now() - t0;
+  const timedResult = { ...result, duration_ms };
+
+  writeSyncRuns(db, crypto.randomUUID(), "manual", [{ ...timedResult, orgId }]).catch(() => {});
 
   if (result.ok) {
     await Promise.all([
@@ -260,7 +266,7 @@ export async function syncInstance(instanceId: string, orgId: string): Promise<S
     );
   }
 
-  return result;
+  return timedResult;
 }
 
 /** Sync all active instances across all orgs (cron). Evaluates alerts per org after sync. */
@@ -274,12 +280,17 @@ export async function syncAllInstances(): Promise<SyncResult[]> {
 
   if (!instances || instances.length === 0) return [];
 
+  const batchId = crypto.randomUUID();
   const results = await Promise.all(
-    instances.map((inst) => {
+    instances.map(async (inst) => {
       const lastExecutionId = inst.last_execution_id != null ? Number(inst.last_execution_id) : null;
-      return runInstanceSync(db, inst.org_id, inst.id, inst.url, inst.api_key_encrypted, lastExecutionId);
+      const t0 = Date.now();
+      const r = await runInstanceSync(db, inst.org_id, inst.id, inst.url, inst.api_key_encrypted, lastExecutionId);
+      return { ...r, orgId: inst.org_id, duration_ms: Date.now() - t0 };
     })
   );
+
+  writeSyncRuns(db, batchId, "cron", results).catch(() => {});
 
   // Post-sync steps once per org (alerts, incident grouping, auto-resolve)
   const succeededInstances = results
@@ -313,5 +324,28 @@ export async function syncAllInstances(): Promise<SyncResult[]> {
     )
   );
 
-  return results;
+  return results.map(({ orgId: _orgId, ...r }) => r);
+}
+
+// ─── Internal helpers ─────────────────────────────────────────────────────────
+
+async function writeSyncRuns(
+  db: ReturnType<typeof getServerDb>,
+  batchId: string,
+  triggeredBy: "cron" | "manual",
+  results: Array<SyncResult & { orgId: string; duration_ms: number }>
+) {
+  const rows = results.map((r) => ({
+    batch_id: batchId,
+    triggered_by: triggeredBy,
+    instance_id: r.instanceId,
+    org_id: r.orgId,
+    ok: r.ok,
+    workflows_upserted: r.workflowsUpserted,
+    executions_upserted: r.executionsUpserted,
+    error_message: r.error ?? null,
+    duration_ms: r.duration_ms,
+  }));
+  const { error } = await db.from("cron_sync_runs").insert(rows);
+  if (error) logger.error("Failed to write cron_sync_runs", { category: "cron", err: error });
 }
